@@ -651,7 +651,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 		using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 		await connection.OpenAsync();
 
-		using var command = new SingleStoreCommand("DO SLEEP(3);", connection);
+		using var command = new SingleStoreCommand("SELECT SLEEP(3) INTO @dummy", connection);
 		using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
 		await command.ExecuteNonQueryAsync(tokenSource.Token);
 	}
