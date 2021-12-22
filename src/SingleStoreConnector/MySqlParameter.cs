@@ -193,8 +193,15 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 
 	internal MySqlParameterCollection? ParameterCollection { get; set; }
 
+	/// <summary>
+	/// Appends the string value of the parameter to the writer.
+	/// </summary>
+	/// <remarks>This method escaped the special characters using the options described in https://dev.mysql.com/doc/refman/8.0/en/string-literals.html:
+	/// "\" is replaced with "\\", "'" - "''", NUL(0x00) with "\0"
+	/// </remarks>
 	internal void AppendSqlString(ByteBufferWriter writer, StatementPreparerOptions options)
 	{
+		const byte backslash = 0x5C, quote = 0x27, zeroByte = 0x00;
 		var noBackslashEscapes = (options & StatementPreparerOptions.NoBackslashEscapes) == StatementPreparerOptions.NoBackslashEscapes;
 
 		if (Value is null || Value == DBNull.Value)
@@ -288,7 +295,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 			var length = inputSpan.Length + BinaryBytes.Length + 1;
 			foreach (var by in inputSpan)
 			{
-				if (by is 0x27 || by is 0x5C && !noBackslashEscapes)
+				if (by is quote or zeroByte || (by is backslash && !noBackslashEscapes))
 					length++;
 			}
 
@@ -297,11 +304,19 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 			var index = BinaryBytes.Length;
 			foreach (var by in inputSpan)
 			{
-				if (by is 0x27 || by is 0x5C && !noBackslashEscapes)
+				if (by is zeroByte)
+				{
+					outputSpan[index++] = (byte) '\\';
+					outputSpan[index++] = (byte) '0';
+				}
+				else
+				{
+					if (by is quote || by is backslash && !noBackslashEscapes)
+						outputSpan[index++] = by;
 					outputSpan[index++] = by;
-				outputSpan[index++] = by;
+				}
 			}
-			outputSpan[index++] = 0x27;
+			outputSpan[index++] = quote;
 			Debug.Assert(index == length, "index == length");
 			writer.Advance(index);
 		}
@@ -394,9 +409,17 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 				writer.Write(BinaryBytes);
 				foreach (var by in bytes)
 				{
-					if (by is 0x27 or 0x5C)
-						writer.Write((byte) 0x5C);
-					writer.Write(by);
+					if (by is 0x00)
+					{
+						writer.Write((byte) '\\');
+						writer.Write((byte) '0');
+					}
+					else
+					{
+						if (by is 0x27 or 0x5C)
+							writer.Write((byte) 0x5C);
+						writer.Write(by);
+					}
 				}
 				writer.Write((byte) '\'');
 			}
