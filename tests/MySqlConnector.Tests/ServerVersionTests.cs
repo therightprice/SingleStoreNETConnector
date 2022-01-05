@@ -1,9 +1,9 @@
 using System;
 using System.Text;
-using MySqlConnector.Core;
+using SingleStoreConnector.Core;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class ServerVersionTests
 {

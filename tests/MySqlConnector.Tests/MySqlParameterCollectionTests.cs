@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class MySqlParameterCollectionTests
 {

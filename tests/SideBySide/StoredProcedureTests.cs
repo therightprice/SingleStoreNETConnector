@@ -356,7 +356,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		// reorder parameters
 		// remove return types
-		// remove directions (MySqlConnector only, MySql.Data does not fix these up)
+		// remove directions (SingleStoreConnector only, MySql.Data does not fix these up)
 		// CachedProcedure class should fix everything up based on parameter names
 		using var connection = CreateOpenConnection();
 		using var cmd = connection.CreateCommand();

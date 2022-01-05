@@ -6,9 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using MySqlConnector.Protocol;
+using SingleStoreConnector.Protocol;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 internal sealed class FakeMySqlServerConnection
 {
@@ -102,7 +102,7 @@ internal sealed class FakeMySqlServerConnection
 							var data = new byte[number.Length + 1];
 							data[0] = (byte) number.Length;
 							Encoding.UTF8.GetBytes(number, 0, number.Length, data, 1);
-							
+
 							var negativeOne = new byte[] { 2, 0x2D, 0x31 };
 							var packets = new[]
 							{

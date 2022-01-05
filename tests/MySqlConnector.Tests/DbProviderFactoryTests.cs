@@ -4,7 +4,7 @@ using MySqlConnectorFactory = MySql.Data.MySqlClient.MySqlClientFactory;
 #endif
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class DbProviderFactoryTests
 {

@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public sealed class FakeMySqlServer
 {

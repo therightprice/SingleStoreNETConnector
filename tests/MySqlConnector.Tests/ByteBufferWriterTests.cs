@@ -1,7 +1,7 @@
-using MySqlConnector.Protocol.Serialization;
+using SingleStoreConnector.Protocol.Serialization;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class ByteBufferWriterTests
 {

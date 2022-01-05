@@ -2,10 +2,10 @@ using System;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using MySqlConnector.Utilities;
+using SingleStoreConnector.Utilities;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class UtilityTests
 {

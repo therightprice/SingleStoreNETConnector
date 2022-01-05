@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <Title>SingleStoreConnector Ed25519 Authentication Plugin</Title>
+    <Description>Implements the client_ed25519 authentication plugin for SingleStore.</Description>
+    <Copyright>Copyright 2019–2021 Bradley Grainger</Copyright>
+    <Authors>Bradley Grainger</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>singlestore;singlestoreconnector;authentication;ed25519</PackageTags>
+    <NoWarn>SA1001;SA1002;SA1005;SA1011;SA1012;SA1021;SA1025;SA1106;SA1107;SA1111;SA1119;SA1121;SA1300;SA1307;SA1312;SA1401;SA1413;SA1501;SA1505;SA1507;SA1508;SA1512;SA1518;SA1601</NoWarn>
+    <RootNamespace>SingleStoreConnector.Authentication.Ed25519</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SingleStoreConnector\SingleStoreConnector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="docs\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+</Project>

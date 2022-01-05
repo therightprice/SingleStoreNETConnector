@@ -5,7 +5,7 @@ using MySql.Data.Types;
 #endif
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class MySqlDateTimeTests
 {

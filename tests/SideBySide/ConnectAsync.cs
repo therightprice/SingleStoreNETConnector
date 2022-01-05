@@ -1,6 +1,6 @@
 using System.Security.Authentication;
 #if !BASELINE
-using MySqlConnector.Authentication.Ed25519;
+using SingleStoreConnector.Authentication.Ed25519;
 #endif
 
 namespace SideBySide;

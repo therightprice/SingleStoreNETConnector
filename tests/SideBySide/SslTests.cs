@@ -66,7 +66,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		connection.ProvideClientCertificatesCallback = x =>
 		{
 			x.Add(new X509Certificate2(certificateFilePath, certificateFilePassword));
-			return MySqlConnector.Utilities.Utility.CompletedTask;
+			return SingleStoreConnector.Utilities.Utility.CompletedTask;
 		};
 #else
 		connection.ProvideClientCertificatesCallback = async x =>

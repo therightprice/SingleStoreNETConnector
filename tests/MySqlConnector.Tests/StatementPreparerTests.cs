@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using MySqlConnector.Core;
-using MySqlConnector.Protocol.Serialization;
+using SingleStoreConnector.Core;
+using SingleStoreConnector.Protocol.Serialization;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class StatementPreparerTests
 {

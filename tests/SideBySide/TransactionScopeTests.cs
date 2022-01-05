@@ -247,7 +247,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 
 #if BASELINE
 			// With Connector/NET a MySqlTransaction can't roll back after TransactionScope has been completed;
-			// workaround is to explicitly dispose it first. In MySqlConnector (with AutoEnlist=false) they have
+			// workaround is to explicitly dispose it first. In SingleStoreConnector (with AutoEnlist=false) they have
 			// independent lifetimes.
 			dbTransaction.Dispose();
 #endif

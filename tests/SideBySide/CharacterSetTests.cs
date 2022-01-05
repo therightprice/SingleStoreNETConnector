@@ -1,6 +1,6 @@
 #if !BASELINE
-using MySqlConnector.Protocol;
-using MySqlConnector.Protocol.Serialization;
+using SingleStoreConnector.Protocol;
+using SingleStoreConnector.Protocol.Serialization;
 #endif
 
 namespace SideBySide;

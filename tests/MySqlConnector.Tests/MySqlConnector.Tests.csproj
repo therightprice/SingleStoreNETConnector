@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'Baseline' ">
-    <ProjectReference Include="..\..\src\MySqlConnector\MySqlConnector.csproj" />
+    <ProjectReference Include="..\..\src\SingleStoreConnector\SingleStoreConnector.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'Baseline' ">

@@ -3,7 +3,7 @@ using MySql.Data.MySqlClient;
 #endif
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class MySqlHelperTests
 {

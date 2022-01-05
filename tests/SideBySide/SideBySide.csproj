@@ -46,9 +46,9 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' != 'Baseline' ">
-    <ProjectReference Include="..\..\src\MySqlConnector\MySqlConnector.csproj" />
-    <ProjectReference Include="..\..\src\MySqlConnector.Authentication.Ed25519\MySqlConnector.Authentication.Ed25519.csproj" />
-    <Using Include="MySqlConnector" />
+    <ProjectReference Include="..\..\src\SingleStoreConnector\SingleStoreConnector.csproj" />
+    <ProjectReference Include="..\..\src\SingleStoreConnector.Authentication.Ed25519\SingleStoreConnector.Authentication.Ed25519.csproj" />
+    <Using Include="SingleStoreConnector" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'Baseline' ">

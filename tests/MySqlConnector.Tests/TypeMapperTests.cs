@@ -1,10 +1,10 @@
 using System;
 using System.Data;
 using System.Linq;
-using MySqlConnector.Core;
+using SingleStoreConnector.Core;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class TypeMapperTests
 {

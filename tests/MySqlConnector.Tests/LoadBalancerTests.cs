@@ -1,8 +1,8 @@
 using System.Linq;
-using MySqlConnector.Core;
+using SingleStoreConnector.Core;
 using Xunit;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public class LoadBalancerTests
 {

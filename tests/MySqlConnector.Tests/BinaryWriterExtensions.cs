@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text;
 
-namespace MySqlConnector.Tests;
+namespace SingleStoreConnector.Tests;
 
 public static class BinaryWriterExtensions
 {
