@@ -10,6 +10,8 @@ jobs:
       - run:
           name: Run unit tests
           command: |
+            Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "install-dotnet.ps1"
+            .\install-dotnet.ps1 -Version 6.0.100 -InstallDir "dotnetcli"
             dotnet.exe --info
             cd tests\MySqlConnector.Tests
             dotnet.exe test
