@@ -9,9 +9,9 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 #if NET45 || NET461
-public sealed class MySqlDataReader : DbDataReader
+public sealed class SingleStoreDataReader : DbDataReader
 #else
-public sealed class MySqlDataReader : DbDataReader, IDbColumnSchemaGenerator
+public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerator
 #endif
 {
 	public override bool NextResult()
@@ -441,12 +441,12 @@ public sealed class MySqlDataReader : DbDataReader, IDbColumnSchemaGenerator
 
 	internal Activity? Activity { get; }
 	internal IMySqlCommand? Command { get; private set; }
-	internal MySqlConnection? Connection => Command?.Connection;
+	internal SingleStoreConnection? Connection => Command?.Connection;
 	internal ServerSession? Session => Command?.Connection!.Session;
 
-	internal static async Task<MySqlDataReader> CreateAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary<string, CachedProcedure?>? cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity? activity, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	internal static async Task<SingleStoreDataReader> CreateAsync(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary<string, CachedProcedure?>? cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity? activity, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
-		var dataReader = new MySqlDataReader(commandListPosition, payloadCreator, cachedProcedures, command, behavior, activity);
+		var dataReader = new SingleStoreDataReader(commandListPosition, payloadCreator, cachedProcedures, command, behavior, activity);
 		command.Connection!.SetActiveReader(dataReader);
 
 		try
@@ -564,7 +564,7 @@ public sealed class MySqlDataReader : DbDataReader, IDbColumnSchemaGenerator
 		return schemaTable;
 	}
 
-	private MySqlDataReader(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary<string, CachedProcedure?>? cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity? activity)
+	private SingleStoreDataReader(CommandListPosition commandListPosition, ICommandPayloadCreator payloadCreator, IDictionary<string, CachedProcedure?>? cachedProcedures, IMySqlCommand command, CommandBehavior behavior, Activity? activity)
 	{
 		m_commandListPosition = commandListPosition;
 		m_payloadCreator = payloadCreator;
@@ -650,7 +650,7 @@ public sealed class MySqlDataReader : DbDataReader, IDbColumnSchemaGenerator
 	private void VerifyNotDisposed()
 	{
 		if (Command is null)
-			throw new InvalidOperationException("Can't call this method when MySqlDataReader is closed.");
+			throw new InvalidOperationException("Can't call this method when SingleStoreDataReader is closed.");
 	}
 
 	private ResultSet GetResultSet()

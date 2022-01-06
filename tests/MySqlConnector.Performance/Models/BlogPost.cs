@@ -57,7 +57,7 @@ public class BlogPost
 		await cmd.ExecuteNonQueryAsync();
 	}
 
-	private void BindId(MySqlCommand cmd)
+	private void BindId(SingleStoreCommand cmd)
 	{
 		cmd.Parameters.Add(new MySqlParameter
 		{
@@ -67,7 +67,7 @@ public class BlogPost
 		});
 	}
 
-	private void BindParams(MySqlCommand cmd)
+	private void BindParams(SingleStoreCommand cmd)
 	{
 		cmd.Parameters.Add(new MySqlParameter
 		{
@@ -83,18 +83,18 @@ public class BlogPost
 		});
 	}
 
-	private MySqlCommand InsertCmd()
+	private SingleStoreCommand InsertCmd()
 	{
-		var cmd = Db.Connection.CreateCommand() as MySqlCommand;
+		var cmd = Db.Connection.CreateCommand() as SingleStoreCommand;
 		// ReSharper disable once PossibleNullReferenceException
 		cmd.CommandText = @"INSERT INTO `BlogPost` (`Title`, `Content`) VALUES (@title, @content);";
 		BindParams(cmd);
 		return cmd;
 	}
 
-	private MySqlCommand UpdateCmd()
+	private SingleStoreCommand UpdateCmd()
 	{
-		var cmd = Db.Connection.CreateCommand() as MySqlCommand;
+		var cmd = Db.Connection.CreateCommand() as SingleStoreCommand;
 		// ReSharper disable once PossibleNullReferenceException
 		cmd.CommandText = @"UPDATE `BlogPost` SET `Title` = @title, `Content` = @content WHERE `Id` = @id;";
 		BindParams(cmd);
@@ -102,9 +102,9 @@ public class BlogPost
 		return cmd;
 	}
 
-	private MySqlCommand DeleteCmd()
+	private SingleStoreCommand DeleteCmd()
 	{
-		var cmd = Db.Connection.CreateCommand() as MySqlCommand;
+		var cmd = Db.Connection.CreateCommand() as SingleStoreCommand;
 		// ReSharper disable once PossibleNullReferenceException
 		cmd.CommandText = @"DELETE FROM `BlogPost` WHERE `Id` = @id;";
 		BindId(cmd);

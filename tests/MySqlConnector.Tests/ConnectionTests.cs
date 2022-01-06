@@ -32,7 +32,7 @@ public class ConnectionTests : IDisposable
 			Assert.Equal(0, m_server.ActiveConnections);
 
 			m_csb.Pooling = true;
-			using (var connection = new MySqlConnection(m_csb.ConnectionString))
+			using (var connection = new SingleStoreConnection(m_csb.ConnectionString))
 			{
 				connection.Open();
 				Assert.Equal(1, m_server.ActiveConnections);
@@ -51,7 +51,7 @@ public class ConnectionTests : IDisposable
 			Assert.Equal(0, m_server.ActiveConnections);
 
 			m_csb.Pooling = true;
-			using (var connection = new MySqlConnection(m_csb.ConnectionString))
+			using (var connection = new SingleStoreConnection(m_csb.ConnectionString))
 			{
 				await connection.OpenAsync();
 				Assert.Equal(1, m_server.ActiveConnections);
@@ -70,7 +70,7 @@ public class ConnectionTests : IDisposable
 			Assert.Equal(0, m_server.ActiveConnections);
 
 			m_csb.Pooling = false;
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			await connection.OpenAsync();
 			Assert.Equal(1, m_server.ActiveConnections);
 
@@ -91,14 +91,14 @@ public class ConnectionTests : IDisposable
 			m_csb.ConnectionLifeTime = lifeTime;
 			int serverThread;
 
-			using (var connection = new MySqlConnection(m_csb.ConnectionString))
+			using (var connection = new SingleStoreConnection(m_csb.ConnectionString))
 			{
 				await connection.OpenAsync();
 				serverThread = connection.ServerThread;
 				await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
 			}
 
-			using (var connection = new MySqlConnection(m_csb.ConnectionString))
+			using (var connection = new SingleStoreConnection(m_csb.ConnectionString))
 			{
 				await connection.OpenAsync();
 				if (shouldTimeout)
@@ -114,7 +114,7 @@ public class ConnectionTests : IDisposable
 		public async Task MinimumPoolSize(int size)
 		{
 			m_csb.MinimumPoolSize = (uint) size;
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			await connection.OpenAsync();
 			Assert.Equal(size, m_server.ActiveConnections);
 		}
@@ -129,7 +129,7 @@ public class ConnectionTests : IDisposable
 
 			for (var i = 0; i < m_csb.MaximumPoolSize + 2; i++)
 			{
-				var connection = new MySqlConnection(m_csb.ConnectionString);
+				var connection = new SingleStoreConnection(m_csb.ConnectionString);
 				connection.Open();
 
 				var cmd = connection.CreateCommand();
@@ -149,7 +149,7 @@ public class ConnectionTests : IDisposable
 		public void AuthPluginNameNotNullTerminated()
 		{
 			m_server.SuppressAuthPluginNameTerminatingNull = true;
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			Assert.Equal(ConnectionState.Open, connection.State);
 		}
@@ -158,14 +158,14 @@ public class ConnectionTests : IDisposable
 		public void IncompleteServerHandshake()
 		{
 			m_server.SendIncompletePostHandshakeResponse = true;
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			Assert.Throws<MySqlException>(() => connection.Open());
 		}
 
 		[Fact]
 		public void Ping()
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			Assert.Equal(ConnectionState.Open, connection.State);
 			Assert.True(connection.Ping());
@@ -175,7 +175,7 @@ public class ConnectionTests : IDisposable
 		[Fact]
 		public void PingWhenClosed()
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			Assert.Equal(ConnectionState.Open, connection.State);
 			m_server.Stop();
@@ -189,7 +189,7 @@ public class ConnectionTests : IDisposable
 			m_server.BlockOnConnect = true;
 			var csb = new MySqlConnectionStringBuilder(m_csb.ConnectionString);
 			csb.ConnectionTimeout = 4;
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			var stopwatch = Stopwatch.StartNew();
 			try
 			{

@@ -375,7 +375,7 @@ public class ParameterTests
 	[Fact]
 	public void PrecisionViaInterface()
 	{
-		IDbCommand command = new MySqlCommand();
+		IDbCommand command = new SingleStoreCommand();
 		IDbDataParameter parameter = command.CreateParameter();
 		parameter.Precision = 11;
 		Assert.Equal((byte) 11, parameter.Precision);
@@ -384,7 +384,7 @@ public class ParameterTests
 	[Fact]
 	public void PrecisionViaBaseClass()
 	{
-		DbCommand command = new MySqlCommand();
+		DbCommand command = new SingleStoreCommand();
 		DbParameter parameter = command.CreateParameter();
 		parameter.Precision = 11;
 		Assert.Equal((byte) 11, parameter.Precision);
@@ -393,7 +393,7 @@ public class ParameterTests
 	[Fact]
 	public void PrecisionDirect()
 	{
-		MySqlCommand command = new MySqlCommand();
+		SingleStoreCommand command = new SingleStoreCommand();
 		MySqlParameter parameter = command.CreateParameter();
 		parameter.Precision = 11;
 		Assert.Equal((byte) 11, parameter.Precision);
@@ -402,7 +402,7 @@ public class ParameterTests
 	[Fact]
 	public void PrecisionMixed()
 	{
-		MySqlCommand command = new MySqlCommand();
+		SingleStoreCommand command = new SingleStoreCommand();
 		DbParameter parameter = command.CreateParameter();
 		((IDbDataParameter) parameter).Precision = 11;
 		Assert.Equal((byte) 11, ((MySqlParameter) parameter).Precision);
@@ -411,7 +411,7 @@ public class ParameterTests
 	[Fact]
 	public void ScaleViaInterface()
 	{
-		IDbCommand command = new MySqlCommand();
+		IDbCommand command = new SingleStoreCommand();
 		IDbDataParameter parameter = command.CreateParameter();
 		parameter.Scale = 12;
 		Assert.Equal((byte) 12, parameter.Scale);
@@ -420,7 +420,7 @@ public class ParameterTests
 	[Fact]
 	public void ScaleViaBaseClass()
 	{
-		DbCommand command = new MySqlCommand();
+		DbCommand command = new SingleStoreCommand();
 		DbParameter parameter = command.CreateParameter();
 		parameter.Scale = 12;
 		Assert.Equal((byte) 12, parameter.Scale);
@@ -429,7 +429,7 @@ public class ParameterTests
 	[Fact]
 	public void ScaleDirect()
 	{
-		MySqlCommand command = new MySqlCommand();
+		SingleStoreCommand command = new SingleStoreCommand();
 		MySqlParameter parameter = command.CreateParameter();
 		parameter.Scale = 12;
 		Assert.Equal((byte) 12, parameter.Scale);
@@ -438,7 +438,7 @@ public class ParameterTests
 	[Fact]
 	public void ScaleMixed()
 	{
-		MySqlCommand command = new MySqlCommand();
+		SingleStoreCommand command = new SingleStoreCommand();
 		DbParameter parameter = command.CreateParameter();
 		((IDbDataParameter) parameter).Scale = 12;
 		Assert.Equal((byte) 12, ((MySqlParameter) parameter).Scale);

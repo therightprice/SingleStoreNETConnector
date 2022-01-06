@@ -33,7 +33,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetSyncMethodSteps))]
 		public void Execute(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -55,7 +55,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task ExecuteAsync(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -80,7 +80,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetSyncMethodSteps))]
 		public void Execute(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -102,7 +102,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task ExecuteAsync(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -127,7 +127,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetSyncMethodSteps))]
 		public void Execute(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 10;
@@ -154,7 +154,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task ExecuteAsync(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 10;
@@ -184,7 +184,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task Test(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 0;
@@ -209,7 +209,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetSyncMethodSteps))]
 		public void Test(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -230,7 +230,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task Test(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 0;
@@ -253,7 +253,7 @@ public class CancellationTests : IDisposable
 		[InlineData(1)]
 		public void Timeout(int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -270,7 +270,7 @@ public class CancellationTests : IDisposable
 		[InlineData(2)]
 		public void NoTimeout(int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -289,7 +289,7 @@ public class CancellationTests : IDisposable
 		[InlineData(1)]
 		public async Task Timeout(int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -306,7 +306,7 @@ public class CancellationTests : IDisposable
 		[InlineData(2)]
 		public async Task NoTimeout(int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -324,7 +324,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetSyncMethodSteps))]
 		public void Test(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -346,7 +346,7 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task Test(int step, int method)
 		{
-			using var connection = new MySqlConnection(m_csb.ConnectionString);
+			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -369,7 +369,7 @@ public class CancellationTests : IDisposable
 		public void Execute(int step, int method)
 		{
 			var csb = new MySqlConnectionStringBuilder(m_csb.ConnectionString) { CancellationTimeout = -1 };
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -389,7 +389,7 @@ public class CancellationTests : IDisposable
 		public async Task ExecuteAsync(int step, int method)
 		{
 			var csb = new MySqlConnectionStringBuilder(m_csb.ConnectionString) { CancellationTimeout = -1 };
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
@@ -427,14 +427,14 @@ public class CancellationTests : IDisposable
 		}
 	}
 
-	private static readonly Func<MySqlCommand, int>[] s_executeMethods = new Func<MySqlCommand, int>[] { ExecuteScalar, ExecuteNonQuery, ExecuteReader };
-	private static readonly Func<MySqlCommand, CancellationToken, Task<int>>[] s_executeAsyncMethods = new Func<MySqlCommand, CancellationToken, Task<int>>[] { ExecuteScalarAsync, ExecuteNonQueryAsync, ExecuteReaderAsync };
+	private static readonly Func<SingleStoreCommand, int>[] s_executeMethods = new Func<SingleStoreCommand, int>[] { ExecuteScalar, ExecuteNonQuery, ExecuteReader };
+	private static readonly Func<SingleStoreCommand, CancellationToken, Task<int>>[] s_executeAsyncMethods = new Func<SingleStoreCommand, CancellationToken, Task<int>>[] { ExecuteScalarAsync, ExecuteNonQueryAsync, ExecuteReaderAsync };
 
-	private static int ExecuteScalar(MySqlCommand command) => (int) command.ExecuteScalar();
-	private static async Task<int> ExecuteScalarAsync(MySqlCommand command, CancellationToken token) => (int) await command.ExecuteScalarAsync(token);
-	private static int ExecuteNonQuery(MySqlCommand command) { command.ExecuteNonQuery(); return 0; }
-	private static async Task<int> ExecuteNonQueryAsync(MySqlCommand command, CancellationToken token) { await command.ExecuteNonQueryAsync(token); return 0; }
-	private static int ExecuteReader(MySqlCommand command)
+	private static int ExecuteScalar(SingleStoreCommand command) => (int) command.ExecuteScalar();
+	private static async Task<int> ExecuteScalarAsync(SingleStoreCommand command, CancellationToken token) => (int) await command.ExecuteScalarAsync(token);
+	private static int ExecuteNonQuery(SingleStoreCommand command) { command.ExecuteNonQuery(); return 0; }
+	private static async Task<int> ExecuteNonQueryAsync(SingleStoreCommand command, CancellationToken token) { await command.ExecuteNonQueryAsync(token); return 0; }
+	private static int ExecuteReader(SingleStoreCommand command)
 	{
 		using var reader = command.ExecuteReader();
 		int? value = null;
@@ -445,7 +445,7 @@ public class CancellationTests : IDisposable
 		} while (reader.NextResult());
 		return value.Value;
 	}
-	private static async Task<int> ExecuteReaderAsync(MySqlCommand command, CancellationToken token)
+	private static async Task<int> ExecuteReaderAsync(SingleStoreCommand command, CancellationToken token)
 	{
 		using var reader = await command.ExecuteReaderAsync(token);
 		int? value = null;

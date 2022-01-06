@@ -24,7 +24,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 	public void EnlistTransactionWhenClosed(string connectionString)
 	{
 		using (new TransactionScope())
-		using (var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString))
+		using (var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString))
 		{
 #if !BASELINE
 			Assert.Throws<InvalidOperationException>(() => connection.EnlistTransaction(System.Transactions.Transaction.Current));
@@ -39,7 +39,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 	public void EnlistSameTransaction(string connectionString)
 	{
 		using (new TransactionScope())
-		using (var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString))
+		using (var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString))
 		{
 			connection.Open();
 			connection.EnlistTransaction(System.Transactions.Transaction.Current);
@@ -51,7 +51,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 	[MemberData(nameof(ConnectionStrings))]
 	public void EnlistTwoTransactions(string connectionString)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 		connection.Open();
 
 		using var transaction1 = new CommittableTransaction();
@@ -65,7 +65,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 	public void BeginTransactionInScope(string connectionString)
 	{
 		using var transactionScope = new TransactionScope();
-		using var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 		connection.Open();
 		Assert.Throws<InvalidOperationException>(() => connection.BeginTransaction());
 	}
@@ -74,7 +74,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 	[MemberData(nameof(ConnectionStrings))]
 	public void BeginTransactionThenEnlist(string connectionString)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 		connection.Open();
 
 		using var dbTransaction = connection.BeginTransaction();
@@ -91,7 +91,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 
 		using (var transactionScope = new TransactionScope())
 		{
-			using var conn = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+			using var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 			conn.Open();
 			conn.Execute("insert into transaction_scope_test(value) values(1), (2);");
 
@@ -109,7 +109,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 		m_database.Connection.Execute(@"drop table if exists transaction_scope_test;
 			create table transaction_scope_test(value integer not null);");
 
-		using (var conn = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString))
+		using (var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString))
 		{
 			conn.Open();
 			using var transaction = new CommittableTransaction();
@@ -131,7 +131,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 
 		using (var transactionScope = new TransactionScope())
 		{
-			using var conn = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+			using var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 			conn.Open();
 			conn.Execute("insert into transaction_scope_test(value) values(1), (2);");
 		}
@@ -147,7 +147,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 		m_database.Connection.Execute(@"drop table if exists transaction_scope_test;
 			create table transaction_scope_test(value integer not null);");
 
-		using (var conn = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString))
+		using (var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString))
 		{
 			conn.Open();
 			using var transaction = new CommittableTransaction();
@@ -169,7 +169,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 		try
 		{
 			using var transactionScope = new TransactionScope();
-			using var conn = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+			using var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 			conn.Open();
 			conn.Execute("insert into transaction_scope_test(value) values(1), (2);");
 
@@ -193,7 +193,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 		try
 		{
 			using var transactionScope = new TransactionScope();
-			using var conn = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+			using var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 			conn.Open();
 			conn.Execute("insert into transaction_scope_test(value) values(1), (2);");
 
@@ -217,7 +217,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 			create table transaction_scope_test(value integer not null);");
 
 		using (var transactionScope = new TransactionScope())
-		using (var conn = new MySqlConnection(AppConfig.ConnectionString + ";auto enlist=false;" + connectionString))
+		using (var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";auto enlist=false;" + connectionString))
 		{
 			conn.Open();
 			using var dbTransaction = conn.BeginTransaction();
@@ -239,7 +239,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 			create table transaction_scope_test(value integer not null);");
 
 		using (var transactionScope = new TransactionScope())
-		using (var conn = new MySqlConnection(AppConfig.ConnectionString + ";auto enlist=false;" + connectionString))
+		using (var conn = new SingleStoreConnection(AppConfig.ConnectionString + ";auto enlist=false;" + connectionString))
 		{
 			conn.Open();
 			using var dbTransaction = conn.BeginTransaction();
@@ -263,7 +263,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 	public void UsingSequentialConnectionsInOneTransactionDoesNotDeadlock(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -278,13 +278,13 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 		};
 		using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.Execute("insert into transaction_scope_test(value) values('four'),('five'),('six');");
 			}
 
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.Execute("update transaction_scope_test set value = @newValue where rowid = @id", new { newValue = "new value", id = 4 });
@@ -293,7 +293,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			scope.Complete();
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three", "new value", "five", "six" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -305,7 +305,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void UsingSequentialConnectionsInOneTransactionDoesNotDeadlockWithoutComplete(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -320,20 +320,20 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 		};
 		using (new TransactionScope(TransactionScopeOption.Required, transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.Execute("insert into transaction_scope_test(value) values('four'),('five'),('six');");
 			}
 
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.Execute("update transaction_scope_test set value = @newValue where rowid = @id", new { newValue = "new value", id = 4 });
 			}
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -345,7 +345,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void UsingSequentialConnectionsInOneTransactionWithoutAutoEnlistDoesNotDeadlock(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";AutoEnlist=false;" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -355,14 +355,14 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (var transaction = new CommittableTransaction())
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.EnlistTransaction(transaction);
 				connection.Execute("insert into transaction_scope_test(value) values('four'),('five'),('six');");
 			}
 
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.EnlistTransaction(transaction);
@@ -372,7 +372,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			transaction.Commit();
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three", "new value", "five", "six" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -384,7 +384,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void UsingSequentialConnectionsInOneTransactionWithoutAutoEnlistDoesNotDeadlockWithRollback(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";AutoEnlist=false;" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -394,14 +394,14 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (var transaction = new CommittableTransaction())
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.EnlistTransaction(transaction);
 				connection.Execute("insert into transaction_scope_test(value) values('four'),('five'),('six');");
 			}
 
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.EnlistTransaction(transaction);
@@ -411,7 +411,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			transaction.Rollback();
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -424,12 +424,12 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	{
 		connectionString = AppConfig.ConnectionString + ";AutoEnlist=false;" + connectionString;
 		using var transaction = new CommittableTransaction();
-		using var connection1 = new MySqlConnection(connectionString);
+		using var connection1 = new SingleStoreConnection(connectionString);
 		connection1.Open();
 		connection1.EnlistTransaction(transaction);
 		var sessionId1 = connection1.ServerThread;
 
-		using var connection2 = new MySqlConnection(connectionString);
+		using var connection2 = new SingleStoreConnection(connectionString);
 		connection2.Open();
 		Assert.NotEqual(sessionId1, connection2.ServerThread);
 
@@ -443,7 +443,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void ReusingConnectionInOneTransactionDoesNotDeadlock(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -458,7 +458,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 		};
 		using (var scope = new TransactionScope(TransactionScopeOption.Required, transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.Execute("insert into transaction_scope_test(value) values('four'),('five'),('six');");
@@ -471,7 +471,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			scope.Complete();
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three", "new value", "five", "six" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -483,7 +483,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void ReusingConnectionInOneTransactionDoesNotDeadlockWithoutComplete(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -498,7 +498,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 		};
 		using (new TransactionScope(TransactionScopeOption.Required, transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.Execute("insert into transaction_scope_test(value) values('four'),('five'),('six');");
@@ -509,7 +509,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			}
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -521,7 +521,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void ReusingConnectionInOneTransactionWithoutAutoEnlistDoesNotDeadlock(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";AutoEnlist=false;" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -531,7 +531,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (var transaction = new CommittableTransaction())
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.EnlistTransaction(transaction);
@@ -546,7 +546,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			transaction.Commit();
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three", "new value", "five", "six" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -558,7 +558,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	public void ReusingConnectionInOneTransactionWithoutAutoEnlistDoesNotDeadlockWithRollback(string connectionString)
 	{
 		connectionString = AppConfig.ConnectionString + ";AutoEnlist=false;" + connectionString;
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"drop table if exists transaction_scope_test;
@@ -568,7 +568,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (var transaction = new CommittableTransaction())
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				connection.EnlistTransaction(transaction);
@@ -583,7 +583,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 			transaction.Rollback();
 		}
 
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			Assert.Equal(new[] { "one", "two", "three" }, connection.Query<string>(@"select value from transaction_scope_test order by rowid;"));
@@ -597,7 +597,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 		connectionString = AppConfig.ConnectionString + ";" + connectionString;
 		using (var transactionScope = new TransactionScope())
 		{
-			using (var connection = new MySqlConnection(connectionString))
+			using (var connection = new SingleStoreConnection(connectionString))
 			{
 				connection.Open();
 				var sessionId = connection.ServerThread;
@@ -613,11 +613,11 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	[MemberData(nameof(ConnectionStrings))]
 	public async Task CommandBehaviorCloseConnection(string connectionString)
 	{
-		using (var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString))
+		using (var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString))
 		using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 		{
-			using (var command1 = new MySqlCommand("SELECT 1"))
-			using (var command2 = new MySqlCommand("SELECT 2"))
+			using (var command1 = new SingleStoreCommand("SELECT 1"))
+			using (var command2 = new SingleStoreCommand("SELECT 2"))
 			{
 				command1.Connection = connection;
 				command2.Connection = connection;
@@ -647,11 +647,11 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	[MemberData(nameof(ConnectionStrings))]
 	public async Task CancelExecuteNonQueryAsync(string connectionString)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString + ";" + connectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
 		using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 		await connection.OpenAsync();
 
-		using var command = new MySqlCommand("DO SLEEP(3);", connection);
+		using var command = new SingleStoreCommand("DO SLEEP(3);", connection);
 		using var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
 		await command.ExecuteNonQueryAsync(tokenSource.Token);
 	}
@@ -666,11 +666,11 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (var transactionScope = new TransactionScope())
 		{
-			using var conn1 = new MySqlConnection(AppConfig.ConnectionString);
+			using var conn1 = new SingleStoreConnection(AppConfig.ConnectionString);
 			conn1.Open();
 			conn1.Execute("insert into transaction_scope_test_1(value) values(1), (2);");
 
-			using var conn2 = new MySqlConnection(AppConfig.ConnectionString);
+			using var conn2 = new SingleStoreConnection(AppConfig.ConnectionString);
 			conn2.Open();
 			conn2.Execute("insert into transaction_scope_test_2(value) values(3), (4);");
 
@@ -693,11 +693,11 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (var transactionScope = new TransactionScope())
 		{
-			using var conn1 = new MySqlConnection(AppConfig.ConnectionString);
+			using var conn1 = new SingleStoreConnection(AppConfig.ConnectionString);
 			conn1.Open();
 			conn1.Execute("insert into transaction_scope_test_1(value) values(1), (2);");
 
-			using var conn2 = new MySqlConnection(AppConfig.ConnectionString);
+			using var conn2 = new SingleStoreConnection(AppConfig.ConnectionString);
 			conn2.Open();
 			conn2.Execute("insert into transaction_scope_test_2(value) values(3), (4);");
 		}
@@ -718,10 +718,10 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (new TransactionScope())
 		{
-			using var conn1 = new MySqlConnection(connectionString);
+			using var conn1 = new SingleStoreConnection(connectionString);
 			conn1.Open();
 
-			using var conn2 = new MySqlConnection(connectionString);
+			using var conn2 = new SingleStoreConnection(connectionString);
 			Assert.Throws<NotSupportedException>(() => conn2.Open());
 		}
 	}
@@ -735,7 +735,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 #endif
 
 		// from https://github.com/mysql-net/MySqlConnector/issues/605
-		using (var connection = new MySqlConnection(connectionString))
+		using (var connection = new SingleStoreConnection(connectionString))
 		{
 			connection.Open();
 			connection.Execute(@"DROP TABLE IF EXISTS orders;
@@ -757,7 +757,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 				new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted },
 				TransactionScopeAsyncFlowOption.Enabled))
 			{
-				using (var connection = new MySqlConnection(connectionString))
+				using (var connection = new SingleStoreConnection(connectionString))
 				using (var command = connection.CreateCommand())
 				{
 					command.CommandText = @"SELECT MAX(id) FROM orders FOR UPDATE;";
@@ -765,7 +765,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 					command.ExecuteScalar();
 				}
 
-				using (var connection = new MySqlConnection(connectionString))
+				using (var connection = new SingleStoreConnection(connectionString))
 				using (var command = connection.CreateCommand())
 				{
 					command.CommandText = @"INSERT INTO orders (description) VALUES ('blabla'), ('blablabla');";
@@ -788,10 +788,10 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 
 		using (new TransactionScope())
 		{
-			using var conn1 = new MySqlConnection(connectionString);
+			using var conn1 = new SingleStoreConnection(connectionString);
 			conn1.Open();
 
-			using var conn2 = new MySqlConnection(connectionString + ";MaxPoolSize=6");
+			using var conn2 = new SingleStoreConnection(connectionString + ";MaxPoolSize=6");
 			Assert.Throws<NotSupportedException>(() => conn2.Open());
 		}
 	}
@@ -802,10 +802,10 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	{
 		using (new TransactionScope())
 		{
-			using var conn1 = new MySqlConnection(AppConfig.ConnectionString);
+			using var conn1 = new SingleStoreConnection(AppConfig.ConnectionString);
 			conn1.Open();
 
-			using var conn2 = new MySqlConnection(AppConfig.ConnectionString + ";UseXaTransactions=False");
+			using var conn2 = new SingleStoreConnection(AppConfig.ConnectionString + ";UseXaTransactions=False");
 			Assert.Throws<NotSupportedException>(() => conn2.Open());
 		}
 	}
@@ -815,10 +815,10 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	{
 		using (new TransactionScope())
 		{
-			using var conn1 = new MySqlConnection(AppConfig.ConnectionString + ";UseXaTransactions=False");
+			using var conn1 = new SingleStoreConnection(AppConfig.ConnectionString + ";UseXaTransactions=False");
 			conn1.Open();
 
-			using var conn2 = new MySqlConnection(AppConfig.ConnectionString);
+			using var conn2 = new SingleStoreConnection(AppConfig.ConnectionString);
 			Assert.Throws<NotSupportedException>(() => conn2.Open());
 		}
 	}

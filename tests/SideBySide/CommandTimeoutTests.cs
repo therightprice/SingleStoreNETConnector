@@ -5,7 +5,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 	public CommandTimeoutTests(DatabaseFixture database)
 	{
 		m_database = database;
-		m_connection = new MySqlConnection(m_database.Connection.ConnectionString);
+		m_connection = new SingleStoreConnection(m_database.Connection.ConnectionString);
 		m_connection.Open();
 	}
 
@@ -22,7 +22,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.DefaultCommandTimeout = (uint) defaultCommandTimeout;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		using var command = connection.CreateCommand();
 		Assert.Equal(defaultCommandTimeout, command.CommandTimeout);
 	}
@@ -50,7 +50,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 	public void CommandTimeoutWithSleepSync()
 	{
 		var connectionState = m_connection.State;
-		using (var cmd = new MySqlCommand("SELECT SLEEP(120);", m_connection))
+		using (var cmd = new SingleStoreCommand("SELECT SLEEP(120);", m_connection))
 		{
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
@@ -76,7 +76,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 	public async Task CommandTimeoutWithSleepAsync()
 	{
 		var connectionState = m_connection.State;
-		using (var cmd = new MySqlCommand("SELECT SLEEP(120);", m_connection))
+		using (var cmd = new SingleStoreCommand("SELECT SLEEP(120);", m_connection))
 		{
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
@@ -103,7 +103,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 	[InlineData(false)]
 	public void CommandTimeoutWithStoredProcedureSleepSync(bool pooling)
 	{
-		using (var setupCmd = new MySqlCommand(@"drop procedure if exists sleep_sproc;
+		using (var setupCmd = new SingleStoreCommand(@"drop procedure if exists sleep_sproc;
 create procedure sleep_sproc(IN seconds INT)
 begin
 select sleep(seconds);
@@ -114,8 +114,8 @@ end;", m_connection))
 
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Pooling = pooling;
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		using var cmd = new MySqlCommand("sleep_sproc", connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		using var cmd = new SingleStoreCommand("sleep_sproc", connection);
 		connection.Open();
 		cmd.CommandType = CommandType.StoredProcedure;
 		cmd.Parameters.AddWithValue("seconds", 10);
@@ -141,7 +141,7 @@ end;", m_connection))
 	{
 		var connectionState = m_connection.State;
 		var csb = new MySqlConnectionStringBuilder(m_connection.ConnectionString);
-		using (var cmd = new MySqlCommand("SELECT 1; SELECT SLEEP(120);", m_connection))
+		using (var cmd = new SingleStoreCommand("SELECT 1; SELECT SLEEP(120);", m_connection))
 		{
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
@@ -174,7 +174,7 @@ end;", m_connection))
 	public async Task MultipleCommandTimeoutWithSleepAsync()
 	{
 		var connectionState = m_connection.State;
-		using (var cmd = new MySqlCommand("SELECT 1; SELECT SLEEP(120);", m_connection))
+		using (var cmd = new SingleStoreCommand("SELECT 1; SELECT SLEEP(120);", m_connection))
 		{
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
@@ -207,7 +207,7 @@ end;", m_connection))
 	public void CommandTimeoutResetsOnReadSync()
 	{
 		var csb = new MySqlConnectionStringBuilder(m_connection.ConnectionString);
-		using (var cmd = new MySqlCommand("SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1);", m_connection))
+		using (var cmd = new SingleStoreCommand("SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1);", m_connection))
 		{
 			cmd.CommandTimeout = 3;
 			using var reader = cmd.ExecuteReader();
@@ -228,7 +228,7 @@ end;", m_connection))
 	public async Task CommandTimeoutResetsOnReadAsync()
 	{
 		var csb = new MySqlConnectionStringBuilder(m_connection.ConnectionString);
-		using (var cmd = new MySqlCommand("SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1);", m_connection))
+		using (var cmd = new SingleStoreCommand("SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1);", m_connection))
 		{
 			cmd.CommandTimeout = 3;
 			using var reader = await cmd.ExecuteReaderAsync();
@@ -251,7 +251,7 @@ end;", m_connection))
 	{
 		var connectionState = m_connection.State;
 		using (var transaction = m_connection.BeginTransaction())
-		using (var cmd = new MySqlCommand("SELECT SLEEP(120);", m_connection, transaction))
+		using (var cmd = new SingleStoreCommand("SELECT SLEEP(120);", m_connection, transaction))
 		{
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
@@ -278,7 +278,7 @@ end;", m_connection))
 	{
 		var connectionState = m_connection.State;
 		using (var transaction = await m_connection.BeginTransactionAsync())
-		using (var cmd = new MySqlCommand("SELECT SLEEP(120);", m_connection, transaction))
+		using (var cmd = new SingleStoreCommand("SELECT SLEEP(120);", m_connection, transaction))
 		{
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
@@ -300,5 +300,5 @@ end;", m_connection))
 	}
 
 	readonly DatabaseFixture m_database;
-	readonly MySqlConnection m_connection;
+	readonly SingleStoreConnection m_connection;
 }

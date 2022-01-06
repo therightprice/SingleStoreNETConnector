@@ -4,7 +4,7 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector
 {
 	/// <summary>
-	/// <see cref="MySqlAttributeCollection"/> represents a collection of query attributes that can be added to a <see cref="MySqlCommand"/>.
+	/// <see cref="MySqlAttributeCollection"/> represents a collection of query attributes that can be added to a <see cref="SingleStoreCommand"/>.
 	/// </summary>
 	public sealed class MySqlAttributeCollection : IEnumerable<MySqlAttribute>
 	{

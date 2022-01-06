@@ -14,8 +14,8 @@ public sealed class MySqlInfoMessageEventArgs : EventArgs
 }
 
 /// <summary>
-/// Defines the event handler for <see cref="MySqlConnection.InfoMessage"/>.
+/// Defines the event handler for <see cref="SingleStoreConnection.InfoMessage"/>.
 /// </summary>
-/// <param name="sender">The sender. This is the associated <see cref="MySqlConnection"/>.</param>
+/// <param name="sender">The sender. This is the associated <see cref="SingleStoreConnection"/>.</param>
 /// <param name="args">The <see cref="MySqlInfoMessageEventArgs"/> containing the errors.</param>
 public delegate void MySqlInfoMessageEventHandler(object sender, MySqlInfoMessageEventArgs args);

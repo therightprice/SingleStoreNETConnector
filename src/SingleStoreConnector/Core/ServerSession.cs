@@ -58,7 +58,7 @@ internal sealed class ServerSession
 	public string? DatabaseOverride { get; set; }
 	public string HostName { get; private set; }
 	public IPAddress? IPAddress => (m_tcpClient?.Client.RemoteEndPoint as IPEndPoint)?.Address;
-	public WeakReference<MySqlConnection>? OwningConnection { get; set; }
+	public WeakReference<SingleStoreConnection>? OwningConnection { get; set; }
 	public bool SupportsComMulti => m_supportsComMulti;
 	public bool SupportsDeprecateEof => m_supportsDeprecateEof;
 	public bool SupportsQueryAttributes { get; private set; }
@@ -67,9 +67,9 @@ internal sealed class ServerSession
 	public ICollection<KeyValuePair<string, object?>> ActivityTags => m_activityTags;
 
 #if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-	public ValueTask ReturnToPoolAsync(IOBehavior ioBehavior, MySqlConnection? owningConnection)
+	public ValueTask ReturnToPoolAsync(IOBehavior ioBehavior, SingleStoreConnection? owningConnection)
 #else
-	public ValueTask<int> ReturnToPoolAsync(IOBehavior ioBehavior, MySqlConnection? owningConnection)
+	public ValueTask<int> ReturnToPoolAsync(IOBehavior ioBehavior, SingleStoreConnection? owningConnection)
 #endif
 	{
 		if (Log.IsTraceEnabled())
@@ -104,13 +104,13 @@ internal sealed class ServerSession
 			m_state = State.CancelingQuery;
 		}
 
-		Log.Debug("Session{0} will cancel CommandId: {1} (CancelledAttempts={2}) CommandText: {3}", m_logArguments[0], command.CommandId, command.CancelAttemptCount, (command as MySqlCommand)?.CommandText);
+		Log.Debug("Session{0} will cancel CommandId: {1} (CancelledAttempts={2}) CommandText: {3}", m_logArguments[0], command.CommandId, command.CancelAttemptCount, (command as SingleStoreCommand)?.CommandText);
 		return true;
 	}
 
-	public void DoCancel(ICancellableCommand commandToCancel, MySqlCommand killCommand)
+	public void DoCancel(ICancellableCommand commandToCancel, SingleStoreCommand killCommand)
 	{
-		Log.Info("Session{0} canceling CommandId {1} from Session{2}; CommandText: {3}", m_logArguments[0], commandToCancel.CommandId, killCommand.Connection!.Session.Id, (commandToCancel as MySqlCommand)?.CommandText);
+		Log.Info("Session{0} canceling CommandId {1} from Session{2}; CommandText: {3}", m_logArguments[0], commandToCancel.CommandId, killCommand.Connection!.Session.Id, (commandToCancel as SingleStoreCommand)?.CommandText);
 		lock (m_lock)
 		{
 			if (ActiveCommandId != commandToCancel.CommandId)
@@ -285,7 +285,7 @@ internal sealed class ServerSession
 			{
 				m_logArguments[1] = m_state;
 				Log.Error("Session{0} can't execute new command when in SessionState: {1}", m_logArguments[0], m_state);
-				throw new InvalidOperationException("This MySqlConnection is already in use. See https://fl.vu/mysql-conn-reuse");
+				throw new InvalidOperationException("This SingleStoreConnection is already in use. See https://fl.vu/mysql-conn-reuse");
 			}
 
 			VerifyState(State.Connected);
@@ -392,7 +392,7 @@ internal sealed class ServerSession
 			m_state = State.Closed;
 	}
 
-	public async Task<string?> ConnectAsync(ConnectionSettings cs, MySqlConnection connection, int startTickCount, ILoadBalancer? loadBalancer, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	public async Task<string?> ConnectAsync(ConnectionSettings cs, SingleStoreConnection connection, int startTickCount, ILoadBalancer? loadBalancer, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		string? statusInfo = null;
 
@@ -586,7 +586,7 @@ internal sealed class ServerSession
 		return statusInfo;
 	}
 
-	public async Task<bool> TryResetConnectionAsync(ConnectionSettings cs, MySqlConnection connection, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	public async Task<bool> TryResetConnectionAsync(ConnectionSettings cs, SingleStoreConnection connection, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		VerifyState(State.Connected);
 
@@ -1231,7 +1231,7 @@ internal sealed class ServerSession
 		return false;
 	}
 
-	private async Task InitSslAsync(ProtocolCapabilities serverCapabilities, ConnectionSettings cs, MySqlConnection connection, SslProtocols sslProtocols, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private async Task InitSslAsync(ProtocolCapabilities serverCapabilities, ConnectionSettings cs, SingleStoreConnection connection, SslProtocols sslProtocols, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		Log.Trace("Session{0} initializing TLS connection", m_logArguments);
 		X509CertificateCollection? clientCertificates = null;
@@ -1838,7 +1838,7 @@ internal sealed class ServerSession
 		}
 	}
 
-	private string GetPassword(ConnectionSettings cs, MySqlConnection connection)
+	private string GetPassword(ConnectionSettings cs, SingleStoreConnection connection)
 	{
 		if (cs.Password.Length != 0)
 			return cs.Password;

@@ -24,7 +24,7 @@ namespace SingleStoreConnector;
 /// var dataTable = GetDataTableFromExternalSource();
 ///
 /// // open the connection
-/// using var connection = new MySqlConnection("...;AllowLoadLocalInfile=True");
+/// using var connection = new SingleStoreConnection("...;AllowLoadLocalInfile=True");
 /// await connection.OpenAsync();
 ///
 /// // bulk copy the data
@@ -45,9 +45,9 @@ public sealed class MySqlBulkCopy
 	/// <summary>
 	/// Initializes a <see cref="MySqlBulkCopy"/> object with the specified connection, and optionally the active transaction.
 	/// </summary>
-	/// <param name="connection">The <see cref="MySqlConnection"/> to use.</param>
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
 	/// <param name="transaction">(Optional) The <see cref="MySqlTransaction"/> to use.</param>
-	public MySqlBulkCopy(MySqlConnection connection, MySqlTransaction? transaction = null)
+	public MySqlBulkCopy(SingleStoreConnection connection, MySqlTransaction? transaction = null)
 	{
 		m_connection = connection ?? throw new ArgumentNullException(nameof(connection));
 		m_transaction = transaction;
@@ -257,7 +257,7 @@ public sealed class MySqlBulkCopy
 		// merge column mappings with the destination schema
 		var columnMappings = new List<MySqlBulkCopyColumnMapping>(ColumnMappings);
 		var addDefaultMappings = columnMappings.Count == 0;
-		using (var cmd = new MySqlCommand("select * from " + tableName + ";", m_connection, m_transaction))
+		using (var cmd = new SingleStoreCommand("select * from " + tableName + ";", m_connection, m_transaction))
 		using (var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly, ioBehavior, cancellationToken).ConfigureAwait(false))
 		{
 			var schema = reader.GetColumnSchema();
@@ -436,7 +436,7 @@ public sealed class MySqlBulkCopy
 			m_wasAborted = eventArgs?.Abort ?? false;
 		}
 
-		static bool WriteValue(MySqlConnection connection, object value, ref int inputIndex, ref Encoder? utf8Encoder, Span<byte> output, out int bytesWritten)
+		static bool WriteValue(SingleStoreConnection connection, object value, ref int inputIndex, ref Encoder? utf8Encoder, Span<byte> output, out int bytesWritten)
 		{
 			if (output.Length == 0)
 			{
@@ -671,7 +671,7 @@ public sealed class MySqlBulkCopy
 	private static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(MySqlBulkCopy));
 	private static readonly Encoding s_utf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
-	readonly MySqlConnection m_connection;
+	readonly SingleStoreConnection m_connection;
 	readonly MySqlTransaction? m_transaction;
 	int m_rowsCopied;
 	IValuesEnumerator? m_valuesEnumerator;

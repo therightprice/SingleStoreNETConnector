@@ -115,7 +115,7 @@ insert into update_rows_dapper (value) VALUES (1), (2), (1), (4);
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.UseAffectedRows = useAffectedRows;
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			await connection.OpenAsync();
 			using (var cmd = connection.CreateCommand())
@@ -144,7 +144,7 @@ insert into update_rows_reader (value) VALUES ('one'), ('two'), ('one'), ('four'
 			cmd.ExecuteNonQuery();
 		}
 
-		using (var cmd = new MySqlCommand(@"UPDATE update_rows_reader SET value = 'three' WHERE id = 3;", m_database.Connection))
+		using (var cmd = new SingleStoreCommand(@"UPDATE update_rows_reader SET value = 'three' WHERE id = 3;", m_database.Connection))
 		using (var reader = cmd.ExecuteReader())
 		{
 			Assert.Equal(0, reader.FieldCount);

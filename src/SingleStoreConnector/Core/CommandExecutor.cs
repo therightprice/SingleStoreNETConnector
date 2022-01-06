@@ -8,7 +8,7 @@ namespace SingleStoreConnector.Core;
 
 internal static class CommandExecutor
 {
-	public static async Task<MySqlDataReader> ExecuteReaderAsync(IReadOnlyList<IMySqlCommand> commands, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity? activity, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	public static async Task<SingleStoreDataReader> ExecuteReaderAsync(IReadOnlyList<IMySqlCommand> commands, ICommandPayloadCreator payloadCreator, CommandBehavior behavior, Activity? activity, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -33,7 +33,7 @@ internal static class CommandExecutor
 					{
 						cachedProcedures.Add(commandText, await connection.GetCachedProcedure(commandText, revalidateMissing: false, ioBehavior, cancellationToken).ConfigureAwait(false));
 
-						// because the connection was used to execute a MySqlDataReader with the connection's DefaultCommandTimeout,
+						// because the connection was used to execute a SingleStoreDataReader with the connection's DefaultCommandTimeout,
 						// we need to reapply the command's CommandTimeout (even if some of the time has elapsed)
 						command.CancellableCommand.ResetCommandTimeout();
 					}
@@ -53,7 +53,7 @@ internal static class CommandExecutor
 			try
 			{
 				await connection.Session.SendAsync(payload, ioBehavior, CancellationToken.None).ConfigureAwait(false);
-				return await MySqlDataReader.CreateAsync(commandListPosition, payloadCreator, cachedProcedures, command, behavior, activity, ioBehavior, cancellationToken).ConfigureAwait(false);
+				return await SingleStoreDataReader.CreateAsync(commandListPosition, payloadCreator, cachedProcedures, command, behavior, activity, ioBehavior, cancellationToken).ConfigureAwait(false);
 			}
 			catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
 			{

@@ -33,7 +33,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.TsvFile)]
 	public async Task BulkLoadTsvFile()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.FileName = AppConfig.MySqlBulkLoaderTsvFile;
 		bl.TableName = m_testTable;
@@ -48,7 +48,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalTsvFile)]
 	public async Task BulkLoadLocalTsvFile()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.FileName = AppConfig.MySqlBulkLoaderLocalTsvFile;
 		bl.TableName = m_testTable;
@@ -63,7 +63,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.CsvFile)]
 	public async Task BulkLoadCsvFile()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.FileName = AppConfig.MySqlBulkLoaderCsvFile;
 		bl.TableName = m_testTable;
@@ -81,7 +81,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile)]
 	public async Task BulkLoadLocalCsvFile()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.FileName = AppConfig.MySqlBulkLoaderLocalCsvFile;
@@ -101,7 +101,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task BulkLoadCsvFileNotFound()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
 
 		var secureFilePath = await connection.ExecuteScalarAsync<string>(@"select @@global.secure_file_priv;");
@@ -146,7 +146,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task BulkLoadLocalCsvFileNotFound()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.Timeout = 3; //Set a short timeout for this test because the file not found exception takes a long time otherwise, the timeout does not change the result
@@ -193,7 +193,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile)]
 	public async Task BulkLoadLocalCsvFileInTransactionWithCommit()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		using (var transaction = connection.BeginTransaction())
 		{
@@ -223,7 +223,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile)]
 	public async Task BulkLoadLocalCsvFileInTransactionWithRollback()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		using (var transaction = connection.BeginTransaction())
 		{
@@ -253,7 +253,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task BulkLoadMissingFileName()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.TableName = m_testTable;
@@ -280,7 +280,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile)]
 	public async Task BulkLoadMissingTableName()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		bl.FileName = AppConfig.MySqlBulkLoaderLocalCsvFile;
@@ -308,7 +308,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile)]
 	public async Task BulkLoadFileStreamInvalidOperation()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		var bl = new MySqlBulkLoader(connection);
 		using var fileStream = new FileStream(AppConfig.MySqlBulkLoaderLocalCsvFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
 		bl.SourceStream = fileStream;
@@ -329,7 +329,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile)]
 	public async Task BulkLoadLocalFileStream()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		using var fileStream = new FileStream(AppConfig.MySqlBulkLoaderLocalCsvFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
@@ -349,7 +349,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task BulkLoadMemoryStreamInvalidOperation()
 	{
-		using var connection = new MySqlConnection(GetConnectionString());
+		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		using var memoryStream = new MemoryStream(m_memoryStreamBytes, false);
@@ -370,7 +370,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task BulkLoadLocalMemoryStream()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
 		using var memoryStream = new MemoryStream(m_memoryStreamBytes, false);
@@ -389,11 +389,11 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task BulkCopyDataReader()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
-		using var connection2 = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
+		using var connection2 = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
 		await connection2.OpenAsync();
-		using (var cmd = new MySqlCommand(@"drop table if exists bulk_load_data_reader_source;
+		using (var cmd = new SingleStoreCommand(@"drop table if exists bulk_load_data_reader_source;
 drop table if exists bulk_load_data_reader_destination;
 create table bulk_load_data_reader_source(value int, name text);
 create table bulk_load_data_reader_destination(value int, name text);
@@ -402,7 +402,7 @@ insert into bulk_load_data_reader_source values(0, 'zero'),(1,'one'),(2,'two'),(
 			await cmd.ExecuteNonQueryAsync();
 		}
 
-		using (var cmd = new MySqlCommand("select * from bulk_load_data_reader_source;", connection))
+		using (var cmd = new SingleStoreCommand("select * from bulk_load_data_reader_source;", connection))
 		using (var reader = await cmd.ExecuteReaderAsync())
 		{
 			var bulkCopy = new MySqlBulkCopy(connection2) { DestinationTableName = "bulk_load_data_reader_destination", };
@@ -411,8 +411,8 @@ insert into bulk_load_data_reader_source values(0, 'zero'),(1,'one'),(2,'two'),(
 			Assert.Empty(result.Warnings);
 		}
 
-		using var cmd1 = new MySqlCommand("select * from bulk_load_data_reader_source order by value;", connection);
-		using var cmd2 = new MySqlCommand("select * from bulk_load_data_reader_destination order by value;", connection2);
+		using var cmd1 = new SingleStoreCommand("select * from bulk_load_data_reader_source order by value;", connection);
+		using var cmd2 = new SingleStoreCommand("select * from bulk_load_data_reader_destination order by value;", connection2);
 		using var reader1 = await cmd1.ExecuteReaderAsync();
 		using var reader2 = await cmd2.ExecuteReaderAsync();
 		while (await reader1.ReadAsync())
@@ -427,7 +427,7 @@ insert into bulk_load_data_reader_source values(0, 'zero'),(1,'one'),(2,'two'),(
 	[Fact]
 	public void BulkCopyNullDataTable()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		connection.Open();
 		var bulkCopy = new MySqlBulkCopy(connection);
 		Assert.ThrowsAsync<ArgumentNullException>(async () => await bulkCopy.WriteToServerAsync(default(DataTable)));
@@ -450,9 +450,9 @@ insert into bulk_load_data_reader_source values(0, 'zero'),(1,'one'),(2,'two'),(
 			},
 		};
 
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		using (var cmd = new MySqlCommand(@"drop table if exists bulk_load_data_table;
+		using (var cmd = new SingleStoreCommand(@"drop table if exists bulk_load_data_table;
 create table bulk_load_data_table(a int, b longblob);", connection))
 		{
 			await cmd.ExecuteNonQueryAsync();
@@ -474,9 +474,9 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 	[InlineData(int.MaxValue, 0, 0, 0)]
 	public async Task BulkCopyNotifyAfter(int notifyAfter, int rowCount, int expectedEventCount, int expectedRowsCopied)
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		using (var cmd = new MySqlCommand(@"drop table if exists bulk_copy_notify_after;
+		using (var cmd = new SingleStoreCommand(@"drop table if exists bulk_copy_notify_after;
 			create table bulk_copy_notify_after(value int);", connection))
 		{
 			await cmd.ExecuteNonQueryAsync();
@@ -516,9 +516,9 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 	[InlineData(int.MaxValue, 20, 0, 0, 0, 20)]
 	public async Task BulkCopyAbort(int notifyAfter, int rowCount, int abortAfter, int expectedEventCount, int expectedRowsCopied, long expectedCount)
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		using (var cmd = new MySqlCommand(@"drop table if exists bulk_copy_abort;
+		using (var cmd = new SingleStoreCommand(@"drop table if exists bulk_copy_abort;
 			create table bulk_copy_abort(value longtext);", connection))
 		{
 			await cmd.ExecuteNonQueryAsync();
@@ -553,7 +553,7 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 		Assert.Equal(expectedCount, result.RowsInserted);
 		Assert.Empty(result.Warnings);
 
-		using (var cmd = new MySqlCommand("select count(value) from bulk_copy_abort;", connection))
+		using (var cmd = new SingleStoreCommand("select count(value) from bulk_copy_abort;", connection))
 			Assert.Equal(expectedCount, await cmd.ExecuteScalarAsync());
 	}
 
@@ -574,9 +574,9 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 			},
 		};
 
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		connection.Open();
-		using (var cmd = new MySqlCommand(@"drop table if exists bulk_load_data_table;
+		using (var cmd = new SingleStoreCommand(@"drop table if exists bulk_load_data_table;
 create table bulk_load_data_table(str varchar(5), number tinyint);", connection))
 		{
 			cmd.ExecuteNonQuery();
@@ -596,7 +596,7 @@ create table bulk_load_data_table(str varchar(5), number tinyint);", connection)
 	[Fact]
 	public void BulkCopyNullDataReader()
 	{
-		using var connection = new MySqlConnection(GetLocalConnectionString());
+		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		connection.Open();
 		var bulkCopy = new MySqlBulkCopy(connection);
 		Assert.ThrowsAsync<ArgumentNullException>(async () => await bulkCopy.WriteToServerAsync(default(DbDataReader)));

@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS `BlogPost` (
 		}
 	}
 
-	public MySqlConnection Connection;
+	public SingleStoreConnection Connection;
 
 	public AppDb()
 	{
-		Connection = new MySqlConnection(AppConfig.Config["Data:ConnectionString"]);
+		Connection = new SingleStoreConnection(AppConfig.Config["Data:ConnectionString"]);
 	}
 
 	public void Dispose()

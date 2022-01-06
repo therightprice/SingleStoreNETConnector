@@ -3,14 +3,14 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector.Core;
 
 /// <summary>
-/// <see cref="IMySqlCommand"/> provides an internal abstraction over operations that can be cancelled: <see cref="MySqlCommand"/> and <see cref="MySqlBatch"/>.
+/// <see cref="IMySqlCommand"/> provides an internal abstraction over operations that can be cancelled: <see cref="SingleStoreCommand"/> and <see cref="MySqlBatch"/>.
 /// </summary>
 internal interface ICancellableCommand
 {
 	int CommandId { get; }
 	int CommandTimeout { get; }
 	int CancelAttemptCount { get; set; }
-	MySqlConnection? Connection { get; }
+	SingleStoreConnection? Connection { get; }
 	IDisposable? RegisterCancel(CancellationToken cancellationToken);
 	void SetTimeout(int milliseconds);
 	bool IsTimedOut { get; }

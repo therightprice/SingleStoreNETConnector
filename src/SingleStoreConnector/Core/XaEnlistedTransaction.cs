@@ -5,7 +5,7 @@ namespace SingleStoreConnector.Core;
 
 internal sealed class XaEnlistedTransaction : EnlistedTransactionBase
 {
-	public XaEnlistedTransaction(Transaction transaction, MySqlConnection connection)
+	public XaEnlistedTransaction(Transaction transaction, SingleStoreConnection connection)
 		: base(transaction, connection)
 	{
 	}

@@ -14,7 +14,7 @@ public class DatabaseFixture : IDisposable
 				var csb = AppConfig.CreateConnectionStringBuilder();
 				var database = csb.Database;
 				csb.Database = "";
-				using (var db = new MySqlConnection(csb.ConnectionString))
+				using (var db = new SingleStoreConnection(csb.ConnectionString))
 				{
 					db.Open();
 					using (var cmd = db.CreateCommand())
@@ -35,10 +35,10 @@ public class DatabaseFixture : IDisposable
 			}
 		}
 
-		Connection = new MySqlConnection(AppConfig.ConnectionString);
+		Connection = new SingleStoreConnection(AppConfig.ConnectionString);
 	}
 
-	public MySqlConnection Connection { get; }
+	public SingleStoreConnection Connection { get; }
 
 	public void Dispose()
 	{

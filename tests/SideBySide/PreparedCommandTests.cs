@@ -19,7 +19,7 @@ public class PreparedCommandTests : IClassFixture<DatabaseFixture>
 		connection.Execute($@"DROP TABLE IF EXISTS bind_parameters_test;
 CREATE TABLE bind_parameters_test(data TEXT NOT NULL);");
 
-		using (var command = new MySqlCommand(@"INSERT INTO bind_parameters_test(data) VALUES(@data);", connection))
+		using (var command = new SingleStoreCommand(@"INSERT INTO bind_parameters_test(data) VALUES(@data);", connection))
 		{
 			command.Prepare();
 			command.Parameters.AddWithValue("@data", "test");
@@ -36,7 +36,7 @@ CREATE TABLE bind_parameters_test(data TEXT NOT NULL);");
 		connection.Execute($@"DROP TABLE IF EXISTS bind_parameters_test;
 CREATE TABLE bind_parameters_test(data1 TEXT NOT NULL, data2 INTEGER);");
 
-		using (var command = new MySqlCommand(@"INSERT INTO bind_parameters_test(data1, data2) VALUES(?, ?);", connection))
+		using (var command = new SingleStoreCommand(@"INSERT INTO bind_parameters_test(data1, data2) VALUES(?, ?);", connection))
 		{
 			command.Parameters.Add(new() { Value = "test" });
 			command.Parameters.Add(new() { Value = 1234 });
@@ -44,7 +44,7 @@ CREATE TABLE bind_parameters_test(data1 TEXT NOT NULL, data2 INTEGER);");
 			command.ExecuteNonQuery();
 		}
 
-		using (var command = new MySqlCommand(@"SELECT data1, data2 FROM bind_parameters_test;", connection))
+		using (var command = new SingleStoreCommand(@"SELECT data1, data2 FROM bind_parameters_test;", connection))
 		{
 			command.Prepare();
 			using var reader = command.ExecuteReader();
@@ -61,7 +61,7 @@ CREATE TABLE bind_parameters_test(data1 TEXT NOT NULL, data2 INTEGER);");
 		connection.Execute($@"DROP TABLE IF EXISTS reuse_command_test;
 CREATE TABLE reuse_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, data TEXT NOT NULL);");
 
-		using (var command = new MySqlCommand(@"INSERT INTO reuse_command_test(data) VALUES(@data);", connection))
+		using (var command = new SingleStoreCommand(@"INSERT INTO reuse_command_test(data) VALUES(@data);", connection))
 		{
 			// work around Connector/NET failure; see PrepareBeforeBindingParameters
 			var parameter = command.Parameters.AddWithValue("@data", "");
@@ -82,12 +82,12 @@ CREATE TABLE reuse_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMEN
 	public void InsertAndQuery(bool isPrepared, string dataType, object dataValue, MySqlDbType dbType)
 	{
 		var csb = new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute($@"DROP TABLE IF EXISTS prepared_command_test;
 CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, data {dataType});");
 
-		using (var command = new MySqlCommand("INSERT INTO prepared_command_test(data) VALUES(@null), (@data);", connection))
+		using (var command = new SingleStoreCommand("INSERT INTO prepared_command_test(data) VALUES(@null), (@data);", connection))
 		{
 			command.Parameters.AddWithValue("@null", null);
 			command.Parameters.AddWithValue("@data", dataValue).MySqlDbType = dbType;
@@ -97,7 +97,7 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 			command.ExecuteNonQuery();
 		}
 
-		using (var command = new MySqlCommand("SELECT data FROM prepared_command_test ORDER BY rowid;", connection))
+		using (var command = new SingleStoreCommand("SELECT data FROM prepared_command_test ORDER BY rowid;", connection))
 		{
 			if (isPrepared)
 				command.Prepare();
@@ -121,12 +121,12 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 	public void InsertAndQueryInferredType(bool isPrepared, string dataType, object dataValue, MySqlDbType dbType)
 	{
 		GC.KeepAlive(dbType); // ignore the parameter
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute($@"DROP TABLE IF EXISTS prepared_command_test;
 CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, data {dataType});");
 
-		using (var command = new MySqlCommand("INSERT INTO prepared_command_test(data) VALUES(@null), (@data);", connection))
+		using (var command = new SingleStoreCommand("INSERT INTO prepared_command_test(data) VALUES(@null), (@data);", connection))
 		{
 			command.Parameters.AddWithValue("@null", null);
 			command.Parameters.AddWithValue("@data", dataValue);
@@ -136,7 +136,7 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 			command.ExecuteNonQuery();
 		}
 
-		using (var command = new MySqlCommand("SELECT data FROM prepared_command_test ORDER BY rowid;", connection))
+		using (var command = new SingleStoreCommand("SELECT data FROM prepared_command_test ORDER BY rowid;", connection))
 		{
 			if (isPrepared)
 				command.Prepare();
@@ -159,12 +159,12 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 	[MemberData(nameof(GetDifferentTypeInsertAndQueryData))]
 	public void InsertAndQueryDifferentType(bool isPrepared, string dataType, object dataValue, object expectedValue)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute($@"DROP TABLE IF EXISTS prepared_command_test;
 CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, data {dataType});");
 
-		using (var command = new MySqlCommand("INSERT INTO prepared_command_test(data) VALUES(@param);", connection))
+		using (var command = new SingleStoreCommand("INSERT INTO prepared_command_test(data) VALUES(@param);", connection))
 		{
 			command.Parameters.AddWithValue("@param", dataValue);
 			if (isPrepared)
@@ -172,7 +172,7 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 			command.ExecuteNonQuery();
 		}
 
-		using (var command = new MySqlCommand("SELECT data FROM prepared_command_test ORDER BY rowid;", connection))
+		using (var command = new SingleStoreCommand("SELECT data FROM prepared_command_test ORDER BY rowid;", connection))
 		{
 			if (isPrepared)
 				command.Prepare();
@@ -192,12 +192,12 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 	public void InsertAndQueryMultipleStatements(bool isPrepared, string dataType, object dataValue, MySqlDbType dbType)
 	{
 		var csb = new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute($@"DROP TABLE IF EXISTS prepared_command_test;
 CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, data {dataType});");
 
-		using var command = new MySqlCommand(@"INSERT INTO prepared_command_test(data) VALUES(@null);
+		using var command = new SingleStoreCommand(@"INSERT INTO prepared_command_test(data) VALUES(@null);
 INSERT INTO prepared_command_test(data) VALUES(@data);
 SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		command.Parameters.AddWithValue("@null", null);
@@ -222,7 +222,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	public void PrepareMultipleTimes()
 	{
 		using var connection = CreateConnection();
-		using var cmd = new MySqlCommand("SELECT 'test';", connection);
+		using var cmd = new SingleStoreCommand("SELECT 'test';", connection);
 		Assert.False(cmd.IsPrepared);
 		cmd.Prepare();
 		Assert.True(cmd.IsPrepared);
@@ -235,13 +235,13 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	{
 		using var connection = CreateConnection();
 
-		using (var cmd = new MySqlCommand("SELECT 'test';", connection))
+		using (var cmd = new SingleStoreCommand("SELECT 'test';", connection))
 		{
 			cmd.Prepare();
 			Assert.Equal("test", cmd.ExecuteScalar());
 		}
 
-		using (var cmd = new MySqlCommand("SELECT 'test';", connection))
+		using (var cmd = new SingleStoreCommand("SELECT 'test';", connection))
 		{
 			Assert.True(cmd.IsPrepared);
 			Assert.Equal("test", cmd.ExecuteScalar());
@@ -252,7 +252,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	public void ThrowsIfNamedParameterUsedButNoParametersDefined()
 	{
 		using var connection = CreateConnection();
-		using var cmd = new MySqlCommand("SELECT @param;", connection);
+		using var cmd = new SingleStoreCommand("SELECT @param;", connection);
 #if BASELINE
 		Assert.Throws<InvalidOperationException>(() => cmd.Prepare());
 #else
@@ -265,7 +265,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	public void ThrowsIfUnnamedParameterUsedButNoParametersDefined()
 	{
 		using var connection = CreateConnection();
-		using var cmd = new MySqlCommand("SELECT ?;", connection);
+		using var cmd = new SingleStoreCommand("SELECT ?;", connection);
 #if BASELINE
 		Assert.Throws<IndexOutOfRangeException>(() => cmd.Prepare());
 #else
@@ -278,7 +278,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	public void ThrowsIfUndefinedNamedParameterUsed()
 	{
 		using var connection = CreateConnection();
-		using var cmd = new MySqlCommand("SELECT @param;", connection);
+		using var cmd = new SingleStoreCommand("SELECT @param;", connection);
 		cmd.Parameters.AddWithValue("@name", "test");
 #if BASELINE
 		Assert.Throws<InvalidOperationException>(() => cmd.Prepare());
@@ -292,7 +292,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	public void ThrowsIfTooManyUnnamedParametersUsed()
 	{
 		using var connection = CreateConnection();
-		using var cmd = new MySqlCommand("SELECT ?, ?;", connection);
+		using var cmd = new SingleStoreCommand("SELECT ?, ?;", connection);
 		cmd.Parameters.Add(new() { Value = 1 });
 #if BASELINE
 		Assert.Throws<IndexOutOfRangeException>(() => cmd.Prepare());
@@ -346,7 +346,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		Assert.Equal(MySqlErrorCode.PreparedStatementManyParameters, (MySqlErrorCode) ex.Number);
 	}
 
-	private static MySqlCommand CreateCommandWithParameters(MySqlConnection connection, int parameterCount)
+	private static SingleStoreCommand CreateCommandWithParameters(SingleStoreConnection connection, int parameterCount)
 	{
 		var cmd = connection.CreateCommand();
 		var sql = new StringBuilder("select value from prepared_command_test where value in (");
@@ -439,9 +439,9 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		}
 	}
 
-	private static MySqlConnection CreateConnection()
+	private static SingleStoreConnection CreateConnection()
 	{
-		var connection = new MySqlConnection(AppConfig.ConnectionString);
+		var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		return connection;
 	}

@@ -549,11 +549,11 @@ public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
 	}
 
 	/// <summary>
-	/// The length of time (in seconds) to wait for a query to be canceled when <see cref="MySqlCommand.CommandTimeout"/> expires, or zero for no timeout.
+	/// The length of time (in seconds) to wait for a query to be canceled when <see cref="SingleStoreCommand.CommandTimeout"/> expires, or zero for no timeout.
 	/// </summary>
 	[Category("Other")]
 	[DefaultValue(2)]
-	[Description("The length of time (in seconds) to wait for a query to be canceled when MySqlCommand.CommandTimeout expires, or zero for no timeout.")]
+	[Description("The length of time (in seconds) to wait for a query to be canceled when SingleStoreCommand.CommandTimeout expires, or zero for no timeout.")]
 	[DisplayName("Cancellation Timeout")]
 	public int CancellationTimeout
 	{
@@ -588,11 +588,11 @@ public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
 	}
 
 	/// <summary>
-	/// Does not check the <see cref="MySqlCommand.Transaction"/> property for validity when executing a command.
+	/// Does not check the <see cref="SingleStoreCommand.Transaction"/> property for validity when executing a command.
 	/// </summary>
 	[Category("Other")]
 	[DefaultValue(false)]
-	[Description("Does not check the MySqlCommand.Transaction property for validity when executing a command.")]
+	[Description("Does not check the SingleStoreCommand.Transaction property for validity when executing a command.")]
 	[DisplayName("Ignore Command Transaction")]
 	public bool IgnoreCommandTransaction
 	{
@@ -601,11 +601,11 @@ public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
 	}
 
 	/// <summary>
-	/// Ignores calls to <see cref="MySqlCommand.Prepare"/> and <c>PrepareAsync</c>.
+	/// Ignores calls to <see cref="SingleStoreCommand.Prepare"/> and <c>PrepareAsync</c>.
 	/// </summary>
 	[Category("Other")]
 	[DefaultValue(false)]
-	[Description("Ignores calls to MySqlCommand.Prepare and PrepareAsync.")]
+	[Description("Ignores calls to SingleStoreCommand.Prepare and PrepareAsync.")]
 	[DisplayName("Ignore Prepare")]
 	public bool IgnorePrepare
 	{
@@ -665,12 +665,12 @@ public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
 	}
 
 	/// <summary>
-	/// If true, preserves security-sensitive information in the connection string retrieved from any open <see cref="MySqlConnection"/>.
+	/// If true, preserves security-sensitive information in the connection string retrieved from any open <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	[Category("Other")]
 	[DisplayName("Persist Security Info")]
 	[DefaultValue(false)]
-	[Description("Preserves security-sensitive information in the connection string retrieved from any open MySqlConnection.")]
+	[Description("Preserves security-sensitive information in the connection string retrieved from any open SingleStoreConnection.")]
 	public bool PersistSecurityInfo
 	{
 		get => MySqlConnectionStringOption.PersistSecurityInfo.GetValue(this);

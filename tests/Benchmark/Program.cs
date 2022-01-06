@@ -40,7 +40,7 @@ public class MySqlClient
 	[GlobalSetup]
 	public void GlobalSetup()
 	{
-		using (var connection = new MySqlConnector.MySqlConnection(s_connectionString))
+		using (var connection = new MySqlConnector.SingleStoreConnection(s_connectionString))
 		{
 			connection.Open();
 			using (var cmd = connection.CreateCommand())
@@ -69,11 +69,11 @@ insert into benchmark.blobs(`Blob`) values(null), (@Blob1), (@Blob2);";
 
 		s_connectionString += ";database=benchmark";
 
-		var mySqlData = new MySql.Data.MySqlClient.MySqlConnection(s_connectionString);
+		var mySqlData = new MySql.Data.MySqlClient.SingleStoreConnection(s_connectionString);
 		mySqlData.Open();
 		m_connections.Add("MySql.Data", mySqlData);
 
-		var mySqlConnector = new MySqlConnector.MySqlConnection(s_connectionString);
+		var mySqlConnector = new MySqlConnector.SingleStoreConnection(s_connectionString);
 		mySqlConnector.Open();
 		m_connections.Add("MySqlConnector", mySqlConnector);
 
@@ -86,8 +86,8 @@ insert into benchmark.blobs(`Blob`) values(null), (@Blob1), (@Blob2);";
 		foreach (var connection in m_connections.Values)
 			connection.Dispose();
 		m_connections.Clear();
-		MySqlConnector.MySqlConnection.ClearAllPools();
-		MySql.Data.MySqlClient.MySqlConnection.ClearAllPools();
+		MySqlConnector.SingleStoreConnection.ClearAllPools();
+		MySql.Data.MySqlClient.SingleStoreConnection.ClearAllPools();
 	}
 
 	private static void AddBlobParameter(DbCommand command, string name, int size)

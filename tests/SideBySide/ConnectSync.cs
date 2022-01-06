@@ -16,7 +16,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		{
 			Server = "invalid.example.com",
 		};
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 		var ex = Assert.Throws<MySqlException>(connection.Open);
 #if !BASELINE
@@ -35,7 +35,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 			Server = "localhost",
 			Port = 65000,
 		};
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 		Assert.Throws<MySqlException>(() => connection.Open());
 		Assert.Equal(ConnectionState.Closed, connection.State);
@@ -49,7 +49,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 			Server = "localhost",
 			Port = 1000000,
 		};
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Throws<MySqlException>(() => connection.Open());
 	}
 
@@ -58,7 +58,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Database = "wrong_database";
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		var ex = Assert.Throws<MySqlException>(connection.Open);
 #if !BASELINE // https://bugs.mysql.com/bug.php?id=78426
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.ErrorCodes) || ex.ErrorCode != default)
@@ -72,7 +72,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Password = "wrong";
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		var ex = Assert.Throws<MySqlException>(connection.Open);
 #if !BASELINE // https://bugs.mysql.com/bug.php?id=78426
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.ErrorCodes) || ex.ErrorCode != default)
@@ -87,7 +87,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[InlineData("server=pipename;Protocol=Pipe;LoadBalance=Failover")]
 	public void LoadBalanceNotSupported(string connectionString)
 	{
-		using var connection = new MySqlConnection(connectionString);
+		using var connection = new SingleStoreConnection(connectionString);
 		Assert.Throws<NotSupportedException>(() => connection.Open());
 	}
 #endif
@@ -104,7 +104,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		};
 
 		var sw = Stopwatch.StartNew();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Throws<MySqlException>(connection.Open);
 #if !BASELINE
 		TestUtilities.AssertDuration(sw, 900, 500);
@@ -124,7 +124,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		csb.PersistSecurityInfo = persistSecurityInfo;
 		var connectionStringWithoutPassword = Regex.Replace(csb.ConnectionString, @"(?i)password='?" + Regex.Escape(csb.Password) + "'?;?", "");
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(csb.ConnectionString, connection.ConnectionString);
 		connection.Open();
 		if (persistSecurityInfo)
@@ -145,7 +145,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void State()
 	{
-		using var connection = new MySqlConnection(m_database.Connection.ConnectionString);
+		using var connection = new SingleStoreConnection(m_database.Connection.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 		connection.Open();
 		Assert.Equal(ConnectionState.Open, connection.State);
@@ -158,11 +158,11 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void DataSource()
 	{
-		using (var connection = new MySqlConnection())
+		using (var connection = new SingleStoreConnection())
 		{
 			Assert.Equal("", connection.DataSource);
 		}
-		using (var connection = new MySqlConnection(m_database.Connection.ConnectionString))
+		using (var connection = new SingleStoreConnection(m_database.Connection.ConnectionString))
 		{
 			Assert.NotNull(connection.DataSource);
 		}
@@ -174,7 +174,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Server = "invalid.example.net," + csb.Server;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 		connection.Open();
 		Assert.Equal(ConnectionState.Open, connection.State);
@@ -188,7 +188,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		csb.Password = "";
 		csb.Database = "";
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 		connection.Open();
 		Assert.Equal(ConnectionState.Open, connection.State);
@@ -207,7 +207,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 
 		for (int i = 0; i < 3; i++)
 		{
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			Assert.Equal(ConnectionState.Closed, connection.State);
 			connection.Open();
 			Assert.Equal(ConnectionState.Open, connection.State);
@@ -224,7 +224,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 			ConnectionTimeout = 3,
 		};
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		var stopwatch = Stopwatch.StartNew();
 		Assert.Throws<MySqlException>(() => connection.Open());
 		stopwatch.Stop();
@@ -239,8 +239,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var password = csb.Password;
 		csb.Password = null;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		MySqlConnection.ClearPool(connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		SingleStoreConnection.ClearPool(connection);
 
 		var wasCalled = false;
 		connection.ProvidePasswordCallback = x =>
@@ -263,8 +263,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		var password = csb.Password;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		MySqlConnection.ClearPool(connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		SingleStoreConnection.ClearPool(connection);
 
 		var wasCalled = false;
 		connection.ProvidePasswordCallback = _ => { wasCalled = true; return password; };
@@ -280,8 +280,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var password = csb.Password;
 		csb.Password = null;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		MySqlConnection.ClearPool(connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		SingleStoreConnection.ClearPool(connection);
 
 		connection.ProvidePasswordCallback = _ => $"wrong_{password}";
 
@@ -297,8 +297,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		csb.Password = null;
 		csb.ConnectionTimeout = 60;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		MySqlConnection.ClearPool(connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		SingleStoreConnection.ClearPool(connection);
 
 		var innerException = new NotSupportedException();
 		connection.ProvidePasswordCallback = _ => throw innerException;
@@ -315,8 +315,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var password = csb.Password;
 		csb.Password = null;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		MySqlConnection.ClearPool(connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		SingleStoreConnection.ClearPool(connection);
 		connection.ProvidePasswordCallback = _ => password;
 
 		using var clonedConnection = connection.Clone();
@@ -334,8 +334,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		csb.MinimumPoolSize = 3;
 		csb.MaximumPoolSize = 102;
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
-		MySqlConnection.ClearPool(connection);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		SingleStoreConnection.ClearPool(connection);
 
 		var invocationCount = 0;
 		connection.ProvidePasswordCallback = _ =>
@@ -353,7 +353,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void ConnectionDatabase()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(csb.Database, connection.Database);
 
 		connection.Open();
@@ -366,7 +366,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void ChangeDatabase()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		Assert.Equal(csb.Database, connection.Database);
@@ -382,7 +382,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void ChangeDatabaseNotOpen()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Throws<InvalidOperationException>(() => connection.ChangeDatabase(AppConfig.SecondaryDatabase));
 	}
 
@@ -390,7 +390,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void ChangeDatabaseNull()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Throws<ArgumentException>(() => connection.ChangeDatabase(null));
 		Assert.Throws<ArgumentException>(() => connection.ChangeDatabase(""));
 	}
@@ -399,7 +399,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void ChangeDatabaseInvalidName()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		Assert.Throws<MySqlException>(() => connection.ChangeDatabase($"not_a_real_database_1234"));
@@ -419,7 +419,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 
 		for (int i = 0; i < csb.MaximumPoolSize * 2; i++)
 		{
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
 
 			Assert.Equal(csb.Database, connection.Database);
@@ -436,7 +436,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void UseDatabase()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		Assert.Equal(csb.Database, connection.Database);
@@ -456,7 +456,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	public void ChangeDatabaseInTransaction()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute($@"drop table if exists changedb1;
 create table changedb1(value int not null);
@@ -468,9 +468,9 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 #if !BASELINE
 		Assert.Equal(transaction, connection.CurrentTransaction);
 #endif
-		using (var command = new MySqlCommand("SELECT 'abc';", connection, transaction))
+		using (var command = new SingleStoreCommand("SELECT 'abc';", connection, transaction))
 			Assert.Equal("abc", command.ExecuteScalar());
-		using (var command = new MySqlCommand("INSERT INTO changedb1(value) values(1),(2);", connection, transaction))
+		using (var command = new SingleStoreCommand("INSERT INTO changedb1(value) values(1),(2);", connection, transaction))
 			command.ExecuteNonQuery();
 
 		connection.ChangeDatabase(AppConfig.SecondaryDatabase);
@@ -479,20 +479,20 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 		Assert.Equal(transaction, connection.CurrentTransaction);
 #endif
 
-		using (var command = new MySqlCommand("SELECT 'abc';", connection, transaction))
+		using (var command = new SingleStoreCommand("SELECT 'abc';", connection, transaction))
 			Assert.Equal("abc", command.ExecuteScalar());
-		using (var command = new MySqlCommand("INSERT INTO changedb2(value) values(3),(4);", connection, transaction))
+		using (var command = new SingleStoreCommand("INSERT INTO changedb2(value) values(3),(4);", connection, transaction))
 			command.ExecuteNonQuery();
 
 		transaction.Commit();
 
-		using var connection2 = new MySqlConnection(csb.ConnectionString);
+		using var connection2 = new SingleStoreConnection(csb.ConnectionString);
 		connection2.Open();
 		var values = connection2.Query<int>($@"SELECT value FROM changedb1 UNION SELECT value FROM `{AppConfig.SecondaryDatabase}`.changedb2", connection2).OrderBy(x => x).ToList();
 		Assert.Equal(new[] { 1, 2, 3, 4 }, values);
 	}
 
-	private static string QueryCurrentDatabase(MySqlConnection connection)
+	private static string QueryCurrentDatabase(SingleStoreConnection connection)
 	{
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = "SELECT DATABASE()";
@@ -503,7 +503,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 	public void ChangeConnectionStringWhenOpen()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		Assert.Equal(csb.Database, connection.Database);
 
@@ -522,7 +522,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 	public void ChangeConnectionStringAfterClose()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		Assert.Equal(csb.Database, connection.Database);
 		connection.Close();
@@ -539,7 +539,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 	public void Sha256WithSecureConnection()
 	{
 		var csb = AppConfig.CreateSha256ConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 	}
 
@@ -549,7 +549,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 		var csb = AppConfig.CreateSha256ConnectionStringBuilder();
 		csb.SslMode = MySqlSslMode.None;
 		csb.AllowPublicKeyRetrieval = true;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 #if NET45
 		Assert.Throws<NotImplementedException>(() => connection.Open());
 #else
@@ -563,21 +563,21 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 	[Fact]
 	public void PingNoConnection()
 	{
-		using var connection = new MySqlConnection();
+		using var connection = new SingleStoreConnection();
 		Assert.False(connection.Ping());
 	}
 
 	[Fact]
 	public void PingBeforeConnecting()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		Assert.False(connection.Ping());
 	}
 
 	[Fact]
 	public void PingConnection()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		Assert.True(connection.Ping());
 	}
@@ -588,7 +588,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Server = AppConfig.SocketPath;
 		csb.ConnectionProtocol = MySqlConnectionProtocol.Unix;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		Assert.Equal(ConnectionState.Open, connection.State);
 	}

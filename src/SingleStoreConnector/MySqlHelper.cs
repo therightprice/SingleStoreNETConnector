@@ -4,8 +4,8 @@ namespace SingleStoreConnector;
 
 public sealed class MySqlHelper
 {
-	[Obsolete("Use MySqlConnection.ClearAllPools or MySqlConnection.ClearAllPoolsAsync")]
-	public static void ClearConnectionPools() => MySqlConnection.ClearAllPools();
+	[Obsolete("Use SingleStoreConnection.ClearAllPools or SingleStoreConnection.ClearAllPoolsAsync")]
+	public static void ClearConnectionPools() => SingleStoreConnection.ClearAllPools();
 
 	/// <summary>
 	/// Escapes single and double quotes, and backslashes in <paramref name="value"/>.

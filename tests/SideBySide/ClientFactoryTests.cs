@@ -9,13 +9,13 @@ public class ClientFactoryTests
 	[Fact]
 	public void CreateCommand()
 	{
-		Assert.IsType<MySqlCommand>(MySqlConnectorFactory.Instance.CreateCommand());
+		Assert.IsType<SingleStoreCommand>(MySqlConnectorFactory.Instance.CreateCommand());
 	}
 
 	[Fact]
 	public void CreateConnection()
 	{
-		Assert.IsType<MySqlConnection>(MySqlConnectorFactory.Instance.CreateConnection());
+		Assert.IsType<SingleStoreConnection>(MySqlConnectorFactory.Instance.CreateConnection());
 	}
 
 	[Fact]
@@ -40,7 +40,7 @@ public class ClientFactoryTests
 	[Fact]
 	public void CreateDataAdapter()
 	{
-		Assert.IsType<MySqlDataAdapter>(MySqlConnectorFactory.Instance.CreateDataAdapter());
+		Assert.IsType<SingleStoreDataAdapter>(MySqlConnectorFactory.Instance.CreateDataAdapter());
 	}
 
 	[Fact]
@@ -58,7 +58,7 @@ public class ClientFactoryTests
 		Assert.NotNull(factory);
 		Assert.Same(MySqlConnectorFactory.Instance, factory);
 
-		using (var connection = new MySqlConnection())
+		using (var connection = new SingleStoreConnection())
 		{
 			factory = System.Data.Common.DbProviderFactories.GetFactory(connection);
 			Assert.NotNull(factory);

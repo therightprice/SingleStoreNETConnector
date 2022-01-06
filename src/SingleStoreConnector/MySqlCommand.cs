@@ -7,55 +7,55 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlCommand"/> represents a SQL statement or stored procedure name
+/// <see cref="SingleStoreCommand"/> represents a SQL statement or stored procedure name
 /// to execute against a MySQL database.
 /// </summary>
-public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand, ICloneable
+public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableCommand, ICloneable
 {
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlCommand"/> class.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class.
 	/// </summary>
-	public MySqlCommand()
+	public SingleStoreCommand()
 		: this(null, null, null)
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlCommand"/> class, setting <see cref="CommandText"/> to <paramref name="commandText"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class, setting <see cref="CommandText"/> to <paramref name="commandText"/>.
 	/// </summary>
 	/// <param name="commandText">The text to assign to <see cref="CommandText"/>.</param>
-	public MySqlCommand(string? commandText)
+	public SingleStoreCommand(string? commandText)
 		: this(commandText, null, null)
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlCommand"/> class with the specified <see cref="MySqlConnection"/> and <see cref="MySqlTransaction"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified <see cref="SingleStoreConnection"/> and <see cref="MySqlTransaction"/>.
 	/// </summary>
-	/// <param name="connection">The <see cref="MySqlConnection"/> to use.</param>
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
 	/// <param name="transaction">The active <see cref="MySqlTransaction"/>, if any.</param>
-	public MySqlCommand(MySqlConnection? connection, MySqlTransaction? transaction)
+	public SingleStoreCommand(SingleStoreConnection? connection, MySqlTransaction? transaction)
 		: this(null, connection, transaction)
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlCommand"/> class with the specified command text and <see cref="MySqlConnection"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified command text and <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="commandText">The text to assign to <see cref="CommandText"/>.</param>
-	/// <param name="connection">The <see cref="MySqlConnection"/> to use.</param>
-	public MySqlCommand(string? commandText, MySqlConnection? connection)
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
+	public SingleStoreCommand(string? commandText, SingleStoreConnection? connection)
 		: this(commandText, connection, null)
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlCommand"/> class with the specified command text,<see cref="MySqlConnection"/>, and <see cref="MySqlTransaction"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified command text,<see cref="SingleStoreConnection"/>, and <see cref="MySqlTransaction"/>.
 	/// </summary>
 	/// <param name="commandText">The text to assign to <see cref="CommandText"/>.</param>
-	/// <param name="connection">The <see cref="MySqlConnection"/> to use.</param>
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
 	/// <param name="transaction">The active <see cref="MySqlTransaction"/>, if any.</param>
-	public MySqlCommand(string? commandText, MySqlConnection? connection, MySqlTransaction? transaction)
+	public SingleStoreCommand(string? commandText, SingleStoreConnection? connection, MySqlTransaction? transaction)
 	{
 		GC.SuppressFinalize(this);
 		m_commandId = ICancellableCommandExtensions.GetNextId();
@@ -65,7 +65,7 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 		CommandType = CommandType.Text;
 	}
 
-	private MySqlCommand(MySqlCommand other)
+	private SingleStoreCommand(SingleStoreCommand other)
 		: this(other.CommandText, other.Connection, other.Transaction)
 	{
 		GC.SuppressFinalize(this);
@@ -102,9 +102,9 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 	/// <inheritdoc/>
 	public override object? ExecuteScalar() => ExecuteScalarAsync(IOBehavior.Synchronous, CancellationToken.None).GetAwaiter().GetResult();
 
-	public new MySqlDataReader ExecuteReader() => ExecuteReaderAsync(default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
+	public new SingleStoreDataReader ExecuteReader() => ExecuteReaderAsync(default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 
-	public new MySqlDataReader ExecuteReader(CommandBehavior commandBehavior) => ExecuteReaderAsync(commandBehavior, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
+	public new SingleStoreDataReader ExecuteReader(CommandBehavior commandBehavior) => ExecuteReaderAsync(commandBehavior, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 
 	/// <inheritdoc/>
 	public override void Prepare()
@@ -175,7 +175,7 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 
 		if (CommandType != CommandType.StoredProcedure && CommandType != CommandType.Text)
 		{
-			exception = new NotSupportedException("Only CommandType.Text and CommandType.StoredProcedure are currently supported by MySqlCommand.Prepare.");
+			exception = new NotSupportedException("Only CommandType.Text and CommandType.StoredProcedure are currently supported by SingleStoreCommand.Prepare.");
 			return false;
 		}
 
@@ -196,7 +196,7 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 		set
 		{
 			if (m_connection?.ActiveCommandId == m_commandId)
-				throw new InvalidOperationException("Cannot set MySqlCommand.CommandText when there is an open DataReader for this command; it must be closed first.");
+				throw new InvalidOperationException("Cannot set SingleStoreCommand.CommandText when there is an open DataReader for this command; it must be closed first.");
 			m_commandText = value ?? "";
 		}
 	}
@@ -205,13 +205,13 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 
 	public new MySqlTransaction? Transaction { get; set; }
 
-	public new MySqlConnection? Connection
+	public new SingleStoreConnection? Connection
 	{
 		get => m_connection;
 		set
 		{
 			if (m_connection?.ActiveCommandId == m_commandId)
-				throw new InvalidOperationException("Cannot set MySqlCommand.Connection when there is an open DataReader for this command; it must be closed first.");
+				throw new InvalidOperationException("Cannot set SingleStoreCommand.Connection when there is an open DataReader for this command; it must be closed first.");
 			m_connection = value;
 		}
 	}
@@ -254,7 +254,7 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 	protected override DbConnection? DbConnection
 	{
 		get => Connection;
-		set => Connection = (MySqlConnection?) value;
+		set => Connection = (SingleStoreConnection?) value;
 	}
 
 	protected override DbParameterCollection DbParameterCollection => Parameters;
@@ -312,16 +312,16 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 		return result;
 	}
 
-	public new Task<MySqlDataReader> ExecuteReaderAsync(CancellationToken cancellationToken = default) =>
+	public new Task<SingleStoreDataReader> ExecuteReaderAsync(CancellationToken cancellationToken = default) =>
 		ExecuteReaderAsync(default, AsyncIOBehavior, cancellationToken);
 
-	public new Task<MySqlDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken = default) =>
+	public new Task<SingleStoreDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken = default) =>
 		ExecuteReaderAsync(behavior, AsyncIOBehavior, cancellationToken);
 
 	protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken) =>
 		await ExecuteReaderAsync(behavior, AsyncIOBehavior, cancellationToken).ConfigureAwait(false);
 
-	internal async Task<MySqlDataReader> ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	internal async Task<SingleStoreDataReader> ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		Volatile.Write(ref m_commandTimedOut, false);
 		this.ResetCommandTimeout();
@@ -329,10 +329,10 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 		return await ExecuteReaderNoResetTimeoutAsync(behavior, ioBehavior, cancellationToken).ConfigureAwait(false);
 	}
 
-	internal Task<MySqlDataReader> ExecuteReaderNoResetTimeoutAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	internal Task<SingleStoreDataReader> ExecuteReaderNoResetTimeoutAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		if (!IsValid(out var exception))
-			return Utility.TaskFromException<MySqlDataReader>(exception);
+			return Utility.TaskFromException<SingleStoreDataReader>(exception);
 
 		var activity = NoActivity ? null : Connection!.Session.StartActivity(ActivitySourceHelper.ExecuteActivityName,
 			ActivitySourceHelper.DatabaseStatementTagName, CommandText);
@@ -340,7 +340,7 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 		return CommandExecutor.ExecuteReaderAsync(new IMySqlCommand[] { this }, SingleCommandPayloadCreator.Instance, behavior, activity, ioBehavior, cancellationToken);
 	}
 
-	public MySqlCommand Clone() => new(this);
+	public SingleStoreCommand Clone() => new(this);
 
 	object ICloneable.Clone() => Clone();
 
@@ -431,11 +431,11 @@ public sealed class MySqlCommand : DbCommand, IMySqlCommand, ICancellableCommand
 	MySqlParameterCollection? IMySqlCommand.OutParameters { get; set; }
 	MySqlParameter? IMySqlCommand.ReturnParameter { get; set; }
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(MySqlCommand));
+	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(SingleStoreCommand));
 
 	readonly int m_commandId;
 	bool m_isDisposed;
-	MySqlConnection? m_connection;
+	SingleStoreConnection? m_connection;
 	string m_commandText;
 	MySqlParameterCollection? m_parameterCollection;
 	MySqlAttributeCollection? m_attributeCollection;

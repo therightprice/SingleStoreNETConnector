@@ -26,7 +26,7 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 {
 	public DataTypes(DataTypesFixture database)
 	{
-		Connection = new MySqlConnection(CreateConnectionStringBuilder().ConnectionString);
+		Connection = new SingleStoreConnection(CreateConnectionStringBuilder().ConnectionString);
 		Connection.Open();
 	}
 
@@ -144,11 +144,11 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 		await DoGetValue(column, (r, n) => r.GetUInt64(n), (r, s) => r.GetUInt64(s), flags, values).ConfigureAwait(false);
 	}
 
-	private async Task DoGetValue<T>(string column, Func<MySqlDataReader, int, T> getInt, Func<MySqlDataReader, string, T> getIntByName, int[] flags, T[] values)
+	private async Task DoGetValue<T>(string column, Func<SingleStoreDataReader, int, T> getInt, Func<SingleStoreDataReader, string, T> getIntByName, int[] flags, T[] values)
 	{
 		using var cmd = Connection.CreateCommand();
 		cmd.CommandText = $"select {column} from datatypes_integers order by rowid";
-		using var reader = (MySqlDataReader) await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+		using var reader = (SingleStoreDataReader) await cmd.ExecuteReaderAsync().ConfigureAwait(false);
 		for (int i = 0; i < flags.Length; i++)
 		{
 			Assert.True(await reader.ReadAsync().ConfigureAwait(false));
@@ -215,7 +215,7 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.TreatTinyAsBoolean = false;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		DoQuery("bools", column, dataTypeName, expected, reader => reader.GetSByte(0), baselineCoercedNullValue: default(sbyte), connection: connection);
 	}
@@ -387,7 +387,7 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.OldGuids = oldGuids;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = @"select guidbin from datatypes_blobs order by rowid;";
@@ -444,7 +444,7 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.OldGuids = oldGuids;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await connection.OpenAsync().ConfigureAwait(false);
 		try
 		{
@@ -551,10 +551,10 @@ UNHEX('33221100554477668899AABBCCDDEEFF'),
 		var csb = CreateConnectionStringBuilder();
 		csb.GuidFormat = guidFormat;
 		csb.OldGuids = oldGuids;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand(sql, connection)
+		using var cmd = new SingleStoreCommand(sql, connection)
 		{
 			Parameters =
 			{
@@ -666,13 +666,13 @@ UNHEX('33221100554477668899AABBCCDDEEFF'),
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.ConvertZeroDateTime = convertZeroDateTime;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = @"select cast(0 as date), cast(0 as datetime);";
 
-		using var reader = (MySqlDataReader) cmd.ExecuteReader();
+		using var reader = (SingleStoreDataReader) cmd.ExecuteReader();
 		Assert.True(reader.Read());
 		if (convertZeroDateTime)
 		{
@@ -712,11 +712,11 @@ UNHEX('33221100554477668899AABBCCDDEEFF'),
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.DateTimeKind = kindOption;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		var dateTimeIn = new DateTime(2001, 2, 3, 14, 5, 6, 789, kindIn);
-		using var cmd = new MySqlCommand(@"drop table if exists date_time_kind;
+		using var cmd = new SingleStoreCommand(@"drop table if exists date_time_kind;
 create table date_time_kind(
 rowid integer not null primary key auto_increment,
 d date,
@@ -792,7 +792,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	[InlineData("`Year`", "YEAR", new object[] { null, 1901, 2155, 0, 2016 })]
 	public void QueryYear(string column, string dataTypeName, object[] expected)
 	{
-		Func<MySqlDataReader, object> getValue = reader => reader.GetInt32(0);
+		Func<SingleStoreDataReader, object> getValue = reader => reader.GetInt32(0);
 #if BASELINE
 		// Connector/NET incorrectly returns "SMALLINT" for "YEAR", and returns all YEAR values as short values
 		dataTypeName = "SMALLINT";
@@ -839,14 +839,14 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	public async Task InsertLargeBlobAsync(string column, int size)
 	{
 		// NOTE: MySQL Server will reset the connection when it receives an oversize packet, so we need to create a test-specific connection here
-		using var connection = new MySqlConnection(CreateConnectionStringBuilder().ConnectionString);
+		using var connection = new SingleStoreConnection(CreateConnectionStringBuilder().ConnectionString);
 		await connection.OpenAsync();
 
 		var data = CreateByteArray(size);
 		var isSupported = size < 1048576 || AppConfig.SupportedFeatures.HasFlag(ServerFeatures.LargePackets);
 
 		long lastInsertId;
-		using (var cmd = new MySqlCommand($"insert into datatypes_blob_insert(`{column}`) values(@data)", connection))
+		using (var cmd = new SingleStoreCommand($"insert into datatypes_blob_insert(`{column}`) values(@data)", connection))
 		{
 			try
 			{
@@ -881,14 +881,14 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	public void InsertLargeBlobSync(string column, int size)
 	{
 		// NOTE: MySQL Server will reset the connection when it receives an oversize packet, so we need to create a test-specific connection here
-		using var connection = new MySqlConnection(CreateConnectionStringBuilder().ConnectionString);
+		using var connection = new SingleStoreConnection(CreateConnectionStringBuilder().ConnectionString);
 		connection.Open();
 
 		var data = CreateByteArray(size);
 		var isSupported = size < 1048576 || AppConfig.SupportedFeatures.HasFlag(ServerFeatures.LargePackets);
 
 		long lastInsertId;
-		using (var cmd = new MySqlCommand($"insert into datatypes_blob_insert(`{column}`) values(@data)", connection))
+		using (var cmd = new SingleStoreCommand($"insert into datatypes_blob_insert(`{column}`) values(@data)", connection))
 		{
 			try
 			{
@@ -928,10 +928,10 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.AllowZeroDateTime = allowZeroDateTime;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand($"SELECT `{columnName}` FROM datatypes_times WHERE `{columnName}` IS NOT NULL ORDER BY rowid", connection);
+		using var cmd = new SingleStoreCommand($"SELECT `{columnName}` FROM datatypes_times WHERE `{columnName}` IS NOT NULL ORDER BY rowid", connection);
 		using var reader = cmd.ExecuteReader();
 		Assert.True(reader.Read());
 		Assert.Equal(expectedType, reader.GetFieldType(0));
@@ -953,7 +953,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	[InlineData("Timestamp")]
 	public void GetMySqlDateTime(string columnName)
 	{
-		using var cmd = new MySqlCommand($"SELECT `{columnName}` FROM datatypes_times WHERE `{columnName}` IS NOT NULL", Connection);
+		using var cmd = new SingleStoreCommand($"SELECT `{columnName}` FROM datatypes_times WHERE `{columnName}` IS NOT NULL", Connection);
 		using var reader = cmd.ExecuteReader();
 		while (reader.Read())
 		{
@@ -970,7 +970,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	public void ReadNewDate(bool prepare)
 	{
 		// returns a NEWDATE in MySQL < 5.7.22; see https://github.com/mysql-net/MySqlConnector/issues/1007
-		using var cmd = new MySqlCommand($"SELECT `Date` FROM datatypes_times UNION ALL SELECT `Date` FROM datatypes_times", Connection);
+		using var cmd = new SingleStoreCommand($"SELECT `Date` FROM datatypes_times UNION ALL SELECT `Date` FROM datatypes_times", Connection);
 		if (prepare)
 			cmd.Prepare();
 		using var reader = cmd.ExecuteReader();
@@ -1005,7 +1005,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 		var expectedDate = (DateTime?) ConvertToDateTime(new object[] { expectedValue }, DateTimeKind.Unspecified)[0];
 
 		// returns VARCHAR in MySQL 5.7; DATE in MySQL 8.0
-		using var cmd = new MySqlCommand($@"SELECT MAX(CASE WHEN 1 = t.`Key` THEN t.`{columnName}` END) AS `Max`
+		using var cmd = new SingleStoreCommand($@"SELECT MAX(CASE WHEN 1 = t.`Key` THEN t.`{columnName}` END) AS `Max`
 FROM (SELECT `{columnName}`, 1 AS `Key` FROM datatypes_times) t
 GROUP BY t.`Key`
 ORDER BY t.`Key`", Connection);
@@ -1045,7 +1045,7 @@ ORDER BY t.`Key`", Connection);
 		var expectedDate = (DateTime?) ConvertToDateTime(new object[] { expectedValue }, DateTimeKind.Unspecified)[0];
 
 		// returns VARCHAR in MySQL 5.7; DATE in MySQL 8.0
-		using var cmd = new MySqlCommand($@"SELECT '{value}' AS value", Connection);
+		using var cmd = new SingleStoreCommand($@"SELECT '{value}' AS value", Connection);
 		if (prepare)
 			cmd.Prepare();
 
@@ -1530,34 +1530,34 @@ end;";
 		if (table == "datatypes_json_core" && !AppConfig.SupportsJson)
 			return;
 
-		using var connection1 = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection1 = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection1.Open();
 
 		var bulkCopyTable = "bulk_copy_" + table;
-		using (var command = new MySqlCommand($@"drop table if exists `{bulkCopyTable}`; create table `{bulkCopyTable}`
+		using (var command = new SingleStoreCommand($@"drop table if exists `{bulkCopyTable}`; create table `{bulkCopyTable}`
 (`{column}` {dataTypeName} NULL);", connection1))
 		{
 			command.ExecuteNonQuery();
 		}
 
-		using (var command = new MySqlCommand($@"select `{column}` from `{table}`;", connection1))
+		using (var command = new SingleStoreCommand($@"select `{column}` from `{table}`;", connection1))
 		{
 			using var reader = command.ExecuteReader();
 			var csb = AppConfig.CreateConnectionStringBuilder();
 			csb.AllowLoadLocalInfile = true;
-			var bulkCopy = new MySqlBulkCopy(new MySqlConnection(csb.ConnectionString))
+			var bulkCopy = new MySqlBulkCopy(new SingleStoreConnection(csb.ConnectionString))
 			{
 				DestinationTableName = bulkCopyTable,
 			};
 			bulkCopy.WriteToServer(reader);
 		}
 
-		using var connection2 = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection2 = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection2.Open();
 
-		using (var command1 = new MySqlCommand($@"select `{column}` from `{table}`;", connection1))
+		using (var command1 = new SingleStoreCommand($@"select `{column}` from `{table}`;", connection1))
 		using (var reader1 = command1.ExecuteReader())
-		using (var command2 = new MySqlCommand($@"select `{column}` from `{bulkCopyTable}`;", connection2))
+		using (var command2 = new SingleStoreCommand($@"select `{column}` from `{bulkCopyTable}`;", connection2))
 		using (var reader2 = command2.ExecuteReader())
 		{
 			while (reader1.Read())
@@ -1614,9 +1614,9 @@ end;";
 	public void QueryAggregateBit(bool shouldPrepare, string aggregation, ulong expected)
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
-		using var command = new MySqlCommand($@"SELECT {aggregation}(Bit32) FROM datatypes_bits;", connection);
+		using var command = new SingleStoreCommand($@"SELECT {aggregation}(Bit32) FROM datatypes_bits;", connection);
 		if (shouldPrepare)
 			command.Prepare();
 		var result = command.ExecuteScalar();
@@ -1646,12 +1646,12 @@ end;";
 		string column,
 		string dataTypeName,
 		object[] expected,
-		Func<MySqlDataReader, object> getValue,
+		Func<SingleStoreDataReader, object> getValue,
 		object baselineCoercedNullValue = null,
 		bool omitWhereTest = false,
 		bool omitWherePrepareTest = false,
 		bool matchesDefaultType = true,
-		MySqlConnection connection = null,
+		SingleStoreConnection connection = null,
 		Action<object, object> assertEqual = null,
 		Type getFieldValueType = null,
 		bool omitGetFieldValueTest = false)
@@ -1666,12 +1666,12 @@ end;";
 		string column,
 		string dataTypeName,
 		object[] expected,
-		Func<MySqlDataReader, object> getValue,
+		Func<SingleStoreDataReader, object> getValue,
 		object baselineCoercedNullValue = null,
 		bool omitWhereTest = false,
 		bool omitWherePrepareTest = false,
 		bool matchesDefaultType = true,
-		MySqlConnection connection = null,
+		SingleStoreConnection connection = null,
 		Action<object, object> assertEqual = null,
 		Type getFieldValueType = null,
 		bool omitGetFieldValueTest = false)
@@ -1714,13 +1714,13 @@ end;";
 					if (!omitGetFieldValueTest)
 					{
 						// test `reader.GetFieldValue<value.GetType()>`
-						var syncMethod = typeof(MySqlDataReader)
+						var syncMethod = typeof(SingleStoreDataReader)
 							.GetMethod("GetFieldValue")
 							.MakeGenericMethod(getFieldValueType ?? value.GetType());
 						assertEqual(value, syncMethod.Invoke(reader, new object[] { 0 }));
 
 						// test `reader.GetFieldValueAsync<value.GetType()>`
-						var asyncMethod = typeof(MySqlDataReader)
+						var asyncMethod = typeof(SingleStoreDataReader)
 							.GetMethod("GetFieldValueAsync", new[] { typeof(int) })
 							.MakeGenericMethod(getFieldValueType ?? value.GetType());
 						var asyncMethodValue = asyncMethod.Invoke(reader, new object[] { 0 });
@@ -1848,7 +1848,7 @@ end;";
 		return output;
 	}
 
-	private MySqlConnection Connection { get; }
+	private SingleStoreConnection Connection { get; }
 
 	private MySqlConnectionStringBuilder CreateConnectionStringBuilder() => new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
 }

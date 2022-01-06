@@ -14,7 +14,7 @@ namespace SingleStoreConnector;
 /// individually.</para>
 /// <para>Example usage:</para>
 /// <code>
-/// using var connection = new MySqlConnection("...connection string...");
+/// using var connection = new SingleStoreConnection("...connection string...");
 /// await connection.OpenAsync();
 ///
 /// using var batch = new MySqlBatch(connection)
@@ -66,9 +66,9 @@ public sealed class MySqlBatch :
 	/// <summary>
 	/// Initializes a new <see cref="MySqlBatch"/> object, setting the <see cref="Connection"/> and <see cref="Transaction"/> if specified.
 	/// </summary>
-	/// <param name="connection">(Optional) The <see cref="MySqlConnection"/> to use.</param>
+	/// <param name="connection">(Optional) The <see cref="SingleStoreConnection"/> to use.</param>
 	/// <param name="transaction">(Optional) The <see cref="MySqlTransaction"/> to use.</param>
-	public MySqlBatch(MySqlConnection? connection = null, MySqlTransaction? transaction = null)
+	public MySqlBatch(SingleStoreConnection? connection = null, MySqlTransaction? transaction = null)
 	{
 		Connection = connection;
 		Transaction = transaction;
@@ -77,12 +77,12 @@ public sealed class MySqlBatch :
 	}
 
 #if NET6_0_OR_GREATER
-	public new MySqlConnection? Connection { get; set; }
-	protected override DbConnection? DbConnection { get => Connection; set => Connection = (MySqlConnection?) value; }
+	public new SingleStoreConnection? Connection { get; set; }
+	protected override DbConnection? DbConnection { get => Connection; set => Connection = (SingleStoreConnection?) value; }
 	public new MySqlTransaction? Transaction { get; set; }
 	protected override DbTransaction? DbTransaction { get => Transaction; set => Transaction = (MySqlTransaction?) value; }
 #else
-	public MySqlConnection? Connection { get; set; }
+	public SingleStoreConnection? Connection { get; set; }
 	public MySqlTransaction? Transaction { get; set; }
 #endif
 
@@ -97,30 +97,30 @@ public sealed class MySqlBatch :
 #endif
 
 	/// <summary>
-	/// Executes all the commands in the batch, returning a <see cref="MySqlDataReader"/> that can iterate
-	/// over the result sets. If multiple resultsets are returned, use <see cref="MySqlDataReader.NextResult"/>
+	/// Executes all the commands in the batch, returning a <see cref="SingleStoreDataReader"/> that can iterate
+	/// over the result sets. If multiple resultsets are returned, use <see cref="SingleStoreDataReader.NextResult"/>
 	/// to access them.
 	/// </summary>
 #if NET6_0_OR_GREATER
-	public new MySqlDataReader ExecuteReader(CommandBehavior commandBehavior = CommandBehavior.Default) =>
+	public new SingleStoreDataReader ExecuteReader(CommandBehavior commandBehavior = CommandBehavior.Default) =>
 #else
-	public MySqlDataReader ExecuteReader(CommandBehavior commandBehavior = CommandBehavior.Default) =>
+	public SingleStoreDataReader ExecuteReader(CommandBehavior commandBehavior = CommandBehavior.Default) =>
 #endif
-		(MySqlDataReader) ExecuteDbDataReader(commandBehavior);
+		(SingleStoreDataReader) ExecuteDbDataReader(commandBehavior);
 
 	/// <summary>
-	/// Executes all the commands in the batch, returning a <see cref="MySqlDataReader"/> that can iterate
-	/// over the result sets. If multiple resultsets are returned, use <see cref="MySqlDataReader.NextResultAsync(CancellationToken)"/>
+	/// Executes all the commands in the batch, returning a <see cref="SingleStoreDataReader"/> that can iterate
+	/// over the result sets. If multiple resultsets are returned, use <see cref="SingleStoreDataReader.NextResultAsync(CancellationToken)"/>
 	/// to access them.
 	/// </summary>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlDataReader}"/> containing the result of the asynchronous operation.</returns>
+	/// <returns>A <see cref="Task{SingleStoreDataReader}"/> containing the result of the asynchronous operation.</returns>
 #if NET6_0_OR_GREATER
-	public new async Task<MySqlDataReader> ExecuteReaderAsync(CancellationToken cancellationToken = default) =>
+	public new async Task<SingleStoreDataReader> ExecuteReaderAsync(CancellationToken cancellationToken = default) =>
 #else
-	public async Task<MySqlDataReader> ExecuteReaderAsync(CancellationToken cancellationToken = default) =>
+	public async Task<SingleStoreDataReader> ExecuteReaderAsync(CancellationToken cancellationToken = default) =>
 #endif
-		(MySqlDataReader) await ExecuteDbDataReaderAsync(CommandBehavior.Default, cancellationToken);
+		(SingleStoreDataReader) await ExecuteDbDataReaderAsync(CommandBehavior.Default, cancellationToken);
 
 	//// TODO: new ExecuteReaderAsync(CommandBehavior)
 
@@ -145,10 +145,10 @@ public sealed class MySqlBatch :
 		return await ExecuteReaderAsync(behavior, AsyncIOBehavior, cancellationToken).ConfigureAwait(false);
 	}
 
-	private Task<MySqlDataReader> ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private Task<SingleStoreDataReader> ExecuteReaderAsync(CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		if (!IsValid(out var exception))
-		 	return Utility.TaskFromException<MySqlDataReader>(exception);
+		 	return Utility.TaskFromException<SingleStoreDataReader>(exception);
 
 		CurrentCommandBehavior = behavior;
 		foreach (MySqlBatchCommand batchCommand in BatchCommands)

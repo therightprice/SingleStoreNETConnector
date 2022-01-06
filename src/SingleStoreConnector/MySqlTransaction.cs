@@ -32,7 +32,7 @@ public sealed class MySqlTransaction : DbTransaction
 		using var activity = Connection!.Session.StartActivity("Commit");
 		try
 		{
-			using (var cmd = new MySqlCommand("commit", Connection, this) { NoActivity = true })
+			using (var cmd = new SingleStoreCommand("commit", Connection, this) { NoActivity = true })
 				await cmd.ExecuteNonQueryAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 			Connection!.CurrentTransaction = null;
 			Connection = null;
@@ -155,22 +155,22 @@ public sealed class MySqlTransaction : DbTransaction
 		if (savepointName.Length == 0)
 			throw new ArgumentException("savepointName must not be empty", nameof(savepointName));
 
-		using var cmd = new MySqlCommand(command + "savepoint " + QuoteIdentifier(savepointName), Connection, this) { NoActivity = true };
+		using var cmd = new SingleStoreCommand(command + "savepoint " + QuoteIdentifier(savepointName), Connection, this) { NoActivity = true };
 		await cmd.ExecuteNonQueryAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 	}
 
 	/// <summary>
-	/// Gets the <see cref="MySqlConnection"/> that this transaction is associated with.
+	/// Gets the <see cref="SingleStoreConnection"/> that this transaction is associated with.
 	/// </summary>
-	public new MySqlConnection? Connection { get; private set; }
+	public new SingleStoreConnection? Connection { get; private set; }
 
 	/// <summary>
-	/// Gets the <see cref="MySqlConnection"/> that this transaction is associated with.
+	/// Gets the <see cref="SingleStoreConnection"/> that this transaction is associated with.
 	/// </summary>
 	protected override DbConnection? DbConnection => Connection;
 
 	/// <summary>
-	/// Gets the <see cref="IsolationLevel"/> of this transaction. This value is set from <see cref="MySqlConnection.BeginTransaction(IsolationLevel)"/>
+	/// Gets the <see cref="IsolationLevel"/> of this transaction. This value is set from <see cref="SingleStoreConnection.BeginTransaction(IsolationLevel)"/>
 	/// or any other overload that specifies an <see cref="IsolationLevel"/>.
 	/// </summary>
 	public override IsolationLevel IsolationLevel { get; }
@@ -247,7 +247,7 @@ public sealed class MySqlTransaction : DbTransaction
 		Connection = null;
 	}
 
-	internal MySqlTransaction(MySqlConnection connection, IsolationLevel isolationLevel)
+	internal MySqlTransaction(SingleStoreConnection connection, IsolationLevel isolationLevel)
 	{
 		Connection = connection;
 		IsolationLevel = isolationLevel;
@@ -258,7 +258,7 @@ public sealed class MySqlTransaction : DbTransaction
 		using var activity = Connection!.Session.StartActivity("Rollback");
 		try
 		{
-			using var cmd = new MySqlCommand("rollback", Connection, this) { NoActivity = true };
+			using var cmd = new SingleStoreCommand("rollback", Connection, this) { NoActivity = true };
 			await cmd.ExecuteNonQueryAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 			activity?.SetSuccess();
 		}

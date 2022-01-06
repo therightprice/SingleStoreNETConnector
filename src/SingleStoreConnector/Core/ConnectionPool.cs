@@ -14,7 +14,7 @@ internal sealed class ConnectionPool
 
 	public SslProtocols SslProtocols { get; set; }
 
-	public async ValueTask<ServerSession> GetSessionAsync(MySqlConnection connection, int startTickCount, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	public async ValueTask<ServerSession> GetSessionAsync(SingleStoreConnection connection, int startTickCount, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -221,7 +221,7 @@ internal sealed class ConnectionPool
 
 	/// <summary>
 	/// Examines all the <see cref="ServerSession"/> objects in <see cref="m_leasedSessions"/> to determine if any
-	/// have an owning <see cref="MySqlConnection"/> that has been garbage-collected. If so, assumes that the connection
+	/// have an owning <see cref="SingleStoreConnection"/> that has been garbage-collected. If so, assumes that the connection
 	/// was not properly disposed and returns the session to the pool.
 	/// </summary>
 	private async Task RecoverLeakedSessionsAsync(IOBehavior ioBehavior)
@@ -316,7 +316,7 @@ internal sealed class ConnectionPool
 		}
 	}
 
-	private async Task CreateMinimumPooledSessions(MySqlConnection connection, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private async Task CreateMinimumPooledSessions(SingleStoreConnection connection, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		while (true)
 		{
@@ -355,7 +355,7 @@ internal sealed class ConnectionPool
 		}
 	}
 
-	private async ValueTask<ServerSession> ConnectSessionAsync(MySqlConnection connection, string logMessage, int startTickCount, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private async ValueTask<ServerSession> ConnectSessionAsync(SingleStoreConnection connection, string logMessage, int startTickCount, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		var session = new ServerSession(this, m_generation, Interlocked.Increment(ref m_lastSessionId));
 		if (Log.IsDebugEnabled())

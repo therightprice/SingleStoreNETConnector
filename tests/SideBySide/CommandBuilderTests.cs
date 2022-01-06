@@ -22,7 +22,7 @@ public class CommandBuilderTests : IClassFixture<DatabaseFixture>, IDisposable
 	[SkippableFact(Baseline = "Throws NullReferenceException")]
 	public void DeriveParametersNoConnection()
 	{
-		using var cmd = new MySqlCommand("test");
+		using var cmd = new SingleStoreCommand("test");
 		cmd.CommandType = CommandType.StoredProcedure;
 		Assert.Throws<ArgumentException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
 	}
@@ -52,7 +52,7 @@ create table command_builder_insert
 	id int not null primary key,
 	value varchar(100)
 );");
-		using (var dataAdapter = new MySqlDataAdapter("select * from command_builder_insert", m_database.Connection))
+		using (var dataAdapter = new SingleStoreDataAdapter("select * from command_builder_insert", m_database.Connection))
 		using (new MySqlCommandBuilder(dataAdapter))
 		{
 			var dataTable = new DataTable();
@@ -81,7 +81,7 @@ create table command_builder_update
 );
 insert into command_builder_update values(1, 'one'), (2, 'two');
 ");
-		using (var dataAdapter = new MySqlDataAdapter("select * from command_builder_update", m_database.Connection))
+		using (var dataAdapter = new SingleStoreDataAdapter("select * from command_builder_update", m_database.Connection))
 		using (new MySqlCommandBuilder(dataAdapter))
 		{
 			var dataTable = new DataTable();
@@ -105,7 +105,7 @@ create table command_builder_delete
 );
 insert into command_builder_delete values(1, 'one'), (2, 'two');
 ");
-		using (var dataAdapter = new MySqlDataAdapter("select * from command_builder_delete", m_database.Connection))
+		using (var dataAdapter = new SingleStoreDataAdapter("select * from command_builder_delete", m_database.Connection))
 		using (new MySqlCommandBuilder(dataAdapter))
 		{
 			var dataTable = new DataTable();

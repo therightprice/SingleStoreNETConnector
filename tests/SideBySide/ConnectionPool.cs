@@ -21,7 +21,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 		if (connectionReset is bool connectionResetValue)
 			csb.ConnectionReset = connectionResetValue;
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			connection.Open();
 			using var command = connection.CreateCommand();
@@ -29,7 +29,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 			Assert.Equal(1L, command.ExecuteScalar());
 		}
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			connection.Open();
 			using var command = connection.CreateCommand();
@@ -37,7 +37,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 			command.ExecuteNonQuery();
 		}
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			connection.Open();
 			using var command = connection.CreateCommand();
@@ -55,11 +55,11 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 		csb.MaximumPoolSize = 3;
 		csb.ConnectionTimeout = 60;
 
-		var connections = new List<MySqlConnection>();
+		var connections = new List<SingleStoreConnection>();
 
 		for (int i = 0; i < csb.MaximumPoolSize; i++)
 		{
-			var connection = new MySqlConnection(csb.ConnectionString);
+			var connection = new SingleStoreConnection(csb.ConnectionString);
 			await connection.OpenAsync().ConfigureAwait(false);
 			connections.Add(connection);
 		}
@@ -71,7 +71,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 			connections.RemoveAt(0);
 		});
 
-		using (var extraConnection = new MySqlConnection(csb.ConnectionString))
+		using (var extraConnection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			var stopwatch = Stopwatch.StartNew();
 			await extraConnection.OpenAsync().ConfigureAwait(false);
@@ -94,16 +94,16 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 		csb.MaximumPoolSize = 3;
 		csb.ConnectionTimeout = 5;
 
-		var connections = new List<MySqlConnection>();
+		var connections = new List<SingleStoreConnection>();
 
 		for (int i = 0; i < csb.MaximumPoolSize; i++)
 		{
-			var connection = new MySqlConnection(csb.ConnectionString);
+			var connection = new SingleStoreConnection(csb.ConnectionString);
 			await connection.OpenAsync().ConfigureAwait(false);
 			connections.Add(connection);
 		}
 
-		using (var extraConnection = new MySqlConnection(csb.ConnectionString))
+		using (var extraConnection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			var stopwatch = Stopwatch.StartNew();
 			Assert.Throws<MySqlException>(() => extraConnection.Open());
@@ -126,7 +126,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 
 		for (int i = 0; i < csb.MaximumPoolSize + 2; i++)
 		{
-			var connection = new MySqlConnection(csb.ConnectionString);
+			var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
 
 			// have to GC for leaked connections to be removed from the pool
@@ -144,7 +144,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 		csb.MaximumPoolSize = 1;
 		int serverThread;
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			await connection.OpenAsync();
 			using (var cmd = connection.CreateCommand())
@@ -157,7 +157,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 
 		await Task.Delay(TimeSpan.FromSeconds(5));
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 #if !BASELINE
 			try
@@ -194,7 +194,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 
 	private async Task CheckCharacterSetAsync(string connectionString)
 	{
-		using var connection = new MySqlConnection(connectionString);
+		using var connection = new SingleStoreConnection(connectionString);
 		await connection.OpenAsync().ConfigureAwait(false);
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = @"select @@character_set_client, @@character_set_connection";
@@ -213,11 +213,11 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 		csb.MinimumPoolSize = 0;
 		csb.MaximumPoolSize = 3;
 
-		var connections = new List<MySqlConnection>();
+		var connections = new List<SingleStoreConnection>();
 
 		for (int i = 0; i < csb.MaximumPoolSize; i++)
 		{
-			var connection = new MySqlConnection(csb.ConnectionString);
+			var connection = new SingleStoreConnection(csb.ConnectionString);
 			connections.Add(connection);
 		}
 
@@ -289,7 +289,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 
 		async Task OpenConnections(uint numConnections, HashSet<int> serverIdSet)
 		{
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			await connection.OpenAsync();
 			serverIdSet.Add(connection.ServerThread);
 			if (--numConnections <= 0)
@@ -306,15 +306,15 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 	}
 #endif
 
-	private Task ClearPoolAsync(MySqlConnection connection)
+	private Task ClearPoolAsync(SingleStoreConnection connection)
 	{
 #if BASELINE
 		return connection.ClearPoolAsync(connection);
 #else
-		return MySqlConnection.ClearPoolAsync(connection);
+		return SingleStoreConnection.ClearPoolAsync(connection);
 #endif
 	}
 
-	private static HashSet<long> GetConnectionIds(IEnumerable<MySqlConnection> connections)
+	private static HashSet<long> GetConnectionIds(IEnumerable<SingleStoreConnection> connections)
 		=> new HashSet<long>(connections.Select(x => (long) x.ServerThread));
 }

@@ -10,7 +10,7 @@ namespace SingleStoreConnector;
 /// <para><see cref="MySqlBulkLoader"/> lets you efficiently load a MySQL Server Table with data from a CSV or TSV file or <see cref="Stream"/>.</para>
 /// <para>Example code:</para>
 /// <code>
-/// using var connection = new MySqlConnection("...;AllowLoadLocalInfile=True");
+/// using var connection = new SingleStoreConnection("...;AllowLoadLocalInfile=True");
 /// await connection.OpenAsync();
 /// var bulkLoader = new MySqlBulkLoader(connection)
 /// {
@@ -47,9 +47,9 @@ public sealed class MySqlBulkLoader
 	public MySqlBulkLoaderConflictOption ConflictOption { get; set; }
 
 	/// <summary>
-	/// The <see cref="MySqlConnection"/> to use.
+	/// The <see cref="SingleStoreConnection"/> to use.
 	/// </summary>
-	public MySqlConnection Connection { get; set; }
+	public SingleStoreConnection Connection { get; set; }
 
 	/// <summary>
 	/// (Optional) The character used to escape instances of <see cref="FieldQuotationCharacter"/> within field values.
@@ -128,10 +128,10 @@ public sealed class MySqlBulkLoader
 	public int Timeout { get; set; }
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlBulkLoader"/> class with the specified <see cref="MySqlConnection"/>.
+	/// Initializes a new instance of the <see cref="MySqlBulkLoader"/> class with the specified <see cref="SingleStoreConnection"/>.
 	/// </summary>
-	/// <param name="connection">The <see cref="MySqlConnection"/> to use.</param>
-	public MySqlBulkLoader(MySqlConnection connection)
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
+	public MySqlBulkLoader(SingleStoreConnection connection)
 	{
 		Connection = connection;
 		Local = true;
@@ -205,7 +205,7 @@ public sealed class MySqlBulkLoader
 			if (Local && !Connection.AllowLoadLocalInfile)
 				throw new NotSupportedException("To use MySqlBulkLoader.Local=true, set AllowLoadLocalInfile=true in the connection string. See https://fl.vu/mysql-load-data");
 
-			using var cmd = new MySqlCommand(CreateSql(), Connection, Connection.CurrentTransaction)
+			using var cmd = new SingleStoreCommand(CreateSql(), Connection, Connection.CurrentTransaction)
 			{
 				AllowUserVariables = true,
 				CommandTimeout = Timeout,

@@ -8,14 +8,14 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	{
 		// after cancelling, the connection should still be usable
 		Assert.Equal(ConnectionState.Open, m_database.Connection.State);
-		using var cmd = new MySqlCommand(@"select sum(value) from integers;", m_database.Connection);
+		using var cmd = new SingleStoreCommand(@"select sum(value) from integers;", m_database.Connection);
 		Assert.Equal(210m, cmd.ExecuteScalar());
 	}
 
 	[Fact]
 	public void NoCancel()
 	{
-		using var cmd = new MySqlCommand("SELECT SLEEP(0.25)", m_database.Connection);
+		using var cmd = new SingleStoreCommand("SELECT SLEEP(0.25)", m_database.Connection);
 		var stopwatch = Stopwatch.StartNew();
 		Assert.Equal(0L, Convert.ToInt64(cmd.ExecuteScalar()));
 		Assert.InRange(stopwatch.ElapsedMilliseconds, 100, 1000);
@@ -24,7 +24,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	[SkippableFact(ServerFeatures.Timeout)]
 	public void CancelCommand()
 	{
-		using var cmd = new MySqlCommand("SELECT SLEEP(5)", m_database.Connection);
+		using var cmd = new SingleStoreCommand("SELECT SLEEP(5)", m_database.Connection);
 		var task = Task.Run(async () =>
 		{
 			await Task.Delay(TimeSpan.FromSeconds(0.5));
@@ -42,7 +42,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	public void CancelReaderAsynchronously()
 	{
 		using var barrier = new Barrier(2);
-		using var cmd = new MySqlCommand(c_hugeQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_hugeQuery, m_database.Connection);
 		var task = Task.Run(() =>
 		{
 			barrier.SignalAndWait();
@@ -75,7 +75,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	[SkippableFact(ServerFeatures.Timeout)]
 	public void CancelCommandBeforeRead()
 	{
-		using var cmd = new MySqlCommand(c_hugeQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_hugeQuery, m_database.Connection);
 		using var reader = cmd.ExecuteReader();
 		cmd.Cancel();
 
@@ -99,7 +99,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	public void CancelMultiStatementReader()
 	{
 		using var barrier = new Barrier(2);
-		using var cmd = new MySqlCommand(c_hugeQuery + c_hugeQuery + c_hugeQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_hugeQuery + c_hugeQuery + c_hugeQuery, m_database.Connection);
 		var task = Task.Run(() =>
 		{
 			barrier.SignalAndWait();
@@ -152,7 +152,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelCommandWithTokenBeforeExecuteScalar()
 	{
-		using var cmd = new MySqlCommand("select 1;", m_database.Connection);
+		using var cmd = new SingleStoreCommand("select 1;", m_database.Connection);
 		try
 		{
 			await cmd.ExecuteScalarAsync(s_canceledToken);
@@ -167,7 +167,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelCommandWithTokenBeforeExecuteNonQuery()
 	{
-		using var cmd = new MySqlCommand("select 1;", m_database.Connection);
+		using var cmd = new SingleStoreCommand("select 1;", m_database.Connection);
 		try
 		{
 			await cmd.ExecuteNonQueryAsync(s_canceledToken);
@@ -182,7 +182,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelCommandWithTokenBeforeExecuteReader()
 	{
-		using var cmd = new MySqlCommand("select 1;", m_database.Connection);
+		using var cmd = new SingleStoreCommand("select 1;", m_database.Connection);
 		try
 		{
 			await cmd.ExecuteReaderAsync(s_canceledToken);
@@ -244,7 +244,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelHugeQueryWithTokenAfterExecuteReader()
 	{
-		using var cmd = new MySqlCommand(c_hugeQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_hugeQuery, m_database.Connection);
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
 		using var reader = await cmd.ExecuteReaderAsync(cts.Token);
 		var rows = 0;
@@ -268,7 +268,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelHugeQueryWithTokenInNextResult()
 	{
-		using var cmd = new MySqlCommand(c_hugeQuery + "select 1, 2, 3;", m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_hugeQuery + "select 1, 2, 3;", m_database.Connection);
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
 		using var reader = await cmd.ExecuteReaderAsync(cts.Token);
 
@@ -296,7 +296,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelSlowQueryWithTokenAfterExecuteReader()
 	{
-		using var cmd = new MySqlCommand(c_slowQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_slowQuery, m_database.Connection);
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
 
 		// the call to ExecuteReader should block until the token is cancelled
@@ -322,7 +322,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelSlowQueryWithTokenAfterNextResult()
 	{
-		using var cmd = new MySqlCommand("SELECT 1; " + c_slowQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand("SELECT 1; " + c_slowQuery, m_database.Connection);
 		using var reader = await cmd.ExecuteReaderAsync();
 
 		// first resultset should be available immediately
@@ -357,7 +357,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelMultiStatementInRead()
 	{
-		using var cmd = new MySqlCommand(c_hugeQuery + c_hugeQuery + c_hugeQuery, m_database.Connection);
+		using var cmd = new SingleStoreCommand(c_hugeQuery + c_hugeQuery + c_hugeQuery, m_database.Connection);
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
 		using var reader = await cmd.ExecuteReaderAsync();
 		var rows = 0;

@@ -6,7 +6,7 @@ namespace SingleStoreConnector.Core;
 
 internal sealed class StandardEnlistedTransaction : EnlistedTransactionBase
 {
-	public StandardEnlistedTransaction(Transaction transaction, MySqlConnection connection)
+	public StandardEnlistedTransaction(Transaction transaction, SingleStoreConnection connection)
 		: base(transaction, connection)
 	{
 	}
@@ -27,7 +27,7 @@ internal sealed class StandardEnlistedTransaction : EnlistedTransactionBase
 			_ => "repeatable read",
 		};
 
-		using var cmd = new MySqlCommand($"set session transaction isolation level {isolationLevel};", Connection);
+		using var cmd = new SingleStoreCommand($"set session transaction isolation level {isolationLevel};", Connection);
 		cmd.ExecuteNonQuery();
 
 		var consistentSnapshotText = Transaction.IsolationLevel == IsolationLevel.Snapshot ? " with consistent snapshot" : "";
@@ -41,13 +41,13 @@ internal sealed class StandardEnlistedTransaction : EnlistedTransactionBase
 
 	protected override void OnCommit(Enlistment enlistment)
 	{
-		using var cmd = new MySqlCommand("commit;", Connection);
+		using var cmd = new SingleStoreCommand("commit;", Connection);
 		cmd.ExecuteNonQuery();
 	}
 
 	protected override void OnRollback(Enlistment enlistment)
 	{
-		using var cmd = new MySqlCommand("rollback;", Connection);
+		using var cmd = new SingleStoreCommand("rollback;", Connection);
 		cmd.ExecuteNonQuery();
 	}
 }

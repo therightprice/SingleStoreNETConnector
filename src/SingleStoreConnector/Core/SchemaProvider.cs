@@ -5,7 +5,7 @@ namespace SingleStoreConnector.Core;
 
 internal sealed class SchemaProvider
 {
-	public SchemaProvider(MySqlConnection connection)
+	public SchemaProvider(SingleStoreConnection connection)
 	{
 		m_connection = connection;
 		m_schemaCollections = new(StringComparer.OrdinalIgnoreCase)
@@ -184,13 +184,13 @@ internal sealed class SchemaProvider
 			new("COLUMN_COMMENT", typeof(string)),
 		});
 
-		using (var command = new MySqlCommand("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'information_schema' AND table_name = 'COLUMNS' AND column_name = 'GENERATION_EXPRESSION';", m_connection))
+		using (var command = new SingleStoreCommand("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'information_schema' AND table_name = 'COLUMNS' AND column_name = 'GENERATION_EXPRESSION';", m_connection))
 		{
 			if (await command.ExecuteScalarAsync(ioBehavior, cancellationToken).ConfigureAwait(false) is not null)
 				dataTable.Columns.Add(new DataColumn("GENERATION_EXPRESSION", typeof(string)));
 		}
 
-		using (var command = new MySqlCommand("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'information_schema' AND table_name = 'COLUMNS' AND column_name = 'SRS_ID';", m_connection))
+		using (var command = new SingleStoreCommand("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'information_schema' AND table_name = 'COLUMNS' AND column_name = 'SRS_ID';", m_connection))
 		{
 			if (await command.ExecuteScalarAsync(ioBehavior, cancellationToken).ConfigureAwait(false) is not null)
 				dataTable.Columns.Add(new DataColumn("SRS_ID", typeof(uint)));
@@ -1001,6 +1001,6 @@ internal sealed class SchemaProvider
 		close?.Invoke();
 	}
 
-	readonly MySqlConnection m_connection;
+	readonly SingleStoreConnection m_connection;
 	readonly Dictionary<string, Func<IOBehavior, DataTable, CancellationToken, Task>> m_schemaCollections;
 }

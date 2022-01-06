@@ -13,16 +13,16 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlConnection"/> represents a connection to a MySQL database.
+/// <see cref="SingleStoreConnection"/> represents a connection to a MySQL database.
 /// </summary>
-public sealed class MySqlConnection : DbConnection, ICloneable
+public sealed class SingleStoreConnection : DbConnection, ICloneable
 {
-	public MySqlConnection()
+	public SingleStoreConnection()
 		: this(default)
 	{
 	}
 
-	public MySqlConnection(string? connectionString)
+	public SingleStoreConnection(string? connectionString)
 	{
 		GC.SuppressFinalize(this);
 		m_connectionString = connectionString ?? "";
@@ -149,7 +149,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 			_ => throw new NotSupportedException("IsolationLevel.{0} is not supported.".FormatInvariant(isolationLevel)),
 		};
 
-		using (var cmd = new MySqlCommand($"set session transaction isolation level {isolationLevelValue};", this) { NoActivity = true })
+		using (var cmd = new SingleStoreCommand($"set session transaction isolation level {isolationLevelValue};", this) { NoActivity = true })
 		{
 			await cmd.ExecuteNonQueryAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 
@@ -241,12 +241,12 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 			Close();
 	}
 
-	// If there is an idle (i.e., no client has it open) MySqlConnection thats part of 'transaction',
-	// returns it; otherwise, returns null. If a valid MySqlConnection is returned, the current connection
+	// If there is an idle (i.e., no client has it open) SingleStoreConnection thats part of 'transaction',
+	// returns it; otherwise, returns null. If a valid SingleStoreConnection is returned, the current connection
 	// has been stored in 's_transactionConnections' and the caller must call TakeSessionFrom to
-	// transfer its session to this MySqlConnection.
+	// transfer its session to this SingleStoreConnection.
 	// Also performs validation checks to ensure that XA and non-XA transactions aren't being mixed.
-	private MySqlConnection? FindExistingEnlistedSession(System.Transactions.Transaction transaction)
+	private SingleStoreConnection? FindExistingEnlistedSession(System.Transactions.Transaction transaction)
 	{
 		var hasEnlistedTransactions = false;
 		var hasXaTransaction = false;
@@ -282,7 +282,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		return null;
 	}
 
-	private void TakeSessionFrom(MySqlConnection other)
+	private void TakeSessionFrom(SingleStoreConnection other)
 	{
 #if DEBUG
 		if (other is null)
@@ -341,7 +341,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		m_session.DatabaseOverride = databaseName;
 	}
 
-	public new MySqlCommand CreateCommand() => (MySqlCommand)base.CreateCommand();
+	public new SingleStoreCommand CreateCommand() => (SingleStoreCommand)base.CreateCommand();
 
 #pragma warning disable CA2012 // Safe because method completes synchronously
 	public bool Ping() => PingAsync(IOBehavior.Synchronous, CancellationToken.None).GetAwaiter().GetResult();
@@ -539,16 +539,16 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 	/// <summary>
 	/// Clears the connection pool that <paramref name="connection"/> belongs to.
 	/// </summary>
-	/// <param name="connection">The <see cref="MySqlConnection"/> whose connection pool will be cleared.</param>
-	public static void ClearPool(MySqlConnection connection) => ClearPoolAsync(connection, IOBehavior.Synchronous, CancellationToken.None).GetAwaiter().GetResult();
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> whose connection pool will be cleared.</param>
+	public static void ClearPool(SingleStoreConnection connection) => ClearPoolAsync(connection, IOBehavior.Synchronous, CancellationToken.None).GetAwaiter().GetResult();
 
 	/// <summary>
 	/// Asynchronously clears the connection pool that <paramref name="connection"/> belongs to.
 	/// </summary>
-	/// <param name="connection">The <see cref="MySqlConnection"/> whose connection pool will be cleared.</param>
+	/// <param name="connection">The <see cref="SingleStoreConnection"/> whose connection pool will be cleared.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
 	/// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-	public static Task ClearPoolAsync(MySqlConnection connection, CancellationToken cancellationToken = default) => ClearPoolAsync(connection, connection.AsyncIOBehavior, cancellationToken);
+	public static Task ClearPoolAsync(SingleStoreConnection connection, CancellationToken cancellationToken = default) => ClearPoolAsync(connection, connection.AsyncIOBehavior, cancellationToken);
 
 	/// <summary>
 	/// Clears all connection pools.
@@ -562,7 +562,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 	/// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
 	public static Task ClearAllPoolsAsync(CancellationToken cancellationToken = default) => ConnectionPool.ClearPoolsAsync(IOBehavior.Asynchronous, cancellationToken);
 
-	private static async Task ClearPoolAsync(MySqlConnection connection, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private static async Task ClearPoolAsync(SingleStoreConnection connection, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		if (connection is null)
 			throw new ArgumentNullException(nameof(connection));
@@ -572,26 +572,26 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 			await pool.ClearAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 	}
 
-	protected override DbCommand CreateDbCommand() => new MySqlCommand(this, null);
+	protected override DbCommand CreateDbCommand() => new SingleStoreCommand(this, null);
 
 	protected override DbProviderFactory DbProviderFactory => MySqlConnectorFactory.Instance;
 
 #pragma warning disable CA2012 // Safe because method completes synchronously
 	/// <summary>
-	/// Returns schema information for the data source of this <see cref="MySqlConnection"/>.
+	/// Returns schema information for the data source of this <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <returns>A <see cref="DataTable"/> containing schema information.</returns>
 	public override DataTable GetSchema() => GetSchemaProvider().GetSchemaAsync(IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 
 	/// <summary>
-	/// Returns schema information for the data source of this <see cref="MySqlConnection"/>.
+	/// Returns schema information for the data source of this <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="collectionName">The name of the schema to return.</param>
 	/// <returns>A <see cref="DataTable"/> containing schema information.</returns>
 	public override DataTable GetSchema(string collectionName) => GetSchemaProvider().GetSchemaAsync(IOBehavior.Synchronous, collectionName, default).GetAwaiter().GetResult();
 
 	/// <summary>
-	/// Returns schema information for the data source of this <see cref="MySqlConnection"/>.
+	/// Returns schema information for the data source of this <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="collectionName">The name of the schema to return.</param>
 	/// <param name="restrictionValues">The restrictions to apply to the schema; this parameter is currently ignored.</param>
@@ -600,7 +600,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 #pragma warning restore CA2012
 
 	/// <summary>
-	/// Asynchronously returns schema information for the data source of this <see cref="MySqlConnection"/>.
+	/// Asynchronously returns schema information for the data source of this <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
 	/// <returns>A <see cref="Task{DataTable}"/> containing schema information.</returns>
@@ -613,7 +613,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		=> GetSchemaProvider().GetSchemaAsync(AsyncIOBehavior, cancellationToken).AsTask();
 
 	/// <summary>
-	/// Asynchronously returns schema information for the data source of this <see cref="MySqlConnection"/>.
+	/// Asynchronously returns schema information for the data source of this <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="collectionName">The name of the schema to return.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
@@ -627,7 +627,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		=> GetSchemaProvider().GetSchemaAsync(AsyncIOBehavior, collectionName, cancellationToken).AsTask();
 
 	/// <summary>
-	/// Asynchronously returns schema information for the data source of this <see cref="MySqlConnection"/>.
+	/// Asynchronously returns schema information for the data source of this <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="collectionName">The name of the schema to return.</param>
 	/// <param name="restrictionValues">The restrictions to apply to the schema; this parameter is currently ignored.</param>
@@ -695,7 +695,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		}
 	}
 
-	public MySqlConnection Clone() => new(m_connectionString, m_hasBeenOpened)
+	public SingleStoreConnection Clone() => new(m_connectionString, m_hasBeenOpened)
 	{
 		ProvideClientCertificatesCallback = ProvideClientCertificatesCallback,
 		ProvidePasswordCallback = ProvidePasswordCallback,
@@ -710,16 +710,16 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 	/// such as database or pooling.
 	/// </summary>
 	/// <param name="connectionString">The new connection string to be used.</param>
-	/// <returns>A new <see cref="MySqlConnection"/> with different connection string options but
+	/// <returns>A new <see cref="SingleStoreConnection"/> with different connection string options but
 	/// the same password as this connection (unless overridden by <paramref name="connectionString"/>).</returns>
-	public MySqlConnection CloneWith(string connectionString)
+	public SingleStoreConnection CloneWith(string connectionString)
 	{
 		var newBuilder = new MySqlConnectionStringBuilder(connectionString ?? throw new ArgumentNullException(nameof(connectionString)));
 		var currentBuilder = new MySqlConnectionStringBuilder(m_connectionString);
 		var shouldCopyPassword = newBuilder.Password.Length == 0 && (!newBuilder.PersistSecurityInfo || currentBuilder.PersistSecurityInfo);
 		if (shouldCopyPassword)
 			newBuilder.Password = currentBuilder.Password;
-		return new MySqlConnection(newBuilder.ConnectionString, m_hasBeenOpened && shouldCopyPassword && !currentBuilder.PersistSecurityInfo)
+		return new SingleStoreConnection(newBuilder.ConnectionString, m_hasBeenOpened && shouldCopyPassword && !currentBuilder.PersistSecurityInfo)
 		{
 			ProvideClientCertificatesCallback = ProvideClientCertificatesCallback,
 			ProvidePasswordCallback = ProvidePasswordCallback,
@@ -762,9 +762,9 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 			var cancellationTimeout = GetConnectionSettings().CancellationTimeout;
 			csb.ConnectionTimeout = cancellationTimeout < 1 ? 3u : (uint) cancellationTimeout;
 
-			using var connection = new MySqlConnection(csb.ConnectionString);
+			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
-			using var killCommand = new MySqlCommand("KILL QUERY {0}".FormatInvariant(command.Connection!.ServerThread), connection);
+			using var killCommand = new SingleStoreCommand("KILL QUERY {0}".FormatInvariant(command.Connection!.ServerThread), connection);
 			killCommand.CommandTimeout = cancellationTimeout < 1 ? 3 : cancellationTimeout;
 			m_session.DoCancel(command, killCommand);
 		}
@@ -861,7 +861,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 
 	internal bool HasActiveReader => m_activeReader is not null;
 
-	internal void SetActiveReader(MySqlDataReader dataReader)
+	internal void SetActiveReader(SingleStoreDataReader dataReader)
 	{
 		if (dataReader is null)
 			throw new ArgumentNullException(nameof(dataReader));
@@ -878,7 +878,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		if (hasWarnings && InfoMessage is not null)
 		{
 			var errors = new List<MySqlError>();
-			using (var command = new MySqlCommand("SHOW WARNINGS;", this))
+			using (var command = new SingleStoreCommand("SHOW WARNINGS;", this))
 			{
 				command.Transaction = CurrentTransaction;
 				using var reader = command.ExecuteReader();
@@ -920,7 +920,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 					RandomLoadBalancer.Instance : FailOverLoadBalancer.Instance;
 
 				var session = new ServerSession();
-				session.OwningConnection = new WeakReference<MySqlConnection>(this);
+				session.OwningConnection = new WeakReference<SingleStoreConnection>(this);
 				Log.Debug("Created new non-pooled Session{0}", session.Id);
 				await session.ConnectAsync(connectionSettings, this, startTickCount, loadBalancer, actualIOBehavior, connectToken).ConfigureAwait(false);
 				return session;
@@ -967,7 +967,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 		}
 	}
 
-	private MySqlConnection(string connectionString, bool hasBeenOpened)
+	private SingleStoreConnection(string connectionString, bool hasBeenOpened)
 		: this(connectionString)
 	{
 		m_hasBeenOpened = hasBeenOpened;
@@ -1013,10 +1013,10 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 				await m_activeReader.DisposeAsync(ioBehavior, CancellationToken.None).ConfigureAwait(false);
 			m_activeReader = null;
 
-			// This connection is being closed, so create a new MySqlConnection that will own the ServerSession
+			// This connection is being closed, so create a new SingleStoreConnection that will own the ServerSession
 			// (which remains open). This ensures the ServerSession always has a valid OwningConnection (even
 			// if 'this' is GCed.
-			var connection = new MySqlConnection
+			var connection = new SingleStoreConnection
 			{
 				m_connectionString = m_connectionString,
 				m_connectionSettings = m_connectionSettings,
@@ -1025,7 +1025,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 			};
 			connection.TakeSessionFrom(this);
 
-			// put the new, idle, connection into the list of sessions for this transaction (replacing this MySqlConnection)
+			// put the new, idle, connection into the list of sessions for this transaction (replacing this SingleStoreConnection)
 			lock (s_lock)
 			{
 				foreach (var enlistedTransaction in s_transactionConnections[connection.m_enlistedTransaction!.Transaction])
@@ -1093,7 +1093,7 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 	// This method may be called when it's known that the connection settings have been initialized.
 	private ConnectionSettings GetInitializedConnectionSettings() => m_connectionSettings!;
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(MySqlConnection));
+	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(SingleStoreConnection));
 	static readonly StateChangeEventArgs s_stateChangeClosedConnecting = new(ConnectionState.Closed, ConnectionState.Connecting);
 	static readonly StateChangeEventArgs s_stateChangeConnectingOpen = new(ConnectionState.Connecting, ConnectionState.Open);
 	static readonly StateChangeEventArgs s_stateChangeOpenClosed = new(ConnectionState.Open, ConnectionState.Closed);
@@ -1108,6 +1108,6 @@ public sealed class MySqlConnection : DbConnection, ICloneable
 	bool m_isDisposed;
 	Dictionary<string, CachedProcedure?>? m_cachedProcedures;
 	SchemaProvider? m_schemaProvider;
-	MySqlDataReader? m_activeReader;
+	SingleStoreDataReader? m_activeReader;
 	EnlistedTransactionBase? m_enlistedTransaction;
 }

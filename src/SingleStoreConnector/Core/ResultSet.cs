@@ -11,7 +11,7 @@ namespace SingleStoreConnector.Core;
 
 internal sealed class ResultSet
 {
-	public ResultSet(MySqlDataReader dataReader)
+	public ResultSet(SingleStoreDataReader dataReader)
 	{
 		DataReader = dataReader;
 	}
@@ -174,7 +174,7 @@ internal sealed class ResultSet
 		}
 	}
 
-	private static bool IsHostVerified(MySqlConnection connection)
+	private static bool IsHostVerified(SingleStoreConnection connection)
 	{
 		return connection.SslMode == MySqlSslMode.VerifyCA
 			|| connection.SslMode == MySqlSslMode.VerifyFull;
@@ -356,10 +356,10 @@ internal sealed class ResultSet
 		return m_row ?? throw new InvalidOperationException("There is no current row.");
 	}
 
-	public MySqlDataReader DataReader { get; }
+	public SingleStoreDataReader DataReader { get; }
 	public ExceptionDispatchInfo? ReadResultSetHeaderException { get; private set; }
 	public IMySqlCommand Command => DataReader.Command!;
-	public MySqlConnection Connection => DataReader.Connection!;
+	public SingleStoreConnection Connection => DataReader.Connection!;
 	public ServerSession Session => DataReader.Session!;
 
 	public ResultSetState BufferState { get; private set; }

@@ -20,7 +20,7 @@ create table insert_ai(rowid integer not null primary key auto_increment, text v
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand("INSERT INTO insert_ai (text) VALUES (@text);", m_database.Connection);
+			using var command = new SingleStoreCommand("INSERT INTO insert_ai (text) VALUES (@text);", m_database.Connection);
 			command.Parameters.Add(new() { ParameterName = "@text", Value = "test" });
 			Assert.Equal(1, await command.ExecuteNonQueryAsync());
 			Assert.Equal(1L, command.LastInsertedId);
@@ -39,7 +39,7 @@ create table insert_ai(rowid integer not null primary key auto_increment);");
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand("INSERT INTO insert_ai(rowid) VALUES (@rowid);", m_database.Connection);
+			using var command = new SingleStoreCommand("INSERT INTO insert_ai(rowid) VALUES (@rowid);", m_database.Connection);
 			command.Parameters.AddWithValue("@rowid", -1);
 			Assert.Equal(1, await command.ExecuteNonQueryAsync());
 			Assert.Equal(-1L, command.LastInsertedId);
@@ -58,7 +58,7 @@ create table insert_ai(rowid bigint unsigned not null primary key auto_increment
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand("INSERT INTO insert_ai(rowid) VALUES (@rowid);", m_database.Connection);
+			using var command = new SingleStoreCommand("INSERT INTO insert_ai(rowid) VALUES (@rowid);", m_database.Connection);
 			command.Parameters.AddWithValue("@rowid", ((ulong) long.MaxValue) + 1);
 			Assert.Equal(1, await command.ExecuteNonQueryAsync());
 			Assert.Equal(long.MinValue, command.LastInsertedId);
@@ -79,7 +79,7 @@ insert into insert_ai(text) values('test');
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand(@"SELECT * FROM insert_ai;
+			using var command = new SingleStoreCommand(@"SELECT * FROM insert_ai;
 INSERT INTO insert_ai (text) VALUES (@text);", m_database.Connection);
 			command.Parameters.Add(new() { ParameterName = "@text", Value = "test" });
 			Assert.Equal(1, await command.ExecuteNonQueryAsync());
@@ -101,7 +101,7 @@ insert into insert_ai(text) values('test');
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand(@"INSERT INTO insert_ai (text) VALUES (@text);
+			using var command = new SingleStoreCommand(@"INSERT INTO insert_ai (text) VALUES (@text);
 SELECT * FROM insert_ai;", m_database.Connection);
 			command.Parameters.Add(new() { ParameterName = "@text", Value = "test" });
 			Assert.Equal(1, await command.ExecuteNonQueryAsync());
@@ -122,7 +122,7 @@ create table insert_ai(rowid integer not null primary key auto_increment, text v
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand(@"INSERT INTO insert_ai (text) VALUES ('test1');
+			using var command = new SingleStoreCommand(@"INSERT INTO insert_ai (text) VALUES ('test1');
 INSERT INTO insert_ai (text) VALUES ('test2');", m_database.Connection);
 			Assert.Equal(2, await command.ExecuteNonQueryAsync());
 			Assert.Equal(2L, command.LastInsertedId);
@@ -142,7 +142,7 @@ create table insert_ai(rowid integer not null primary key auto_increment, text v
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand(@"LOCK TABLES insert_ai WRITE;
+			using var command = new SingleStoreCommand(@"LOCK TABLES insert_ai WRITE;
 INSERT INTO insert_ai (text) VALUES ('test');
 UNLOCK TABLES;", m_database.Connection);
 			Assert.Equal(1, await command.ExecuteNonQueryAsync());
@@ -174,7 +174,7 @@ Create Table TestTableWithForeignKey(
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand(@"INSERT INTO TestTable(column1) VALUES('hello');
+			using var command = new SingleStoreCommand(@"INSERT INTO TestTable(column1) VALUES('hello');
 INSERT INTO TestTableWithForeignKey(foreign_id, column2) VALUES(LAST_INSERT_ID(), 'test');", m_database.Connection);
 			Assert.Equal(2, await command.ExecuteNonQueryAsync());
 			Assert.Equal(1L, command.LastInsertedId);
@@ -194,7 +194,7 @@ create table insert_rows_affected(id integer not null primary key auto_increment
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand(@"
+			using var command = new SingleStoreCommand(@"
 INSERT INTO insert_rows_affected (value) VALUES (null);
 INSERT INTO insert_rows_affected (value) VALUES (null);", m_database.Connection);
 			var rowsAffected = await command.ExecuteNonQueryAsync();
@@ -214,7 +214,7 @@ create table insert_ai_2(rowid integer not null primary key auto_increment, text
 		try
 		{
 			m_database.Connection.Open();
-			using var command = new MySqlCommand("insert into insert_ai_2(text) values('test');", m_database.Connection);
+			using var command = new SingleStoreCommand("insert into insert_ai_2(text) values('test');", m_database.Connection);
 			command.ExecuteNonQuery();
 			Assert.Equal(1234L, command.LastInsertedId);
 		}
@@ -248,13 +248,13 @@ create table insert_time(value TIME({precision}));");
 		try
 		{
 			m_database.Connection.Open();
-			using (var command = new MySqlCommand("INSERT INTO insert_time (value) VALUES (@Value);", m_database.Connection))
+			using (var command = new SingleStoreCommand("INSERT INTO insert_time (value) VALUES (@Value);", m_database.Connection))
 			{
 				command.Parameters.Add(new() { ParameterName = "@value", Value = TimeSpan.FromMilliseconds(10) });
 				command.ExecuteNonQuery();
 			}
 
-			using (var command = new MySqlCommand("SELECT value FROM insert_time;", m_database.Connection))
+			using (var command = new SingleStoreCommand("SELECT value FROM insert_time;", m_database.Connection))
 			using (var reader = command.ExecuteReader())
 			{
 				Assert.True(reader.Read());
@@ -359,7 +359,7 @@ create table insert_stream(rowid integer not null primary key auto_increment, st
 	[InlineData(true)]
 	public void InsertStringBuilder(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_string_builder;
 create table insert_string_builder(rowid integer not null primary key auto_increment, str text collate utf8mb4_bin);");
@@ -393,7 +393,7 @@ create table insert_string_builder(rowid integer not null primary key auto_incre
 	[InlineData(true)]
 	public void InsertBigInteger(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_big_integer;
 create table insert_big_integer(rowid integer not null primary key auto_increment, value bigint);");
@@ -417,7 +417,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[InlineData(true)]
 	public void InsertMySqlDecimal(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_mysql_decimal;
 			create table insert_mysql_decimal(rowid integer not null primary key auto_increment, value decimal(65,0));");
@@ -440,7 +440,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[InlineData(true)]
 	public void InsertMySqlDecimalAsDecimal(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_mysql_decimal;
 			create table insert_mysql_decimal(rowid integer not null primary key auto_increment, value decimal(65, 30));");
@@ -465,7 +465,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[InlineData(true)]
 	public void ReadMySqlDecimalUsingReader(bool prepare)
 	{
-		using MySqlConnection connection = new MySqlConnection(AppConfig.ConnectionString);
+		using SingleStoreConnection connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_mysql_decimal;
 			create table insert_mysql_decimal(rowid integer not null primary key auto_increment, value decimal(65, 30));");
@@ -502,7 +502,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[InlineData(true)]
 	public void InsertBigIntegerAsDecimal(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_big_integer;
 create table insert_big_integer(rowid integer not null primary key auto_increment, value decimal(40, 2));");
@@ -525,7 +525,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.OldGuids = true;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists old_guids;
 create table old_guids(id integer not null primary key auto_increment, guid binary(16) null);");
@@ -576,7 +576,7 @@ create table insert_enum_value2(rowid integer not null primary key auto_incremen
 		try
 		{
 			await m_database.Connection.OpenAsync();
-			using var command = new MySqlCommand("INSERT INTO insert_enum_value2 (`Varchar`, `String`, `Int`) VALUES (@Varchar, @String, @Int);", m_database.Connection);
+			using var command = new SingleStoreCommand("INSERT INTO insert_enum_value2 (`Varchar`, `String`, `Int`) VALUES (@Varchar, @String, @Int);", m_database.Connection);
 			command.Parameters.Add(new("@String", MySqlColor.Orange)).MySqlDbType = MySqlDbType.String;
 			command.Parameters.Add(new("@Varchar", MySqlColor.Green)).MySqlDbType = MySqlDbType.VarChar;
 			command.Parameters.Add(new("@Int", MySqlColor.None));
@@ -686,7 +686,7 @@ create table insert_mysql_set(
 	[MemberData(nameof(GetBlobs))]
 	public void InsertBlob(object data, bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists insert_mysql_blob;
 create table insert_mysql_blob(
@@ -694,7 +694,7 @@ rowid integer not null primary key auto_increment,
 value mediumblob null
 );");
 
-		using (var cmd = new MySqlCommand("insert into insert_mysql_blob(value) values(@data);", connection))
+		using (var cmd = new SingleStoreCommand("insert into insert_mysql_blob(value) values(@data);", connection))
 		{
 			cmd.Parameters.AddWithValue("@data", data);
 			if (prepare)

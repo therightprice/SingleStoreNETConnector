@@ -6,20 +6,20 @@ namespace SingleStoreConnector;
 
 public sealed class MySqlCommandBuilder : DbCommandBuilder
 {
-	public static void DeriveParameters(MySqlCommand command) => DeriveParametersAsync(IOBehavior.Synchronous, command, CancellationToken.None).GetAwaiter().GetResult();
-	public static Task DeriveParametersAsync(MySqlCommand command) => DeriveParametersAsync(command?.Connection?.AsyncIOBehavior ?? IOBehavior.Asynchronous, command!, CancellationToken.None);
-	public static Task DeriveParametersAsync(MySqlCommand command, CancellationToken cancellationToken) => DeriveParametersAsync(command?.Connection?.AsyncIOBehavior ?? IOBehavior.Asynchronous, command!, cancellationToken);
+	public static void DeriveParameters(SingleStoreCommand command) => DeriveParametersAsync(IOBehavior.Synchronous, command, CancellationToken.None).GetAwaiter().GetResult();
+	public static Task DeriveParametersAsync(SingleStoreCommand command) => DeriveParametersAsync(command?.Connection?.AsyncIOBehavior ?? IOBehavior.Asynchronous, command!, CancellationToken.None);
+	public static Task DeriveParametersAsync(SingleStoreCommand command, CancellationToken cancellationToken) => DeriveParametersAsync(command?.Connection?.AsyncIOBehavior ?? IOBehavior.Asynchronous, command!, cancellationToken);
 
-	private static async Task DeriveParametersAsync(IOBehavior ioBehavior, MySqlCommand command, CancellationToken cancellationToken)
+	private static async Task DeriveParametersAsync(IOBehavior ioBehavior, SingleStoreCommand command, CancellationToken cancellationToken)
 	{
 		if (command is null)
 			throw new ArgumentNullException(nameof(command));
 		if (command.CommandType != CommandType.StoredProcedure)
-			throw new ArgumentException("MySqlCommand.CommandType must be StoredProcedure not {0}".FormatInvariant(command.CommandType), nameof(command));
+			throw new ArgumentException("SingleStoreCommand.CommandType must be StoredProcedure not {0}".FormatInvariant(command.CommandType), nameof(command));
 		if (string.IsNullOrWhiteSpace(command.CommandText))
-			throw new ArgumentException("MySqlCommand.CommandText must be set to a stored procedure name", nameof(command));
+			throw new ArgumentException("SingleStoreCommand.CommandText must be set to a stored procedure name", nameof(command));
 		if (command.Connection?.State != ConnectionState.Open)
-			throw new ArgumentException("MySqlCommand.Connection must be an open connection.", nameof(command));
+			throw new ArgumentException("SingleStoreCommand.Connection must be an open connection.", nameof(command));
 		if (command.Connection.Session.ServerVersion.Version < ServerVersions.SupportsProcedureCache)
 			throw new NotSupportedException("MySQL Server {0} doesn't support INFORMATION_SCHEMA".FormatInvariant(command.Connection.Session.ServerVersion.OriginalString));
 
@@ -45,21 +45,21 @@ public sealed class MySqlCommandBuilder : DbCommandBuilder
 		QuoteSuffix = "`";
 	}
 
-	public MySqlCommandBuilder(MySqlDataAdapter dataAdapter)
+	public MySqlCommandBuilder(SingleStoreDataAdapter dataAdapter)
 		: this()
 	{
 		DataAdapter = dataAdapter;
 	}
 
-	public new MySqlDataAdapter? DataAdapter
+	public new SingleStoreDataAdapter? DataAdapter
 	{
-		get => (MySqlDataAdapter?) base.DataAdapter;
+		get => (SingleStoreDataAdapter?) base.DataAdapter;
 		set => base.DataAdapter = value;
 	}
 
-	public new MySqlCommand GetDeleteCommand() => (MySqlCommand) base.GetDeleteCommand();
-	public new MySqlCommand GetInsertCommand() => (MySqlCommand) base.GetInsertCommand();
-	public new MySqlCommand GetUpdateCommand() => (MySqlCommand) base.GetUpdateCommand();
+	public new SingleStoreCommand GetDeleteCommand() => (SingleStoreCommand) base.GetDeleteCommand();
+	public new SingleStoreCommand GetInsertCommand() => (SingleStoreCommand) base.GetInsertCommand();
+	public new SingleStoreCommand GetUpdateCommand() => (SingleStoreCommand) base.GetUpdateCommand();
 
 	protected override void ApplyParameterInfo(DbParameter parameter, DataRow row, StatementType statementType, bool whereClause)
 	{
@@ -72,8 +72,8 @@ public sealed class MySqlCommandBuilder : DbCommandBuilder
 
 	protected override void SetRowUpdatingHandler(DbDataAdapter adapter)
 	{
-		if (!(adapter is MySqlDataAdapter mySqlDataAdapter))
-			throw new ArgumentException("adapter needs to be a MySqlDataAdapter", nameof(adapter));
+		if (!(adapter is SingleStoreDataAdapter mySqlDataAdapter))
+			throw new ArgumentException("adapter needs to be a SingleStoreDataAdapter", nameof(adapter));
 
 		if (adapter == DataAdapter)
 			mySqlDataAdapter.RowUpdating -= RowUpdatingHandler;

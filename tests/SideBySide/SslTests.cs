@@ -19,7 +19,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.SslMode = MySqlSslMode.Preferred;
 		csb.CertificateFile = null;
 		csb.CertificatePassword = null;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		using var cmd = connection.CreateCommand();
 		await connection.OpenAsync();
 		Assert.True(connection.SslIsEncrypted);
@@ -61,7 +61,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		var certificateFilePath = Path.Combine(AppConfig.CertsPath, certificateFile);
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 #if NETFRAMEWORK
 		connection.ProvideClientCertificatesCallback = x =>
 		{
@@ -104,7 +104,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 
 	private async Task DoTestSsl(string connectionString)
 	{
-		using var connection = new MySqlConnection(connectionString);
+		using var connection = new SingleStoreConnection(connectionString);
 		using var cmd = connection.CreateCommand();
 		await connection.OpenAsync();
 #if !BASELINE
@@ -133,7 +133,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.CertificateStoreLocation = storeLocation;
 		csb.CertificateThumbprint = thumbprint;
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			using var cmd = connection.CreateCommand();
 			await connection.OpenAsync();
@@ -158,7 +158,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.CertificateFile = Path.Combine(AppConfig.CertsPath, "ssl-client-cert.pem");
 		csb.SslMode = MySqlSslMode.Required;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
 	}
 
@@ -168,7 +168,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.CertificateFile = Path.Combine(AppConfig.CertsPath, "non-ca-client.pfx");
 		csb.CertificatePassword = "";
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 #if !BASELINE
 		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
 #else
@@ -188,7 +188,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 #endif
 		csb.SslMode = MySqlSslMode.VerifyCA;
 		csb.SslCa = Path.Combine(AppConfig.CertsPath, "non-ca-client-cert.pem");
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
 	}
 
@@ -203,7 +203,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.CertificateFile = Path.Combine(AppConfig.CertsPath, "ssl-client.pfx");
 		csb.SslMode = sslMode;
 		csb.SslCa = clearCA ? "" : Path.Combine(AppConfig.CertsPath, "non-ca-client-cert.pem");
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.RemoteCertificateValidationCallback = (s, c, h, e) => true;
 
 		if (expectedSuccess)
@@ -216,7 +216,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.RequiresSsl)]
 	public async Task ConnectSslTlsVersion()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		await connection.OpenAsync();
 		var expectedProtocol = AppConfig.SupportedFeatures.HasFlag(ServerFeatures.Tls12) ? SslProtocols.Tls12 :
 			AppConfig.SupportedFeatures.HasFlag(ServerFeatures.Tls11) ? SslProtocols.Tls11 :
@@ -236,7 +236,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 #if !BASELINE
 		Assert.Equal(expectedProtocol, connection.SslProtocol);
 #endif
-		using var cmd = new MySqlCommand("show status like 'Ssl_version';", connection);
+		using var cmd = new SingleStoreCommand("show status like 'Ssl_version';", connection);
 		using var reader = await cmd.ExecuteReaderAsync();
 		Assert.True(reader.Read());
 		Assert.Equal(expectedProtocolString, reader.GetString(1));
@@ -253,13 +253,13 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.TlsVersion = "TLS 1.1";
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await connection.OpenAsync();
 
 #if !BASELINE
 		Assert.Equal(SslProtocols.Tls11, connection.SslProtocol);
 #endif
-		using var cmd = new MySqlCommand("show status like 'Ssl_version';", connection);
+		using var cmd = new SingleStoreCommand("show status like 'Ssl_version';", connection);
 		using var reader = await cmd.ExecuteReaderAsync();
 		Assert.True(reader.Read());
 		Assert.Equal("TLSv1.1", reader.GetString(1));
@@ -276,7 +276,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.TlsVersion = "TLS 1.3";
 
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 #if !BASELINE
 		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
 #else

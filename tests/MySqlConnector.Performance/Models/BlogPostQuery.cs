@@ -85,7 +85,7 @@ public class BlogPostQuery
 			DbType = DbType.Int32,
 			Value = id,
 		});
-		return cmd as MySqlCommand;
+		return cmd as SingleStoreCommand;
 	}
 
 	public DbCommand LatestPostsCmd(int limit)
@@ -98,14 +98,14 @@ public class BlogPostQuery
 			DbType = DbType.Int32,
 			Value = limit,
 		});
-		return cmd as MySqlCommand;
+		return cmd as SingleStoreCommand;
 	}
 
 	private DbCommand DeleteAllCmd()
 	{
 		var cmd = Db.Connection.CreateCommand();
 		cmd.CommandText = @"DELETE FROM `BlogPost`";
-		return cmd as MySqlCommand;
+		return cmd as SingleStoreCommand;
 	}
 
 	private List<BlogPost> ReadAll(DbDataReader reader)

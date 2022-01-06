@@ -255,8 +255,8 @@ public class ParameterCollection : IDisposable
 	[Fact]
 	public void ChangeParameterNameAfterAdd()
 	{
-		using var cmd = new MySqlCommand();
-		using var cmd2 = new MySqlCommand();
+		using var cmd = new SingleStoreCommand();
+		using var cmd2 = new SingleStoreCommand();
 		var parameter = cmd.CreateParameter();
 		parameter.ParameterName = "@a";
 
@@ -276,7 +276,7 @@ public class ParameterCollection : IDisposable
 	[Fact]
 	public void SetParameterNameAfterAdd()
 	{
-		using var cmd = new MySqlCommand();
+		using var cmd = new SingleStoreCommand();
 		var parameter = cmd.CreateParameter();
 		cmd.Parameters.Add(parameter);
 		parameter.ParameterName = "@a";
@@ -286,7 +286,7 @@ public class ParameterCollection : IDisposable
 	[Fact]
 	public void SetTwoParametersToSameNAme()
 	{
-		using var cmd = new MySqlCommand();
+		using var cmd = new SingleStoreCommand();
 		var parameter1 = cmd.CreateParameter();
 		cmd.Parameters.Add(parameter1);
 		var parameter2 = cmd.CreateParameter();
@@ -299,6 +299,6 @@ public class ParameterCollection : IDisposable
 #endif
 	}
 
-	MySqlCommand m_command;
+	SingleStoreCommand m_command;
 	MySqlParameterCollection m_parameterCollection;
 }

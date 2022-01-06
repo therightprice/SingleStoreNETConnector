@@ -15,7 +15,7 @@ var builder = new MySqlConnectionStringBuilder
 };
 
 // open a connection asynchronously
-using var connection = new MySqlConnection(builder.ConnectionString);
+using var connection = new SingleStoreConnection(builder.ConnectionString);
 await connection.OpenAsync();
 
 // create a DB command and set the SQL statement with parameters
@@ -43,14 +43,14 @@ while (reader.Read())
 
 The main types provided by this library are:
 
-* `MySqlConnection` (implementation of `DbConnection`)
-* `MySqlCommand` (implementation of `DbCommand`)
-* `MySqlDataReader` (implementation of `DbDataReader`)
+* `SingleStoreConnection` (implementation of `DbConnection`)
+* `SingleStoreCommand` (implementation of `DbCommand`)
+* `SingleStoreDataReader` (implementation of `DbDataReader`)
 * `MySqlBulkCopy`
 * `MySqlBulkLoader`
 * `MySqlConnectionStringBuilder`
 * `MySqlConnectorFactory`
-* `MySqlDataAdapter`
+* `SingleStoreDataAdapter`
 * `MySqlException`
 * `MySqlTransaction` (implementation of `DbTransaction`)
 

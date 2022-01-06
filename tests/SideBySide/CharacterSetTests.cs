@@ -34,7 +34,7 @@ public class CharacterSetTests : IClassFixture<DatabaseFixture>
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.AllowUserVariables = true;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute(@"
 DROP TABLE IF EXISTS mix_collations;
@@ -68,7 +68,7 @@ VALUES ('a'), ('b'), ('c'), ('d'), ('e'), ('f'), ('g'), ('h'), ('i'), ('j');");
 #if BASELINE
 		csb.CharacterSet = "utf8mb4";
 #endif
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		if (reopenConnection)

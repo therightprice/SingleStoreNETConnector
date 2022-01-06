@@ -4,8 +4,8 @@ namespace SingleStoreConnector.Core;
 
 internal abstract class EnlistedTransactionBase : IEnlistmentNotification
 {
-	// A MySqlConnection that holds the ServerSession that was enrolled in the transaction
-	public MySqlConnection Connection { get; set; }
+	// A SingleStoreConnection that holds the ServerSession that was enrolled in the transaction
+	public SingleStoreConnection Connection { get; set; }
 
 	// Whether the connection is idle, i.e., a client has closed it and is no longer using it
 	public bool IsIdle { get; set; }
@@ -40,7 +40,7 @@ internal abstract class EnlistedTransactionBase : IEnlistmentNotification
 
 	public void InDoubt(Enlistment enlistment) => throw new NotImplementedException();
 
-	protected EnlistedTransactionBase(Transaction transaction, MySqlConnection connection)
+	protected EnlistedTransactionBase(Transaction transaction, SingleStoreConnection connection)
 	{
 		Transaction = transaction;
 		Connection = connection;

@@ -10,7 +10,7 @@ public class MySqlAttributeCollectionTests
 {
 	public MySqlAttributeCollectionTests()
 	{
-		m_collection = new MySqlCommand().Attributes;
+		m_collection = new SingleStoreCommand().Attributes;
 		m_attribute = new MySqlAttribute("name", "value");
 	}
 

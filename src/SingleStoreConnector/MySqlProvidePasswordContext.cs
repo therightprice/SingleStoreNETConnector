@@ -1,7 +1,7 @@
 namespace SingleStoreConnector;
 
 /// <summary>
-/// Provides context for the <see cref="MySqlConnection.ProvidePasswordCallback"/> delegate.
+/// Provides context for the <see cref="SingleStoreConnection.ProvidePasswordCallback"/> delegate.
 /// </summary>
 public sealed class MySqlProvidePasswordContext
 {

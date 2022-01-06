@@ -7,7 +7,7 @@ namespace SingleStoreConnector;
 public enum MySqlErrorCode
 {
 	/// <summary>
-	/// The delegate provided to <see cref="MySqlConnection.ProvidePasswordCallback"/> failed.
+	/// The delegate provided to <see cref="SingleStoreConnection.ProvidePasswordCallback"/> failed.
 	/// </summary>
 	ProvidePasswordCallbackFailed = -4,
 
@@ -19,7 +19,7 @@ public enum MySqlErrorCode
 	BulkCopyFailed = -2,
 
 	/// <summary>
-	/// The timeout period specified by <see cref="MySqlCommand.CommandTimeout"/> elapsed before the operation completed.
+	/// The timeout period specified by <see cref="SingleStoreCommand.CommandTimeout"/> elapsed before the operation completed.
 	/// </summary>
 	CommandTimeoutExpired = -1,
 

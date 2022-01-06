@@ -21,7 +21,7 @@ public class QueryTests : IClassFixture<DatabaseFixture>, IDisposable
 	{
 		var csb = new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
 		csb.UseAffectedRows = true;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		connection.Execute(@"
@@ -137,7 +137,7 @@ INSERT INTO bug_1096 (`Name`) VALUES ('Demo-Name');");
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.AllowUserVariables = false;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		using var cmd = connection.CreateCommand();
@@ -150,7 +150,7 @@ INSERT INTO bug_1096 (`Name`) VALUES ('Demo-Name');");
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.AllowUserVariables = true;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		using var cmd = connection.CreateCommand();
@@ -625,7 +625,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 	public void SumShorts(bool prepareCommand)
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		connection.Execute(@"drop table if exists sum_shorts;
@@ -652,7 +652,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 	public void SumInts(bool prepareCommand)
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
 		connection.Execute(@"drop table if exists sum_ints;
@@ -678,10 +678,10 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 	public void DivideInts(bool prepareCommand)
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand("select 2 / 1;", connection);
+		using var cmd = new SingleStoreCommand("select 2 / 1;", connection);
 		if (prepareCommand)
 			cmd.Prepare();
 		using var reader = cmd.ExecuteReader();
@@ -706,7 +706,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.MaximumPoolSize = 8;
 
-		using (var connection = new MySqlConnection(csb.ConnectionString))
+		using (var connection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			connection.Execute(@"drop table if exists dispose_reader;
 				create table dispose_reader(value int not null);
@@ -848,7 +848,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 		{
 			for (int i = 0; i < 100; i++)
 			{
-				using var connection = new MySqlConnection(data.ConnectionStringBuilder.ConnectionString);
+				using var connection = new SingleStoreConnection(data.ConnectionStringBuilder.ConnectionString);
 				connection.Open();
 
 				using var cmd = connection.CreateCommand();
@@ -908,7 +908,7 @@ create table char_test(id integer not null primary key, char1 char(1) not null, 
 insert into char_test (id, char1, char4, varchar1, varchar4) VALUES (1, '\'', 'b', 'c', 'Σ'), (2, 'e', '\\', '""', 'h');
 ");
 
-		using (var command = new MySqlCommand("select id from char_test where char1 = @ch;", m_database.Connection))
+		using (var command = new SingleStoreCommand("select id from char_test where char1 = @ch;", m_database.Connection))
 		{
 			command.Parameters.AddWithValue("@ch", '\'');
 			using var reader = command.ExecuteReader();
@@ -917,7 +917,7 @@ insert into char_test (id, char1, char4, varchar1, varchar4) VALUES (1, '\'', 'b
 			Assert.False(reader.Read());
 		}
 
-		using (var command = new MySqlCommand("select id from char_test where char4 = @ch;", m_database.Connection))
+		using (var command = new SingleStoreCommand("select id from char_test where char4 = @ch;", m_database.Connection))
 		{
 			command.Parameters.AddWithValue("@ch", '\\');
 			using var reader = command.ExecuteReader();
@@ -926,7 +926,7 @@ insert into char_test (id, char1, char4, varchar1, varchar4) VALUES (1, '\'', 'b
 			Assert.False(reader.Read());
 		}
 
-		using (var command = new MySqlCommand("select id from char_test where varchar1 = @ch;", m_database.Connection))
+		using (var command = new SingleStoreCommand("select id from char_test where varchar1 = @ch;", m_database.Connection))
 		{
 			command.Parameters.AddWithValue("@ch", '"');
 			using var reader = command.ExecuteReader();
@@ -937,7 +937,7 @@ insert into char_test (id, char1, char4, varchar1, varchar4) VALUES (1, '\'', 'b
 
 #if !BASELINE
 		// can't repro test failure locally, but it fails on Appveyor
-		using (var command = new MySqlCommand("select id from char_test where varchar4 = @ch;", m_database.Connection))
+		using (var command = new SingleStoreCommand("select id from char_test where varchar4 = @ch;", m_database.Connection))
 		{
 			command.Parameters.AddWithValue("@ch", 'Σ');
 			using var reader = command.ExecuteReader();
@@ -956,7 +956,7 @@ create table enum_test(id integer not null primary key, value text not null);
 insert into enum_test (id, value) VALUES (1002, 'no'), (1003, 'yes');
 ");
 
-		using var command = new MySqlCommand("select * from enum_test where id = @ID;", m_database.Connection);
+		using var command = new SingleStoreCommand("select * from enum_test where id = @ID;", m_database.Connection);
 		command.Parameters.AddWithValue("@ID", MySqlErrorCode.No);
 
 		using var reader = command.ExecuteReader();
@@ -974,7 +974,7 @@ create table long_enum_test(id bigint not null primary key, value integer not nu
 insert into long_enum_test (id, value) VALUES (0x7FFFFFFFFFFFFFFF, 1);
 ");
 
-		using var command = new MySqlCommand("select * from long_enum_test where id = @ID;", m_database.Connection);
+		using var command = new SingleStoreCommand("select * from long_enum_test where id = @ID;", m_database.Connection);
 		command.Parameters.AddWithValue("@ID", TestLongEnum.Value);
 
 		using var reader = command.ExecuteReader();
@@ -988,7 +988,7 @@ insert into long_enum_test (id, value) VALUES (0x7FFFFFFFFFFFFFFF, 1);
 	public void ReturnDerivedTypes()
 	{
 		using MySqlTransaction transaction = m_database.Connection.BeginTransaction();
-		using MySqlCommand command = m_database.Connection.CreateCommand();
+		using SingleStoreCommand command = m_database.Connection.CreateCommand();
 		command.Transaction = transaction;
 		command.CommandText = "select @param + @param2";
 
@@ -1005,7 +1005,7 @@ insert into long_enum_test (id, value) VALUES (0x7FFFFFFFFFFFFFFF, 1);
 		MySqlParameter parameter2B = parameterCollection["param2"];
 		Assert.Same(parameter2, parameter2B);
 
-		using (MySqlDataReader reader = command.ExecuteReader())
+		using (SingleStoreDataReader reader = command.ExecuteReader())
 		{
 			Assert.True(reader.Read());
 			Assert.Equal(3L, Convert.ToInt64(reader.GetValue(0)));
@@ -1079,13 +1079,13 @@ insert into has_rows(value) values(1),(2),(3);");
 	[Fact]
 	public void CommandBehaviorCloseConnection()
 	{
-		using (var connection = new MySqlConnection(AppConfig.ConnectionString))
+		using (var connection = new SingleStoreConnection(AppConfig.ConnectionString))
 		{
 			Assert.Equal(ConnectionState.Closed, connection.State);
 			connection.Open();
 			Assert.Equal(ConnectionState.Open, connection.State);
 
-			using (var cmd = new MySqlCommand("SELECT 1;", connection))
+			using (var cmd = new SingleStoreCommand("SELECT 1;", connection))
 			using (var reader = cmd.ExecuteReader(CommandBehavior.CloseConnection))
 			{
 				Assert.True(reader.Read());
@@ -1103,13 +1103,13 @@ insert into has_rows(value) values(1),(2),(3);");
 	[Fact]
 	public void CommandBehaviorSingleRow()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists command_behavior_single_row;
 create table command_behavior_single_row(id integer not null primary key);
 insert into command_behavior_single_row(id) values(1),(2),(3),(4),(5),(6),(7),(8),(9),(10);");
 
-		using var cmd = new MySqlCommand("SELECT id FROM command_behavior_single_row ORDER BY id;", connection);
+		using var cmd = new SingleStoreCommand("SELECT id FROM command_behavior_single_row ORDER BY id;", connection);
 		using var reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
 		Assert.True(reader.Read());
 		Assert.Equal(1, reader.GetInt32(0));
@@ -1119,12 +1119,12 @@ insert into command_behavior_single_row(id) values(1),(2),(3),(4),(5),(6),(7),(8
 	[Fact]
 	public async Task CommandBehaviorSingleRowMultipleResultSets()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists command_behavior_single_row;
 create table command_behavior_single_row(id integer not null primary key);");
 
-		using (var cmd = new MySqlCommand("SELECT 1; insert into command_behavior_single_row(id) values(1); SELECT 2;", connection))
+		using (var cmd = new SingleStoreCommand("SELECT 1; insert into command_behavior_single_row(id) values(1); SELECT 2;", connection))
 		{
 			using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
 			Assert.True(await reader.ReadAsync());
@@ -1136,7 +1136,7 @@ create table command_behavior_single_row(id integer not null primary key);");
 		}
 
 		// subsequent commands were still executed (and had effects) even though they didn't return results
-		using (var cmd = new MySqlCommand("select count(*) from command_behavior_single_row;", connection))
+		using (var cmd = new SingleStoreCommand("select count(*) from command_behavior_single_row;", connection))
 		{
 			Assert.Equal(1L, await cmd.ExecuteScalarAsync());
 		}
@@ -1145,12 +1145,12 @@ create table command_behavior_single_row(id integer not null primary key);");
 	[Fact]
 	public async Task CommandBehaviorSingleResultMultipleResultSets()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists command_behavior_single_result;
 create table command_behavior_single_result(id integer not null primary key);");
 
-		using (var cmd = new MySqlCommand("SELECT 1; insert into command_behavior_single_result(id) values(1); SELECT 2;", connection))
+		using (var cmd = new SingleStoreCommand("SELECT 1; insert into command_behavior_single_result(id) values(1); SELECT 2;", connection))
 		{
 			using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleResult);
 			Assert.True(await reader.ReadAsync());
@@ -1160,7 +1160,7 @@ create table command_behavior_single_result(id integer not null primary key);");
 		}
 
 		// subsequent commands were still executed (and had effects) even though they didn't return results
-		using (var cmd = new MySqlCommand("select count(*) from command_behavior_single_result;", connection))
+		using (var cmd = new SingleStoreCommand("select count(*) from command_behavior_single_result;", connection))
 		{
 			Assert.Equal(1L, await cmd.ExecuteScalarAsync());
 		}
@@ -1172,11 +1172,11 @@ create table command_behavior_single_result(id integer not null primary key);");
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.NoBackslashEscapes = true;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute("SET @@sql_mode = CONCAT(@@sql_mode, ',NO_BACKSLASH_ESCAPES');");
 		var value = "\\'\"";
-		using var cmd = new MySqlCommand("SELECT @param;", connection)
+		using var cmd = new SingleStoreCommand("SELECT @param;", connection)
 		{
 			Parameters =
 			{
@@ -1191,7 +1191,7 @@ create table command_behavior_single_result(id integer not null primary key);");
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=97067")]
 	public async Task QueryBit()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		await connection.OpenAsync();
 		await connection.ExecuteAsync(@"
 DROP TABLE IF EXISTS query_bit;
@@ -1199,7 +1199,7 @@ CREATE TABLE query_bit(name TEXT, value BIT(1));
 INSERT INTO query_bit VALUES('a', 1);
 ");
 
-		using var command = new MySqlCommand(@"
+		using var command = new SingleStoreCommand(@"
 SELECT value FROM query_bit;
 
 SELECT MAX(value) FROM query_bit;
@@ -1252,13 +1252,13 @@ FROM query_bit;", connection);
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.TreatTinyAsBoolean = treatTinyAsBoolean;
-		using var connection = new MySqlConnection(csb.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute(@"drop table if exists datatypes_tinyint1;
 create table datatypes_tinyint1(value tinyint(1));
 insert into datatypes_tinyint1(value) values(0), (1), (2), (-1), (-128), (127);");
 
-		using var command = new MySqlCommand("select value from datatypes_tinyint1;", connection);
+		using var command = new SingleStoreCommand("select value from datatypes_tinyint1;", connection);
 		if (prepare)
 			command.Prepare();
 		using var reader = command.ExecuteReader();
@@ -1326,11 +1326,11 @@ $$";
 	[Fact]
 	public void QueryDateTimeLiteral()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 
 		string sql = "SELECT ?p0 as datevalue";
-		using var command = new MySqlCommand(sql, connection);
+		using var command = new SingleStoreCommand(sql, connection);
 		command.Parameters.AddWithValue("?p0", DateTime.UtcNow);
 
 		using var reader = command.ExecuteReader();
@@ -1344,7 +1344,7 @@ $$";
 	[InlineData(true)]
 	public void QueryTimeSpan(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 
 		connection.Execute(@"drop table if exists test_time;
@@ -1352,7 +1352,7 @@ create table test_time(id int auto_increment not null primary key, tm time not n
 insert into test_time(tm) values('00:00:00'),('01:01:01'),('00:00:00');");
 
 		string sql = "select tm from test_time order by id";
-		using var command = new MySqlCommand(sql, connection);
+		using var command = new SingleStoreCommand(sql, connection);
 		if (prepare)
 			command.Prepare();
 
@@ -1371,10 +1371,10 @@ insert into test_time(tm) values('00:00:00'),('01:01:01'),('00:00:00');");
 	[InlineData(true)]
 	public void QueryAttributes(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand("select mysql_query_attribute_string('name') as attribute;", connection);
+		using var cmd = new SingleStoreCommand("select mysql_query_attribute_string('name') as attribute;", connection);
 		cmd.Attributes.SetAttribute("name", "attr_value");
 
 		if (prepare)
@@ -1394,10 +1394,10 @@ insert into test_time(tm) values('00:00:00'),('01:01:01'),('00:00:00');");
 #endif
 	public void QueryAttributesMultipleStatements(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand(@"select mysql_query_attribute_string('attr1') as attribute, @param1 as parameter;
+		using var cmd = new SingleStoreCommand(@"select mysql_query_attribute_string('attr1') as attribute, @param1 as parameter;
 select mysql_query_attribute_string('attr2') as attribute, @param2 as parameter;", connection);
 		cmd.Attributes.SetAttribute("attr1", "attr1_value");
 		cmd.Attributes.SetAttribute("attr2", "attr2_value");
@@ -1422,10 +1422,10 @@ select mysql_query_attribute_string('attr2') as attribute, @param2 as parameter;
 	[SkippableFact(ServerFeatures.QueryAttributes)]
 	public void QueryAttributeWithEmptyName()
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand("select mysql_query_attribute_string('name') as attribute;", connection);
+		using var cmd = new SingleStoreCommand("select mysql_query_attribute_string('name') as attribute;", connection);
 		Assert.Throws<ArgumentException>(() => cmd.Attributes.SetAttribute("", "attr_value"));
 	}
 
@@ -1434,10 +1434,10 @@ select mysql_query_attribute_string('attr2') as attribute, @param2 as parameter;
 	[InlineData(true)]
 	public void QueryAttributeAndParameter(bool prepare)
 	{
-		using var connection = new MySqlConnection(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 
-		using var cmd = new MySqlCommand("select mysql_query_attribute_string('name') as attribute, @name as parameter;", connection);
+		using var cmd = new SingleStoreCommand("select mysql_query_attribute_string('name') as attribute, @name as parameter;", connection);
 		cmd.Attributes.SetAttribute("name", "attr_value");
 		cmd.Parameters.AddWithValue("name", "param_value");
 

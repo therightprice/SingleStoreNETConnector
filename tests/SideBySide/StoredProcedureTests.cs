@@ -583,7 +583,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[Fact]
 	public void DeriveParametersCircle()
 	{
-		using var cmd = new MySqlCommand("circle", m_database.Connection);
+		using var cmd = new SingleStoreCommand("circle", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		MySqlCommandBuilder.DeriveParameters(cmd);
 
@@ -601,7 +601,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[Fact]
 	public void DeriveParametersNumberLister()
 	{
-		using var cmd = new MySqlCommand("number_lister", m_database.Connection);
+		using var cmd = new SingleStoreCommand("number_lister", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		MySqlCommandBuilder.DeriveParameters(cmd);
 
@@ -612,7 +612,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[Fact]
 	public void DeriveParametersRemovesExisting()
 	{
-		using var cmd = new MySqlCommand("number_lister", m_database.Connection);
+		using var cmd = new SingleStoreCommand("number_lister", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		cmd.Parameters.AddWithValue("test1", 1);
 		cmd.Parameters.AddWithValue("test2", 2);
@@ -626,7 +626,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[Fact]
 	public void DeriveParametersDoesNotExist()
 	{
-		using var cmd = new MySqlCommand("xx_does_not_exist", m_database.Connection);
+		using var cmd = new SingleStoreCommand("xx_does_not_exist", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		Assert.Throws<MySqlException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
 	}
@@ -634,16 +634,16 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[Fact]
 	public void DeriveParametersDoesNotExistThenIsCreated()
 	{
-		using (var cmd = new MySqlCommand("drop procedure if exists xx_does_not_exist_2;", m_database.Connection))
+		using (var cmd = new SingleStoreCommand("drop procedure if exists xx_does_not_exist_2;", m_database.Connection))
 			cmd.ExecuteNonQuery();
 
-		using (var cmd = new MySqlCommand("xx_does_not_exist_2", m_database.Connection))
+		using (var cmd = new SingleStoreCommand("xx_does_not_exist_2", m_database.Connection))
 		{
 			cmd.CommandType = CommandType.StoredProcedure;
 			Assert.Throws<MySqlException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
 		}
 
-		using (var cmd = new MySqlCommand(@"create procedure xx_does_not_exist_2(
+		using (var cmd = new SingleStoreCommand(@"create procedure xx_does_not_exist_2(
 				IN param1 INT,
 				OUT param2 VARCHAR(100))
 			BEGIN
@@ -653,7 +653,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 			cmd.ExecuteNonQuery();
 		}
 
-		using (var cmd = new MySqlCommand("xx_does_not_exist_2", m_database.Connection))
+		using (var cmd = new SingleStoreCommand("xx_does_not_exist_2", m_database.Connection))
 		{
 			cmd.CommandType = CommandType.StoredProcedure;
 			MySqlCommandBuilder.DeriveParameters(cmd);
@@ -666,7 +666,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[SkippableFact(ServerFeatures.Json, Baseline = "https://bugs.mysql.com/bug.php?id=89335")]
 	public void DeriveParametersSetJson()
 	{
-		using var cmd = new MySqlCommand("SetJson", m_database.Connection);
+		using var cmd = new SingleStoreCommand("SetJson", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		MySqlCommandBuilder.DeriveParameters(cmd);
 
@@ -677,7 +677,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[SkippableFact(ServerFeatures.Json, Baseline = "https://bugs.mysql.com/bug.php?id=101485")]
 	public void PassJsonParameter()
 	{
-		using var cmd = new MySqlCommand("SetJson", m_database.Connection);
+		using var cmd = new SingleStoreCommand("SetJson", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		var json = "{\"prop\":[null]}";
 		cmd.Parameters.AddWithValue("@vJson", json).MySqlDbType = MySqlDbType.JSON;
@@ -721,7 +721,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	[Fact]
 	public void CallNonExistentStoredProcedure()
 	{
-		using var command = new MySqlCommand("NonExistentStoredProcedure", m_database.Connection);
+		using var command = new SingleStoreCommand("NonExistentStoredProcedure", m_database.Connection);
 		command.CommandType = CommandType.StoredProcedure;
 		Assert.Throws<MySqlException>(() => command.ExecuteNonQuery());
 	}
@@ -730,7 +730,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	public void PrepareNonExistentStoredProcedure()
 	{
 		using var connection = CreateOpenConnection();
-		using var command = new MySqlCommand("NonExistentStoredProcedure", connection);
+		using var command = new SingleStoreCommand("NonExistentStoredProcedure", connection);
 		command.CommandType = CommandType.StoredProcedure;
 		Assert.Throws<MySqlException>(command.Prepare);
 	}
@@ -741,7 +741,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	public void OutputTimeParameter(bool prepare)
 	{
 		using var connection = CreateOpenConnection();
-		using var command = new MySqlCommand("GetTime", connection);
+		using var command = new SingleStoreCommand("GetTime", connection);
 		command.CommandType = CommandType.StoredProcedure;
 		var parameter = command.CreateParameter();
 		parameter.ParameterName = "OutTime";
@@ -760,7 +760,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	public void EnumProcedure(bool prepare)
 	{
 		using var connection = CreateOpenConnection();
-		using var command = new MySqlCommand("EnumProcedure", connection);
+		using var command = new SingleStoreCommand("EnumProcedure", connection);
 		command.CommandType = CommandType.StoredProcedure;
 		command.Parameters.AddWithValue("@input", "One");
 		if (prepare)
@@ -780,7 +780,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		using var connection = CreateOpenConnection();
 
-		using (var command = new MySqlCommand($@"DROP PROCEDURE IF EXISTS {sprocName};
+		using (var command = new SingleStoreCommand($@"DROP PROCEDURE IF EXISTS {sprocName};
 CREATE PROCEDURE {sprocName} ()
 BEGIN
 	SELECT 'test' AS Result;
@@ -789,7 +789,7 @@ END;", connection))
 			command.ExecuteNonQuery();
 		}
 
-		using (var command = new MySqlCommand(sprocName, connection))
+		using (var command = new SingleStoreCommand(sprocName, connection))
 		{
 			command.CommandType = CommandType.StoredProcedure;
 
@@ -814,9 +814,9 @@ END;", connection))
 		return input;
 	}
 
-	private static MySqlConnection CreateOpenConnection()
+	private static SingleStoreConnection CreateOpenConnection()
 	{
-		var connection = new MySqlConnection(AppConfig.ConnectionString);
+		var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		return connection;
 	}

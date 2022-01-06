@@ -29,7 +29,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 	public void CommandLoadCsvFile()
 	{
 		var insertInlineCommand = string.Format(m_loadDataInfileCommand, "", AppConfig.MySqlBulkLoaderCsvFile.Replace("\\", "\\\\"));
-		using var command = new MySqlCommand(insertInlineCommand, m_database.Connection);
+		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open) m_database.Connection.Open();
 		var rowCount = command.ExecuteNonQuery();
 		m_database.Connection.Close();
@@ -40,7 +40,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 	public void CommandLoadLocalCsvFile()
 	{
 		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL", AppConfig.MySqlBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
-		using var command = new MySqlCommand(insertInlineCommand, m_database.Connection);
+		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open) m_database.Connection.Open();
 		var rowCount = command.ExecuteNonQuery();
 		m_database.Connection.Close();
@@ -52,7 +52,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 	{
 		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL",
 			AppConfig.MySqlBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
-		using var command = new MySqlCommand(insertInlineCommand, m_database.Connection);
+		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open)
 			m_database.Connection.Open();
 

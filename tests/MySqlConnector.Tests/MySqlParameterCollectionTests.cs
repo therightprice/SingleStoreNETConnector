@@ -10,7 +10,7 @@ public class MySqlParameterCollectionTests
 {
 	public MySqlParameterCollectionTests()
 	{
-		m_collection = new MySqlCommand().Parameters;
+		m_collection = new SingleStoreCommand().Parameters;
 	}
 
 	[Fact]

@@ -386,5 +386,5 @@ public class Transaction : IClassFixture<TransactionFixture>
 #endif
 
 	readonly TransactionFixture m_database;
-	readonly MySqlConnection m_connection;
+	readonly SingleStoreConnection m_connection;
 }

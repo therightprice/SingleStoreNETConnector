@@ -117,7 +117,7 @@ public static class TestUtilities
 	}
 
 #if BASELINE
-	public static System.Threading.Tasks.Task PrepareAsync(this MySqlCommand command)
+	public static System.Threading.Tasks.Task PrepareAsync(this SingleStoreCommand command)
 	{
 		command.Prepare();
 		return System.Threading.Tasks.Task.CompletedTask;

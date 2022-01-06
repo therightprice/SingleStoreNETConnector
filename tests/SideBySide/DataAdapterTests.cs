@@ -33,8 +33,8 @@ insert into data_adapter(int_value, text_value) values
 		[Fact]
 		public void UseDataAdapter()
 		{
-			using var command = new MySqlCommand("SELECT 1", m_connection);
-			using var da = new MySqlDataAdapter();
+			using var command = new SingleStoreCommand("SELECT 1", m_connection);
+			using var da = new SingleStoreDataAdapter();
 			using var ds = new DataSet();
 			da.SelectCommand = command;
 			da.Fill(ds);
@@ -47,8 +47,8 @@ insert into data_adapter(int_value, text_value) values
 		[Fact]
 		public void UseDataAdapterMySqlConnectionConstructor()
 		{
-			using var command = new MySqlCommand("SELECT 1", m_connection);
-			using var da = new MySqlDataAdapter(command);
+			using var command = new SingleStoreCommand("SELECT 1", m_connection);
+			using var da = new SingleStoreDataAdapter(command);
 			using var ds = new DataSet();
 			da.Fill(ds);
 			TestUtilities.AssertIsOne(ds.Tables[0].Rows[0][0]);
@@ -57,7 +57,7 @@ insert into data_adapter(int_value, text_value) values
 		[Fact]
 		public void UseDataAdapterStringMySqlConnectionConstructor()
 		{
-			using var da = new MySqlDataAdapter("SELECT 1", m_connection);
+			using var da = new SingleStoreDataAdapter("SELECT 1", m_connection);
 			using var ds = new DataSet();
 			da.Fill(ds);
 			TestUtilities.AssertIsOne(ds.Tables[0].Rows[0][0]);
@@ -66,7 +66,7 @@ insert into data_adapter(int_value, text_value) values
 		[Fact]
 		public void UseDataAdapterStringStringConstructor()
 		{
-			using var da = new MySqlDataAdapter("SELECT 1", AppConfig.ConnectionString);
+			using var da = new SingleStoreDataAdapter("SELECT 1", AppConfig.ConnectionString);
 			using var ds = new DataSet();
 			da.Fill(ds);
 			TestUtilities.AssertIsOne(ds.Tables[0].Rows[0][0]);
@@ -75,7 +75,7 @@ insert into data_adapter(int_value, text_value) values
 		[Fact]
 		public void Fill()
 		{
-			using var da = new MySqlDataAdapter("select * from data_adapter", m_connection);
+			using var da = new SingleStoreDataAdapter("select * from data_adapter", m_connection);
 			using var ds = new DataSet();
 			da.Fill(ds, "data_adapter");
 
@@ -98,7 +98,7 @@ insert into data_adapter(int_value, text_value) values
 		[Fact]
 		public void LoadDataTable()
 		{
-			using var command = new MySqlCommand("SELECT * FROM data_adapter", m_connection);
+			using var command = new SingleStoreCommand("SELECT * FROM data_adapter", m_connection);
 			using var dr = command.ExecuteReader();
 			var dt = new DataTable();
 			dt.Load(dr);
@@ -123,11 +123,11 @@ insert into data_adapter(int_value, text_value) values
 		public void InsertWithDataSet()
 		{
 			using (var ds = new DataSet())
-			using (var da = new MySqlDataAdapter("SELECT * FROM data_adapter", m_connection))
+			using (var da = new SingleStoreDataAdapter("SELECT * FROM data_adapter", m_connection))
 			{
 				da.Fill(ds);
 
-				da.InsertCommand = new MySqlCommand("INSERT INTO data_adapter (int_value, text_value) VALUES (@int, @text)", m_connection);
+				da.InsertCommand = new SingleStoreCommand("INSERT INTO data_adapter (int_value, text_value) VALUES (@int, @text)", m_connection);
 
 				da.InsertCommand.Parameters.Add(new("@int", DbType.Int32));
 				da.InsertCommand.Parameters.Add(new("@text", DbType.String));
@@ -151,7 +151,7 @@ insert into data_adapter(int_value, text_value) values
 				ds.AcceptChanges();
 			}
 
-			using var cmd2 = new MySqlCommand("SELECT id, int_value, text_value FROM data_adapter", m_connection);
+			using var cmd2 = new SingleStoreCommand("SELECT id, int_value, text_value FROM data_adapter", m_connection);
 			using var dr2 = cmd2.ExecuteReader();
 			Assert.True(dr2.Read());
 			Assert.Equal(1L, dr2[0]);
@@ -172,11 +172,11 @@ insert into data_adapter(int_value, text_value) values
 		public void BatchUpdate()
 		{
 			using (var ds = new DataSet())
-			using (var da = new MySqlDataAdapter("SELECT * FROM data_adapter", m_connection))
+			using (var da = new SingleStoreDataAdapter("SELECT * FROM data_adapter", m_connection))
 			{
 				da.Fill(ds);
 
-				da.UpdateCommand = new MySqlCommand("UPDATE data_adapter SET int_value=@int, text_value=@text WHERE id=@id", m_connection)
+				da.UpdateCommand = new SingleStoreCommand("UPDATE data_adapter SET int_value=@int, text_value=@text WHERE id=@id", m_connection)
 				{
 					Parameters =
 					{
@@ -208,11 +208,11 @@ insert into data_adapter(int_value, text_value) values
 		public void BatchInsert()
 		{
 			using (var ds = new DataSet())
-			using (var da = new MySqlDataAdapter("SELECT * FROM data_adapter", m_connection))
+			using (var da = new SingleStoreDataAdapter("SELECT * FROM data_adapter", m_connection))
 			{
 				da.Fill(ds);
 
-				da.InsertCommand = new MySqlCommand("INSERT INTO data_adapter(int_value, text_value) VALUES(@int, @text);", m_connection)
+				da.InsertCommand = new SingleStoreCommand("INSERT INTO data_adapter(int_value, text_value) VALUES(@int, @text);", m_connection)
 				{
 					Parameters =
 					{
@@ -234,5 +234,5 @@ insert into data_adapter(int_value, text_value) values
 
 			Assert.Equal(new[] { null, "", "one", "two", "three", "four" }, m_connection.Query<string>("SELECT text_value FROM data_adapter ORDER BY id"));
 		}
-		readonly MySqlConnection m_connection;
+		readonly SingleStoreConnection m_connection;
 	}

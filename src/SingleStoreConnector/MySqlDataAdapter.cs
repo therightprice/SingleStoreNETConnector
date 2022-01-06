@@ -1,25 +1,25 @@
 namespace SingleStoreConnector;
 
-public sealed class MySqlDataAdapter : DbDataAdapter
+public sealed class SingleStoreDataAdapter : DbDataAdapter
 {
-	public MySqlDataAdapter()
+	public SingleStoreDataAdapter()
 	{
 		GC.SuppressFinalize(this);
 	}
 
-	public MySqlDataAdapter(MySqlCommand selectCommand)
+	public SingleStoreDataAdapter(SingleStoreCommand selectCommand)
 		: this()
 	{
 		SelectCommand = selectCommand;
 	}
 
-	public MySqlDataAdapter(string selectCommandText, MySqlConnection connection)
-		: this(new MySqlCommand(selectCommandText, connection))
+	public SingleStoreDataAdapter(string selectCommandText, SingleStoreConnection connection)
+		: this(new SingleStoreCommand(selectCommandText, connection))
 	{
 	}
 
-	public MySqlDataAdapter(string selectCommandText, string connectionString)
-		: this(new MySqlCommand(selectCommandText, new MySqlConnection(connectionString)))
+	public SingleStoreDataAdapter(string selectCommandText, string connectionString)
+		: this(new SingleStoreCommand(selectCommandText, new SingleStoreConnection(connectionString)))
 	{
 	}
 
@@ -27,27 +27,27 @@ public sealed class MySqlDataAdapter : DbDataAdapter
 
 	public event MySqlRowUpdatedEventHandler? RowUpdated;
 
-	public new MySqlCommand? DeleteCommand
+	public new SingleStoreCommand? DeleteCommand
 	{
-		get => (MySqlCommand?) base.DeleteCommand;
+		get => (SingleStoreCommand?) base.DeleteCommand;
 		set => base.DeleteCommand = value;
 	}
 
-	public new MySqlCommand? InsertCommand
+	public new SingleStoreCommand? InsertCommand
 	{
-		get => (MySqlCommand?) base.InsertCommand;
+		get => (SingleStoreCommand?) base.InsertCommand;
 		set => base.InsertCommand = value;
 	}
 
-	public new MySqlCommand? SelectCommand
+	public new SingleStoreCommand? SelectCommand
 	{
-		get => (MySqlCommand?) base.SelectCommand;
+		get => (SingleStoreCommand?) base.SelectCommand;
 		set => base.SelectCommand = value;
 	}
 
-	public new MySqlCommand? UpdateCommand
+	public new SingleStoreCommand? UpdateCommand
 	{
-		get => (MySqlCommand?) base.UpdateCommand;
+		get => (SingleStoreCommand?) base.UpdateCommand;
 		set => base.UpdateCommand = value;
 	}
 
@@ -71,7 +71,7 @@ public sealed class MySqlDataAdapter : DbDataAdapter
 
 	protected override int AddToBatch(IDbCommand command)
 	{
-		var mySqlCommand = (MySqlCommand) command;
+		var mySqlCommand = (SingleStoreCommand) command;
 		if (m_batch!.Connection is null)
 		{
 			m_batch.Connection = mySqlCommand.Connection;
@@ -112,7 +112,7 @@ public sealed class MySqlRowUpdatingEventArgs : RowUpdatingEventArgs
 	{
 	}
 
-	public new MySqlCommand? Command => (MySqlCommand?) base.Command!;
+	public new SingleStoreCommand? Command => (SingleStoreCommand?) base.Command!;
 }
 
 public sealed class MySqlRowUpdatedEventArgs : RowUpdatedEventArgs
@@ -122,5 +122,5 @@ public sealed class MySqlRowUpdatedEventArgs : RowUpdatedEventArgs
 	{
 	}
 
-	public new MySqlCommand? Command => (MySqlCommand?) base.Command;
+	public new SingleStoreCommand? Command => (SingleStoreCommand?) base.Command;
 }

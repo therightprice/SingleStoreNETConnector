@@ -11,14 +11,14 @@ public sealed class MySqlConnectorFactory : DbProviderFactory
 	public static readonly MySqlConnectorFactory Instance = new();
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlCommand"/> object.
+	/// Creates a new <see cref="SingleStoreCommand"/> object.
 	/// </summary>
-	public override DbCommand CreateCommand() => new MySqlCommand();
+	public override DbCommand CreateCommand() => new SingleStoreCommand();
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlConnection"/> object.
+	/// Creates a new <see cref="SingleStoreConnection"/> object.
 	/// </summary>
-	public override DbConnection CreateConnection() => new MySqlConnection();
+	public override DbConnection CreateConnection() => new SingleStoreConnection();
 
 	/// <summary>
 	/// Creates a new <see cref="MySqlConnectionStringBuilder"/> object.
@@ -36,9 +36,9 @@ public sealed class MySqlConnectorFactory : DbProviderFactory
 	public override DbCommandBuilder CreateCommandBuilder() => new MySqlCommandBuilder();
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlDataAdapter"/> object.
+	/// Creates a new <see cref="SingleStoreDataAdapter"/> object.
 	/// </summary>
-	public override DbDataAdapter CreateDataAdapter() => new MySqlDataAdapter();
+	public override DbDataAdapter CreateDataAdapter() => new SingleStoreDataAdapter();
 
 	/// <summary>
 	/// Returns <c>false</c>.

@@ -9,7 +9,7 @@ namespace SingleStoreConnector.Core;
 
 internal sealed class CachedProcedure
 {
-	public static async Task<CachedProcedure?> FillAsync(IOBehavior ioBehavior, MySqlConnection connection, string schema, string component, CancellationToken cancellationToken)
+	public static async Task<CachedProcedure?> FillAsync(IOBehavior ioBehavior, SingleStoreConnection connection, string schema, string component, CancellationToken cancellationToken)
 	{
 		// try to use mysql.proc first, as it is much faster
 		if (connection.Session.ServerVersion.Version < ServerVersions.RemovesMySqlProcTable && !connection.Session.ProcAccessDenied)

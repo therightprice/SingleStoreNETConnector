@@ -478,7 +478,7 @@ internal abstract class Row
 	protected abstract void GetDataOffsets(ReadOnlySpan<byte> data, int[] dataOffsets, int[] dataLengths);
 
 	protected ResultSet ResultSet { get; }
-	protected MySqlConnection Connection => ResultSet.Connection;
+	protected SingleStoreConnection Connection => ResultSet.Connection;
 
 	protected object ParseDateTime(ReadOnlySpan<byte> value)
 	{
