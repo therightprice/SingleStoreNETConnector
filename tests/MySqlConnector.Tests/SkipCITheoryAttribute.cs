@@ -15,5 +15,6 @@ public class SkipCITheoryAttribute : TheoryAttribute
 		Environment.GetEnvironmentVariable("APPVEYOR") == "True" ||
 		Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true" ||
 		Environment.GetEnvironmentVariable("TRAVIS") == "true" ||
-		Environment.GetEnvironmentVariable("TF_BUILD") == "True";
+		Environment.GetEnvironmentVariable("TF_BUILD") == "True" ||
+		Environment.GetEnvironmentVariable("CIRCLECI") == "true";
 }
