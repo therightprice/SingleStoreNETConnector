@@ -154,7 +154,7 @@ internal sealed class ServerSession
 			if (cachedProcedure is null)
 			{
 				var name = NormalizedSchema.MustNormalize(command.CommandText!, command.Connection.Database);
-				throw new MySqlException("Procedure or function '{0}' cannot be found in database '{1}'.".FormatInvariant(name.Component, name.Schema));
+				throw new SingleStoreException("Procedure or function '{0}' cannot be found in database '{1}'.".FormatInvariant(name.Component, name.Schema));
 			}
 
 			var parameterCount = cachedProcedure.Parameters.Count;
@@ -219,7 +219,7 @@ internal sealed class ServerSession
 			{
 				payload = await ReceiveReplyAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				ThrowIfStatementContainsDelimiter(ex, command);
 				throw;
@@ -430,7 +430,7 @@ internal sealed class ServerSession
 					lock (m_lock)
 						m_state = State.Failed;
 					Log.Error("Session{0} connecting failed", m_logArguments);
-					throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Unable to connect to any of the specified MySQL hosts.");
+					throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Unable to connect to any of the specified MySQL hosts.");
 				}
 
 				var byteHandler = m_socket is null ? new StreamByteHandler(m_stream!) : (IByteHandler) new SocketByteHandler(m_socket);
@@ -508,7 +508,7 @@ internal sealed class ServerSession
 					if (!serverSupportsSsl)
 					{
 						Log.Error("Session{0} requires SSL but server doesn't support it", m_logArguments);
-						throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Server does not support SSL");
+						throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Server does not support SSL");
 					}
 
 					try
@@ -521,7 +521,7 @@ internal sealed class ServerSession
 						Log.Debug(ex, "Session{0} doesn't support SslProtocols.None; falling back to explicitly specifying SslProtocols", m_logArguments);
 						sslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
 					}
-					catch (Exception ex) when (shouldRetrySsl && ((ex is MySqlException && ex.InnerException is IOException) || ex is IOException))
+					catch (Exception ex) when (shouldRetrySsl && ((ex is SingleStoreException && ex.InnerException is IOException) || ex is IOException))
 					{
 						// negotiating TLS 1.2 with a yaSSL-based server throws an exception on Windows, see comment at top of method
 						Log.Debug(ex, "Session{0} failed negotiating TLS; falling back to TLS 1.1", m_logArguments);
@@ -575,12 +575,12 @@ internal sealed class ServerSession
 		catch (ArgumentException ex)
 		{
 			Log.Error(ex, "Session{0} couldn't connect to server", m_logArguments);
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Couldn't connect to server", ex);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Couldn't connect to server", ex);
 		}
 		catch (IOException ex)
 		{
 			Log.Error(ex, "Session{0} couldn't connect to server", m_logArguments);
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Couldn't connect to server", ex);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Couldn't connect to server", ex);
 		}
 
 		return statusInfo;
@@ -662,9 +662,9 @@ internal sealed class ServerSession
 		{
 			Log.Trace(ex, "Session{0} ignoring IOException in TryResetConnectionAsync", m_logArguments);
 		}
-		catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.ClientInteractionTimeout)
+		catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.ClientInteractionTimeout)
 		{
-			Log.Trace(ex, "Session{0} ignoring ClientInteractionTimeout MySqlException in TryResetConnectionAsync", m_logArguments);
+			Log.Trace(ex, "Session{0} ignoring ClientInteractionTimeout SingleStoreException in TryResetConnectionAsync", m_logArguments);
 		}
 		catch (ObjectDisposedException ex)
 		{
@@ -697,7 +697,7 @@ internal sealed class ServerSession
 			if (!m_isSecureConnection)
 			{
 				Log.Error("Session{0} needs a secure connection to use AuthenticationMethod '{1}'", m_logArguments);
-				throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Authentication method '{0}' requires a secure connection.".FormatInvariant(switchRequest.Name));
+				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Authentication method '{0}' requires a secure connection.".FormatInvariant(switchRequest.Name));
 			}
 
 			// send the password as a NULL-terminated UTF-8 string
@@ -728,7 +728,7 @@ internal sealed class ServerSession
 			{
 #if NET45
 				Log.Error("Session{0} can't use AuthenticationMethod '{1}' without secure connection on .NET 4.5", m_logArguments);
-				throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Authentication method '{0}' requires a secure connection (prior to .NET 4.6).".FormatInvariant(switchRequest.Name));
+				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Authentication method '{0}' requires a secure connection (prior to .NET 4.6).".FormatInvariant(switchRequest.Name));
 #else
 				var publicKey = await GetRsaPublicKeyAsync(switchRequest.Name, cs, ioBehavior, cancellationToken).ConfigureAwait(false);
 				return await SendEncryptedPasswordAsync(switchRequest, publicKey, password, ioBehavior, cancellationToken).ConfigureAwait(false);
@@ -788,7 +788,7 @@ internal sealed class ServerSession
 		catch (Exception ex)
 		{
 			Log.Error(ex, "Session{0} couldn't load server's RSA public key", m_logArguments);
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Couldn't load server's RSA public key; try using a secure connection instead.", ex);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Couldn't load server's RSA public key; try using a secure connection instead.", ex);
 		}
 #else
 		// load the RSA public key
@@ -800,7 +800,7 @@ internal sealed class ServerSession
 		catch (Exception ex)
 		{
 			Log.Error(ex, "Session{0} couldn't load server's RSA public key", m_logArguments);
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Couldn't load server's RSA public key; try using a secure connection instead.", ex);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Couldn't load server's RSA public key; try using a secure connection instead.", ex);
 		}
 
 		rsa.ImportParameters(rsaParameters);
@@ -837,7 +837,7 @@ internal sealed class ServerSession
 			{
 				m_logArguments[1] = cs.ServerRsaPublicKeyFile;
 				Log.Error(ex, "Session{0} couldn't load server's RSA public key from PublicKeyFile '{1}'", m_logArguments);
-				throw new MySqlException("Couldn't load server's RSA public key from '{0}'".FormatInvariant(cs.ServerRsaPublicKeyFile), ex);
+				throw new SingleStoreException("Couldn't load server's RSA public key from '{0}'".FormatInvariant(cs.ServerRsaPublicKeyFile), ex);
 			}
 		}
 
@@ -853,7 +853,7 @@ internal sealed class ServerSession
 
 		m_logArguments[1] = switchRequestName;
 		Log.Error("Session{0} couldn't use AuthenticationMethod '{1}' because RSA key wasn't specified or couldn't be retrieved", m_logArguments);
-		throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Authentication method '{0}' failed. Either use a secure connection, specify the server's RSA public key with ServerRSAPublicKeyFile, or set AllowPublicKeyRetrieval=True.".FormatInvariant(switchRequestName));
+		throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Authentication method '{0}' failed. Either use a secure connection, specify the server's RSA public key with ServerRSAPublicKeyFile, or set AllowPublicKeyRetrieval=True.".FormatInvariant(switchRequestName));
 	}
 #endif
 
@@ -878,9 +878,9 @@ internal sealed class ServerSession
 		{
 			Log.Trace(ex, "Session{0} ping failed due to IOException", m_logArguments);
 		}
-		catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.ClientInteractionTimeout)
+		catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.ClientInteractionTimeout)
 		{
-			Log.Trace(ex, "Session{0} ping failed due to ClientInteractionTimeout MySqlException", m_logArguments);
+			Log.Trace(ex, "Session{0} ping failed due to ClientInteractionTimeout SingleStoreException", m_logArguments);
 		}
 		catch (SocketException ex)
 		{
@@ -917,7 +917,7 @@ internal sealed class ServerSession
 		catch (Exception ex)
 		{
 			Log.Debug(ex, "Session{0} failed in ReceiveReplyAsync", m_logArguments);
-			if ((ex as MySqlException)?.ErrorCode == MySqlErrorCode.CommandTimeoutExpired)
+			if ((ex as SingleStoreException)?.ErrorCode == MySqlErrorCode.CommandTimeoutExpired)
 				HandleTimeout();
 			task = ValueTaskExtensions.FromException<ArraySegment<byte>>(ex);
 		}
@@ -945,7 +945,7 @@ internal sealed class ServerSession
 		catch (Exception ex)
 		{
 			SetFailed(ex);
-			if (ex is MySqlException { ErrorCode: MySqlErrorCode.CommandTimeoutExpired })
+			if (ex is SingleStoreException { ErrorCode: MySqlErrorCode.CommandTimeoutExpired })
 				HandleTimeout();
 			throw;
 		}
@@ -989,7 +989,7 @@ internal sealed class ServerSession
 		}
 	}
 
-	public static void ThrowIfStatementContainsDelimiter(MySqlException exception, IMySqlCommand command)
+	public static void ThrowIfStatementContainsDelimiter(SingleStoreException exception, IMySqlCommand command)
 	{
 		// check if the command used "DELIMITER"
 		if (exception.ErrorCode == MySqlErrorCode.ParseError && command.CommandText?.IndexOf("delimiter", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -997,7 +997,7 @@ internal sealed class ServerSession
 			var parser = new DelimiterSqlParser(command);
 			parser.Parse(command.CommandText);
 			if (parser.HasDelimiter)
-				throw new MySqlException(MySqlErrorCode.DelimiterNotSupported, "'DELIMITER' should not be used with SingleStoreConnector. See https://fl.vu/mysql-delimiter", exception);
+				throw new SingleStoreException(MySqlErrorCode.DelimiterNotSupported, "'DELIMITER' should not be used with SingleStoreConnector. See https://fl.vu/mysql-delimiter", exception);
 		}
 	}
 
@@ -1076,7 +1076,7 @@ internal sealed class ServerSession
 						{
 							SafeDispose(ref tcpClient);
 							Log.Info("Session{0} connect timeout expired connecting to IpAddress {1} for HostName '{2}'", m_logArguments[0], ipAddress, hostName);
-							throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
+							throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
 						}
 					}
 				}
@@ -1090,7 +1090,7 @@ internal sealed class ServerSession
 				{
 					SafeDispose(ref tcpClient);
 					Log.Info("Session{0} connect timeout expired connecting to IpAddress {1} for HostName '{2}'", m_logArguments[0], ipAddress, hostName);
-					throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
+					throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
 				}
 
 				try
@@ -1116,7 +1116,7 @@ internal sealed class ServerSession
 					SafeDispose(ref m_tcpClient);
 					SafeDispose(ref m_socket);
 					Log.Info("Session{0} connect timeout expired connecting to IpAddress {1} for HostName '{2}'", m_logArguments[0], ipAddress, hostName);
-					throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
+					throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
 				}
 
 				lock (m_lock)
@@ -1152,7 +1152,7 @@ internal sealed class ServerSession
 				catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
 				{
 					Log.Info("Session{0} connect timeout expired connecting to UNIX Socket '{1}'", m_logArguments);
-					throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
+					throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
 				}
 			}
 		}
@@ -1206,7 +1206,7 @@ internal sealed class ServerSession
 				{
 					m_logArguments[1] = cs.PipeName;
 					Log.Info("Session{0} connect timeout expired connecting to named pipe '{1}'", m_logArguments);
-					throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
+					throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.");
 				}
 			}
 		}
@@ -1249,7 +1249,7 @@ internal sealed class ServerSession
 					if (store.Certificates.Count == 0)
 					{
 						Log.Error("Session{0} no certificates were found in the certificate store", m_logArguments);
-						throw new MySqlException("No certificates were found in the certificate store");
+						throw new SingleStoreException("No certificates were found in the certificate store");
 					}
 
 					clientCertificates = new(store.Certificates);
@@ -1262,7 +1262,7 @@ internal sealed class ServerSession
 					{
 						m_logArguments[1] = cs.CertificateThumbprint;
 						Log.Error("Session{0} certificate with Thumbprint={1} not found in store", m_logArguments);
-						throw new MySqlException("Certificate with Thumbprint {0} not found".FormatInvariant(cs.CertificateThumbprint));
+						throw new SingleStoreException("Certificate with Thumbprint {0} not found".FormatInvariant(cs.CertificateThumbprint));
 					}
 
 					clientCertificates = new(foundCertificates);
@@ -1272,7 +1272,7 @@ internal sealed class ServerSession
 			{
 				m_logArguments[1] = cs.CertificateStoreLocation;
 				Log.Error(ex, "Session{0} couldn't load certificate from CertificateStoreLocation={1}", m_logArguments);
-				throw new MySqlException("Certificate couldn't be loaded from the CertificateStoreLocation", ex);
+				throw new SingleStoreException("Certificate couldn't be loaded from the CertificateStoreLocation", ex);
 			}
 		}
 
@@ -1294,7 +1294,7 @@ internal sealed class ServerSession
 #endif
 					m_logArguments[1] = cs.CertificateFile;
 					Log.Error("Session{0} no private key included with CertificateFile '{1}'", m_logArguments);
-					throw new MySqlException("CertificateFile does not contain a private key. " +
+					throw new SingleStoreException("CertificateFile does not contain a private key. " +
 						"CertificateFile should be in PKCS #12 (.pfx) format and contain both a Certificate and Private Key");
 				}
 				m_clientCertificate = certificate;
@@ -1305,8 +1305,8 @@ internal sealed class ServerSession
 				m_logArguments[1] = cs.CertificateFile;
 				Log.Error(ex, "Session{0} couldn't load certificate from CertificateFile '{1}'", m_logArguments);
 				if (!File.Exists(cs.CertificateFile))
-					throw new MySqlException("Cannot find Certificate File", ex);
-				throw new MySqlException("Either the Certificate Password is incorrect or the Certificate File is invalid", ex);
+					throw new SingleStoreException("Cannot find Certificate File", ex);
+				throw new SingleStoreException("Either the Certificate Password is incorrect or the Certificate File is invalid", ex);
 			}
 		}
 
@@ -1321,7 +1321,7 @@ internal sealed class ServerSession
 			{
 				m_logArguments[1] = ex.Message;
 				Log.Error(ex, "Session{0} failed to obtain client certificates via ProvideClientCertificatesCallback: {1}", m_logArguments);
-				throw new MySqlException("Failed to obtain client certificates via ProvideClientCertificatesCallback", ex);
+				throw new SingleStoreException("Failed to obtain client certificates via ProvideClientCertificatesCallback", ex);
 			}
 		}
 
@@ -1351,8 +1351,8 @@ internal sealed class ServerSession
 				{
 					Log.Error(ex, "Session{0} couldn't load CA certificate from CertificateFile '{1}'", m_logArguments);
 					if (!File.Exists(cs.CACertificateFile))
-						throw new MySqlException("Cannot find CA Certificate File: " + cs.CACertificateFile, ex);
-					throw new MySqlException("Could not load CA Certificate File: " + cs.CACertificateFile, ex);
+						throw new SingleStoreException("Cannot find CA Certificate File: " + cs.CACertificateFile, ex);
+					throw new SingleStoreException("Could not load CA Certificate File: " + cs.CACertificateFile, ex);
 				}
 
 				// find the index of each individual certificate in the file (assuming there may be multiple certificates concatenated together)
@@ -1504,11 +1504,11 @@ internal sealed class ServerSession
 			lock (m_lock)
 				m_state = State.Failed;
 			if (ex is AuthenticationException)
-				throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "SSL Authentication Error", ex);
+				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "SSL Authentication Error", ex);
 			if (ex is IOException && clientCertificates is not null)
-				throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "MySQL Server rejected client certificate", ex);
+				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "MySQL Server rejected client certificate", ex);
 			if (ex is Win32Exception { NativeErrorCode: -2146893007 }) // SEC_E_ALGORITHM_MISMATCH (0x80090331)
-				throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "The server doesn't support the client's specified TLS versions.", ex);
+				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "The server doesn't support the client's specified TLS versions.", ex);
 			throw;
 		}
 		finally
@@ -1539,7 +1539,7 @@ internal sealed class ServerSession
 			catch (Exception ex)
 			{
 				Log.Error(ex, "Session{0} couldn't load client key from KeyFile '{1}'", m_logArguments);
-				throw new MySqlException("Could not load client key file: " + sslKeyFile, ex);
+				throw new SingleStoreException("Could not load client key file: " + sslKeyFile, ex);
 			}
 
 			RSAParameters rsaParameters;
@@ -1550,7 +1550,7 @@ internal sealed class ServerSession
 			catch (FormatException ex)
 			{
 				Log.Error(ex, "Session{0} couldn't load client key from KeyFile '{1}'", m_logArguments);
-				throw new MySqlException("Could not load the client key from " + sslKeyFile, ex);
+				throw new SingleStoreException("Could not load the client key from " + sslKeyFile, ex);
 			}
 
 			try
@@ -1594,8 +1594,8 @@ internal sealed class ServerSession
 			{
 				Log.Error(ex, "Session{0} couldn't load client key from KeyFile '{1}'", m_logArguments);
 				if (!File.Exists(sslCertificateFile))
-					throw new MySqlException("Cannot find client certificate file: " + sslCertificateFile, ex);
-				throw new MySqlException("Could not load the client key from " + sslCertificateFile, ex);
+					throw new SingleStoreException("Cannot find client certificate file: " + sslCertificateFile, ex);
+				throw new SingleStoreException("Could not load the client key from " + sslCertificateFile, ex);
 			}
 #endif
 		}
@@ -1680,7 +1680,7 @@ internal sealed class ServerSession
 				ServerVersion = newServerVersion;
 			}
 		}
-		catch (MySqlException ex)
+		catch (SingleStoreException ex)
 		{
 			Log.Info(ex, "Session{0} failed to get CONNECTION_ID(), VERSION()", m_logArguments);
 		}
@@ -1854,7 +1854,7 @@ internal sealed class ServerSession
 			{
 				m_logArguments[1] = ex.Message;
 				Log.Error(ex, "Session{0} failed to obtain password via ProvidePasswordCallback: {1}", m_logArguments);
-				throw new MySqlException(MySqlErrorCode.ProvidePasswordCallbackFailed, "Failed to obtain password via ProvidePasswordCallback", ex);
+				throw new SingleStoreException(MySqlErrorCode.ProvidePasswordCallbackFailed, "Failed to obtain password via ProvidePasswordCallback", ex);
 			}
 		}
 

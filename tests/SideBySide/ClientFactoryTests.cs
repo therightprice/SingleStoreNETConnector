@@ -21,20 +21,20 @@ public class ClientFactoryTests
 	[Fact]
 	public void CreateConnectionStringBuilder()
 	{
-		Assert.IsType<MySqlConnectionStringBuilder>(MySqlConnectorFactory.Instance.CreateConnectionStringBuilder());
+		Assert.IsType<SingleStoreConnectionStringBuilder>(MySqlConnectorFactory.Instance.CreateConnectionStringBuilder());
 	}
 
 
 	[Fact]
 	public void CreateParameter()
 	{
-		Assert.IsType<MySqlParameter>(MySqlConnectorFactory.Instance.CreateParameter());
+		Assert.IsType<SingleStoreParameter>(MySqlConnectorFactory.Instance.CreateParameter());
 	}
 
 	[Fact]
 	public void CreateCommandBuilder()
 	{
-		Assert.IsType<MySqlCommandBuilder>(MySqlConnectorFactory.Instance.CreateCommandBuilder());
+		Assert.IsType<SingleStoreCommandBuilder>(MySqlConnectorFactory.Instance.CreateCommandBuilder());
 	}
 
 	[Fact]

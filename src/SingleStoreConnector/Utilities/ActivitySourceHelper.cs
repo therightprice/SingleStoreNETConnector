@@ -40,7 +40,7 @@ internal static class ActivitySourceHelper
 	public static void SetException(this Activity activity, Exception exception)
 	{
 		activity.SetTag(StatusCodeTagName, "ERROR");
-		activity.SetTag("otel.status_description", exception is MySqlException mySqlException ? mySqlException.ErrorCode.ToString() : exception.Message);
+		activity.SetTag("otel.status_description", exception is SingleStoreException mySqlException ? mySqlException.ErrorCode.ToString() : exception.Message);
 		activity.AddEvent(new ActivityEvent("exception", tags: new ActivityTagsCollection
 		{
 			{ "exception.type", exception.GetType().FullName },

@@ -10,7 +10,7 @@ using MySql.Data.Types;
 // Additionally, that is what DbDataReader.GetFieldValue<T> throws. For consistency, we prefer InvalidCastException.
 #if BASELINE
 using GetValueWhenNullException = System.Data.SqlTypes.SqlNullValueException;
-using GetGuidWhenNullException = MySql.Data.MySqlClient.MySqlException;
+using GetGuidWhenNullException = MySql.Data.MySqlClient.SingleStoreException;
 using GetBytesWhenNullException = System.NullReferenceException;
 using GetGeometryWhenNullException = System.Exception;
 #else
@@ -451,7 +451,7 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 			Assert.Equal(oldGuids ? 0L : 1L, (await connection.QueryAsync<long>(@"select count(*) from datatypes_strings where guid = @guid", new { guid = new Guid("fd24a0e8-c3f2-4821-a456-35da2dc4bb8f") }).ConfigureAwait(false)).SingleOrDefault());
 			Assert.Equal(oldGuids ? 0L : 1L, (await connection.QueryAsync<long>(@"select count(*) from datatypes_strings where guidbin = @guid", new { guid = new Guid("fd24a0e8-c3f2-4821-a456-35da2dc4bb8f") }).ConfigureAwait(false)).SingleOrDefault());
 		}
-		catch (MySqlException ex) when (oldGuids && ex.Number is 1300 or 3854) // InvalidCharacterString, CannotConvertString
+		catch (SingleStoreException ex) when (oldGuids && ex.Number is 1300 or 3854) // InvalidCharacterString, CannotConvertString
 		{
 			// new error in MySQL 8.0.24, MariaDB 10.5
 		}
@@ -762,7 +762,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 		}
 		else
 		{
-			Assert.Throws<MySqlException>(() => cmd.ExecuteNonQuery());
+			Assert.Throws<SingleStoreException>(() => cmd.ExecuteNonQuery());
 		}
 	}
 #endif
@@ -855,7 +855,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 				lastInsertId = cmd.LastInsertedId;
 				Assert.True(isSupported);
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Console.WriteLine(ex.Message);
 				lastInsertId = -1;
@@ -897,7 +897,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 				lastInsertId = cmd.LastInsertedId;
 				Assert.True(isSupported);
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Console.WriteLine(ex.Message);
 				lastInsertId = -1;
@@ -1850,6 +1850,6 @@ end;";
 
 	private SingleStoreConnection Connection { get; }
 
-	private MySqlConnectionStringBuilder CreateConnectionStringBuilder() => new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
+	private SingleStoreConnectionStringBuilder CreateConnectionStringBuilder() => new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString);
 }
 

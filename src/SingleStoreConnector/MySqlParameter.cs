@@ -10,14 +10,14 @@ using SingleStoreConnector.Utilities;
 
 namespace SingleStoreConnector;
 
-public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
+public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, ICloneable
 {
-	public MySqlParameter()
+	public SingleStoreParameter()
 		: this(default(string?), default(object?))
 	{
 	}
 
-	public MySqlParameter(string? name, object? value)
+	public SingleStoreParameter(string? name, object? value)
 	{
 		ResetDbType();
 		m_name = name ?? "";
@@ -27,17 +27,17 @@ public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
 		SourceVersion = DataRowVersion.Current;
 	}
 
-	public MySqlParameter(string name, MySqlDbType mySqlDbType)
+	public SingleStoreParameter(string name, MySqlDbType mySqlDbType)
 		: this(name, mySqlDbType, 0)
 	{
 	}
 
-	public MySqlParameter(string name, MySqlDbType mySqlDbType, int size)
+	public SingleStoreParameter(string name, MySqlDbType mySqlDbType, int size)
 		: this(name, mySqlDbType, size, "")
 	{
 	}
 
-	public MySqlParameter(string name, MySqlDbType mySqlDbType, int size, string sourceColumn)
+	public SingleStoreParameter(string name, MySqlDbType mySqlDbType, int size, string sourceColumn)
 	{
 		m_name = name ?? "";
 		NormalizedParameterName = NormalizeParameterName(m_name);
@@ -47,7 +47,7 @@ public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
 		SourceVersion = DataRowVersion.Current;
 	}
 
-	public MySqlParameter(string name, MySqlDbType mySqlDbType, int size, ParameterDirection direction, bool isNullable, byte precision, byte scale, string sourceColumn, DataRowVersion sourceVersion, object value)
+	public SingleStoreParameter(string name, MySqlDbType mySqlDbType, int size, ParameterDirection direction, bool isNullable, byte precision, byte scale, string sourceColumn, DataRowVersion sourceVersion, object value)
 		: this(name, mySqlDbType, size, sourceColumn)
 	{
 		Direction = direction;
@@ -155,13 +155,13 @@ public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
 		HasSetDbType = false;
 	}
 
-	public MySqlParameter Clone() => new MySqlParameter(this);
+	public SingleStoreParameter Clone() => new SingleStoreParameter(this);
 
 	object ICloneable.Clone() => Clone();
 
-	internal MySqlParameter WithParameterName(string parameterName) => new MySqlParameter(this, parameterName);
+	internal SingleStoreParameter WithParameterName(string parameterName) => new SingleStoreParameter(this, parameterName);
 
-	private MySqlParameter(MySqlParameter other)
+	private SingleStoreParameter(SingleStoreParameter other)
 	{
 		m_dbType = other.m_dbType;
 		m_mySqlDbType = other.m_mySqlDbType;
@@ -179,7 +179,7 @@ public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
 		SourceVersion = other.SourceVersion;
 	}
 
-	private MySqlParameter(MySqlParameter other, string parameterName)
+	private SingleStoreParameter(SingleStoreParameter other, string parameterName)
 		: this(other)
 	{
 		ParameterName = parameterName ?? throw new ArgumentNullException(nameof(parameterName));
@@ -340,9 +340,9 @@ public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
 		else if (Value is DateTime dateTimeValue)
 		{
 			if ((options & StatementPreparerOptions.DateTimeUtc) != 0 && dateTimeValue.Kind == DateTimeKind.Local)
-				throw new MySqlException("DateTime.Kind must not be Local when DateTimeKind setting is Utc (parameter name: {0})".FormatInvariant(ParameterName));
+				throw new SingleStoreException("DateTime.Kind must not be Local when DateTimeKind setting is Utc (parameter name: {0})".FormatInvariant(ParameterName));
 			else if ((options & StatementPreparerOptions.DateTimeLocal) != 0 && dateTimeValue.Kind == DateTimeKind.Utc)
-				throw new MySqlException("DateTime.Kind must not be Utc when DateTimeKind setting is Local (parameter name: {0})".FormatInvariant(ParameterName));
+				throw new SingleStoreException("DateTime.Kind must not be Utc when DateTimeKind setting is Local (parameter name: {0})".FormatInvariant(ParameterName));
 
 			writer.Write("timestamp('{0:yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'ffffff}')".FormatInvariant(dateTimeValue));
 		}
@@ -628,9 +628,9 @@ public sealed class MySqlParameter : DbParameter, IDbDataParameter, ICloneable
 		else if (Value is DateTime dateTimeValue)
 		{
 			if ((options & StatementPreparerOptions.DateTimeUtc) != 0 && dateTimeValue.Kind == DateTimeKind.Local)
-				throw new MySqlException("DateTime.Kind must not be Local when DateTimeKind setting is Utc (parameter name: {0})".FormatInvariant(ParameterName));
+				throw new SingleStoreException("DateTime.Kind must not be Local when DateTimeKind setting is Utc (parameter name: {0})".FormatInvariant(ParameterName));
 			else if ((options & StatementPreparerOptions.DateTimeLocal) != 0 && dateTimeValue.Kind == DateTimeKind.Utc)
-				throw new MySqlException("DateTime.Kind must not be Utc when DateTimeKind setting is Local (parameter name: {0})".FormatInvariant(ParameterName));
+				throw new SingleStoreException("DateTime.Kind must not be Utc when DateTimeKind setting is Local (parameter name: {0})".FormatInvariant(ParameterName));
 
 			WriteDateTime(writer, dateTimeValue);
 		}

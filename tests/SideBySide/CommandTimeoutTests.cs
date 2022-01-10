@@ -55,7 +55,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
 #if BASELINE
-			var ex = Assert.Throws<MySqlException>(cmd.ExecuteReader);
+			var ex = Assert.Throws<SingleStoreException>(cmd.ExecuteReader);
 			Assert.Contains("fatal error", ex.Message, StringComparison.OrdinalIgnoreCase);
 			connectionState = ConnectionState.Closed;
 #else
@@ -81,7 +81,7 @@ public class CommandTimeoutTests : IClassFixture<DatabaseFixture>, IDisposable
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
 #if BASELINE
-			var exception = await Assert.ThrowsAsync<MySqlException>(cmd.ExecuteReaderAsync);
+			var exception = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteReaderAsync);
 			Assert.Contains("fatal error", exception.Message, StringComparison.OrdinalIgnoreCase);
 			connectionState = ConnectionState.Closed;
 #else
@@ -123,7 +123,7 @@ end;", m_connection))
 
 		var sw = Stopwatch.StartNew();
 #if BASELINE
-		var ex = Assert.Throws<MySqlException>(cmd.ExecuteReader);
+		var ex = Assert.Throws<SingleStoreException>(cmd.ExecuteReader);
 		Assert.Contains("fatal error", ex.Message, StringComparison.OrdinalIgnoreCase);
 #else
 		using (var reader = cmd.ExecuteReader())
@@ -140,7 +140,7 @@ end;", m_connection))
 	public void MultipleCommandTimeoutWithSleepSync()
 	{
 		var connectionState = m_connection.State;
-		var csb = new MySqlConnectionStringBuilder(m_connection.ConnectionString);
+		var csb = new SingleStoreConnectionStringBuilder(m_connection.ConnectionString);
 		using (var cmd = new SingleStoreCommand("SELECT 1; SELECT SLEEP(120);", m_connection))
 		{
 			cmd.CommandTimeout = 2;
@@ -154,7 +154,7 @@ end;", m_connection))
 			sw.Restart();
 
 #if BASELINE
-			var ex = Assert.Throws<MySqlException>(() => reader.NextResult());
+			var ex = Assert.Throws<SingleStoreException>(() => reader.NextResult());
 			Assert.Contains("fatal error", ex.Message, StringComparison.OrdinalIgnoreCase);
 			connectionState = ConnectionState.Closed;
 #else
@@ -187,7 +187,7 @@ end;", m_connection))
 			sw.Restart();
 
 #if BASELINE
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await reader.NextResultAsync());
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await reader.NextResultAsync());
 			Assert.Contains("fatal error", ex.Message, StringComparison.OrdinalIgnoreCase);
 			connectionState = ConnectionState.Closed;
 #else
@@ -206,7 +206,7 @@ end;", m_connection))
 	[SkippableFact(ServerFeatures.Timeout, Baseline = "https://bugs.mysql.com/bug.php?id=88124")]
 	public void CommandTimeoutResetsOnReadSync()
 	{
-		var csb = new MySqlConnectionStringBuilder(m_connection.ConnectionString);
+		var csb = new SingleStoreConnectionStringBuilder(m_connection.ConnectionString);
 		using (var cmd = new SingleStoreCommand("SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1);", m_connection))
 		{
 			cmd.CommandTimeout = 3;
@@ -227,7 +227,7 @@ end;", m_connection))
 	[SkippableFact(ServerFeatures.Timeout, Baseline = "https://bugs.mysql.com/bug.php?id=88124")]
 	public async Task CommandTimeoutResetsOnReadAsync()
 	{
-		var csb = new MySqlConnectionStringBuilder(m_connection.ConnectionString);
+		var csb = new SingleStoreConnectionStringBuilder(m_connection.ConnectionString);
 		using (var cmd = new SingleStoreCommand("SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1); SELECT SLEEP(1);", m_connection))
 		{
 			cmd.CommandTimeout = 3;
@@ -256,7 +256,7 @@ end;", m_connection))
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
 #if BASELINE
-			var ex = Assert.Throws<MySqlException>(cmd.ExecuteReader);
+			var ex = Assert.Throws<SingleStoreException>(cmd.ExecuteReader);
 			Assert.Contains("fatal error", ex.Message, StringComparison.OrdinalIgnoreCase);
 			connectionState = ConnectionState.Closed;
 #else
@@ -283,7 +283,7 @@ end;", m_connection))
 			cmd.CommandTimeout = 2;
 			var sw = Stopwatch.StartNew();
 #if BASELINE
-			var ex = await Assert.ThrowsAsync<MySqlException>(cmd.ExecuteReaderAsync);
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteReaderAsync);
 			Assert.Contains("fatal error", ex.Message, StringComparison.OrdinalIgnoreCase);
 			connectionState = ConnectionState.Closed;
 #else

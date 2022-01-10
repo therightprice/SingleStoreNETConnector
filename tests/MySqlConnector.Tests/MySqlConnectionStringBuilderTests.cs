@@ -14,7 +14,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void Defaults()
 	{
-		var csb = new MySqlConnectionStringBuilder();
+		var csb = new SingleStoreConnectionStringBuilder();
 		Assert.False(csb.AllowLoadLocalInfile);
 		Assert.False(csb.AllowPublicKeyRetrieval);
 		Assert.False(csb.AllowUserVariables);
@@ -104,7 +104,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void ParseConnectionString()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			ConnectionString = "Data Source=db-server;" +
 				"Initial Catalog=schema_name;" +
@@ -237,14 +237,14 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void EnumInvalidOperation()
 	{
-		Assert.Throws<ArgumentException>(() => new MySqlConnectionStringBuilder("ssl mode=invalid;"));
+		Assert.Throws<ArgumentException>(() => new SingleStoreConnectionStringBuilder("ssl mode=invalid;"));
 	}
 
 #if !BASELINE
 	[Fact]
 	public void ConstructWithNull()
 	{
-		var csb = new MySqlConnectionStringBuilder(default(string));
+		var csb = new SingleStoreConnectionStringBuilder(default(string));
 		Assert.Equal("", csb.ConnectionString);
 	}
 #endif
@@ -252,14 +252,14 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void ConstructWithEmptyString()
 	{
-		var csb = new MySqlConnectionStringBuilder("");
+		var csb = new SingleStoreConnectionStringBuilder("");
 		Assert.Equal("", csb.ConnectionString);
 	}
 
 	[Fact]
 	public void SetConnectionStringToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			ConnectionString = null,
 		};
@@ -269,7 +269,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetConnectionStringToEmptyString()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			ConnectionString = "",
 		};
@@ -279,7 +279,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetServerToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("Server=test");
+		var csb = new SingleStoreConnectionStringBuilder("Server=test");
 		csb.Server = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -287,7 +287,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetUserIdToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("User ID=test");
+		var csb = new SingleStoreConnectionStringBuilder("User ID=test");
 		csb.UserID = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -295,7 +295,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetPasswordToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("Password=test");
+		var csb = new SingleStoreConnectionStringBuilder("Password=test");
 		csb.Password = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -303,7 +303,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetDatabaseToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("Database=test");
+		var csb = new SingleStoreConnectionStringBuilder("Database=test");
 		csb.Database = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -311,7 +311,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetPipeNameToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("Pipe=test");
+		var csb = new SingleStoreConnectionStringBuilder("Pipe=test");
 		csb.PipeName = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -319,7 +319,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetCertificateFileToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("CertificateFile=test");
+		var csb = new SingleStoreConnectionStringBuilder("CertificateFile=test");
 		csb.CertificateFile = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -327,7 +327,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetCertificatePasswordToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("CertificatePassword=test");
+		var csb = new SingleStoreConnectionStringBuilder("CertificatePassword=test");
 		csb.CertificatePassword = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -335,7 +335,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetSslCaToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("SslCa=test");
+		var csb = new SingleStoreConnectionStringBuilder("SslCa=test");
 		csb.SslCa = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -343,7 +343,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetSslCertToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("SslCert=test");
+		var csb = new SingleStoreConnectionStringBuilder("SslCert=test");
 		csb.SslCert = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -351,7 +351,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetSslKeyToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("SslKey=test");
+		var csb = new SingleStoreConnectionStringBuilder("SslKey=test");
 		csb.SslKey = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -359,7 +359,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetCertificateThumbprintToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("CertificateThumbprint=test");
+		var csb = new SingleStoreConnectionStringBuilder("CertificateThumbprint=test");
 		csb.CertificateThumbprint = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -367,7 +367,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetCharacterSetToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("CharSet=test");
+		var csb = new SingleStoreConnectionStringBuilder("CharSet=test");
 		csb.CharacterSet = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -376,7 +376,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetApplicationNameToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("ApplicationName=test");
+		var csb = new SingleStoreConnectionStringBuilder("ApplicationName=test");
 		csb.ApplicationName = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -384,7 +384,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetServerRsaPublicKeyFileToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("ServerRSAPublicKeyFile=test");
+		var csb = new SingleStoreConnectionStringBuilder("ServerRSAPublicKeyFile=test");
 		csb.ServerRsaPublicKeyFile = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -392,7 +392,7 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void SetServerSPNToNull()
 	{
-		var csb = new MySqlConnectionStringBuilder("ServerSPN=test");
+		var csb = new SingleStoreConnectionStringBuilder("ServerSPN=test");
 		csb.ServerSPN = null;
 		Assert.Equal("", csb.ConnectionString);
 	}
@@ -426,7 +426,7 @@ public class MySqlConnectionStringBuilderTests
 	[InlineData("TLS v1.3, TLS12, Tls 1.1", "1,2,3")]
 	public void ParseTlsVersion(string input, string expected)
 	{
-		var csb = new MySqlConnectionStringBuilder { TlsVersion = input };
+		var csb = new SingleStoreConnectionStringBuilder { TlsVersion = input };
 #if !BASELINE
 		string[] normalizedVersions = new[] { "TLS 1.0", "TLS 1.1", "TLS 1.2", "TLS 1.3" };
 #else
@@ -439,9 +439,9 @@ public class MySqlConnectionStringBuilderTests
 	[Fact]
 	public void ParseInvalidTlsVersion()
 	{
-		var csb = new MySqlConnectionStringBuilder();
+		var csb = new SingleStoreConnectionStringBuilder();
 		Assert.Throws<ArgumentException>(() => csb.TlsVersion = "Tls14");
-		Assert.Throws<ArgumentException>(() => new MySqlConnectionStringBuilder("TlsVersion=Tls14"));
+		Assert.Throws<ArgumentException>(() => new SingleStoreConnectionStringBuilder("TlsVersion=Tls14"));
 	}
 
 	[Theory]
@@ -525,7 +525,7 @@ public class MySqlConnectionStringBuilderTests
 #endif
 		for (var i = 0; i < 2; i++)
 		{
-			var csb = new MySqlConnectionStringBuilder();
+			var csb = new SingleStoreConnectionStringBuilder();
 #if !BASELINE
 			// Connector/NET sets all properties to default values
 			Assert.False(csb.ContainsKey(propertyName));

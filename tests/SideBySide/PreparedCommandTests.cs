@@ -81,7 +81,7 @@ CREATE TABLE reuse_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMEN
 	[MemberData(nameof(GetInsertAndQueryData))]
 	public void InsertAndQuery(bool isPrepared, string dataType, object dataValue, MySqlDbType dbType)
 	{
-		var csb = new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
+		var csb = new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString);
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute($@"DROP TABLE IF EXISTS prepared_command_test;
@@ -191,7 +191,7 @@ CREATE TABLE prepared_command_test(rowid INTEGER NOT NULL PRIMARY KEY AUTO_INCRE
 	[MemberData(nameof(GetInsertAndQueryData))]
 	public void InsertAndQueryMultipleStatements(bool isPrepared, string dataType, object dataValue, MySqlDbType dbType)
 	{
-		var csb = new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
+		var csb = new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString);
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		connection.Execute($@"DROP TABLE IF EXISTS prepared_command_test;
@@ -257,7 +257,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		Assert.Throws<InvalidOperationException>(() => cmd.Prepare());
 #else
 		cmd.Prepare();
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 #endif
 	}
 
@@ -270,7 +270,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		Assert.Throws<IndexOutOfRangeException>(() => cmd.Prepare());
 #else
 		cmd.Prepare();
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 #endif
 	}
 
@@ -284,7 +284,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		Assert.Throws<InvalidOperationException>(() => cmd.Prepare());
 #else
 		cmd.Prepare();
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 #endif
 	}
 
@@ -298,7 +298,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 		Assert.Throws<IndexOutOfRangeException>(() => cmd.Prepare());
 #else
 		cmd.Prepare();
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 #endif
 	}
 
@@ -342,7 +342,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 	{
 		using var connection = CreateConnection();
 		using var cmd = CreateCommandWithParameters(connection, 65536);
-		var ex = Assert.Throws<MySqlException>(cmd.Prepare);
+		var ex = Assert.Throws<SingleStoreException>(cmd.Prepare);
 		Assert.Equal(MySqlErrorCode.PreparedStatementManyParameters, (MySqlErrorCode) ex.Number);
 	}
 

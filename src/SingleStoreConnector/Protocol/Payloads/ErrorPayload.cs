@@ -11,7 +11,7 @@ internal sealed class ErrorPayload
 	public string State { get; }
 	public string Message { get; }
 
-	public MySqlException ToException() => new MySqlException((MySqlErrorCode) ErrorCode, State, Message);
+	public SingleStoreException ToException() => new SingleStoreException((MySqlErrorCode) ErrorCode, State, Message);
 
 	public static ErrorPayload Create(ReadOnlySpan<byte> span)
 	{

@@ -32,32 +32,32 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// <summary>
 	/// Begins a database transaction.
 	/// </summary>
-	/// <returns>A <see cref="MySqlTransaction"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="SingleStoreTransaction"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public new MySqlTransaction BeginTransaction() => BeginTransactionAsync(IsolationLevel.Unspecified, default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
+	public new SingleStoreTransaction BeginTransaction() => BeginTransactionAsync(IsolationLevel.Unspecified, default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 
 	/// <summary>
 	/// Begins a database transaction.
 	/// </summary>
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
-	/// <returns>A <see cref="MySqlTransaction"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="SingleStoreTransaction"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public new MySqlTransaction BeginTransaction(IsolationLevel isolationLevel) => BeginTransactionAsync(isolationLevel, default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
+	public new SingleStoreTransaction BeginTransaction(IsolationLevel isolationLevel) => BeginTransactionAsync(isolationLevel, default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 
 	/// <summary>
 	/// Begins a database transaction.
 	/// </summary>
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
 	/// <param name="isReadOnly">If <c>true</c>, changes to tables used in the transaction are prohibited; otherwise, they are permitted.</param>
-	/// <returns>A <see cref="MySqlTransaction"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="SingleStoreTransaction"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public MySqlTransaction BeginTransaction(IsolationLevel isolationLevel, bool isReadOnly) => BeginTransactionAsync(isolationLevel, isReadOnly, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
+	public SingleStoreTransaction BeginTransaction(IsolationLevel isolationLevel, bool isReadOnly) => BeginTransactionAsync(isolationLevel, isReadOnly, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 
 	/// <summary>
 	/// Begins a database transaction.
 	/// </summary>
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
-	/// <returns>A <see cref="MySqlTransaction"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="SingleStoreTransaction"/> representing the new database transaction.</returns>
 	protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel) => BeginTransactionAsync(isolationLevel, default, IOBehavior.Synchronous, default).GetAwaiter().GetResult();
 #pragma warning restore CA2012
 
@@ -66,18 +66,18 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// Begins a database transaction asynchronously.
 	/// </summary>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlTransaction}"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="Task{SingleStoreTransaction}"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public new ValueTask<MySqlTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) => BeginTransactionAsync(IsolationLevel.Unspecified, default, AsyncIOBehavior, cancellationToken);
+	public new ValueTask<SingleStoreTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) => BeginTransactionAsync(IsolationLevel.Unspecified, default, AsyncIOBehavior, cancellationToken);
 
 	/// <summary>
 	/// Begins a database transaction asynchronously.
 	/// </summary>
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlTransaction}"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="Task{SingleStoreTransaction}"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public new ValueTask<MySqlTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, default, AsyncIOBehavior, cancellationToken);
+	public new ValueTask<SingleStoreTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, default, AsyncIOBehavior, cancellationToken);
 
 	/// <summary>
 	/// Begins a database transaction asynchronously.
@@ -85,9 +85,9 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
 	/// <param name="isReadOnly">If <c>true</c>, changes to tables used in the transaction are prohibited; otherwise, they are permitted.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlTransaction}"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="Task{SingleStoreTransaction}"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public ValueTask<MySqlTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, bool isReadOnly, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, isReadOnly, AsyncIOBehavior, cancellationToken);
+	public ValueTask<SingleStoreTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, bool isReadOnly, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, isReadOnly, AsyncIOBehavior, cancellationToken);
 
 	/// <summary>
 	/// Begins a database transaction asynchronously.
@@ -102,18 +102,18 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// Begins a database transaction asynchronously.
 	/// </summary>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlTransaction}"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="Task{SingleStoreTransaction}"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public ValueTask<MySqlTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) => BeginTransactionAsync(IsolationLevel.Unspecified, default, AsyncIOBehavior, cancellationToken);
+	public ValueTask<SingleStoreTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default) => BeginTransactionAsync(IsolationLevel.Unspecified, default, AsyncIOBehavior, cancellationToken);
 
 	/// <summary>
 	/// Begins a database transaction asynchronously.
 	/// </summary>
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlTransaction}"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="Task{SingleStoreTransaction}"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public ValueTask<MySqlTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, default, AsyncIOBehavior, cancellationToken);
+	public ValueTask<SingleStoreTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, default, AsyncIOBehavior, cancellationToken);
 
 	/// <summary>
 	/// Begins a database transaction asynchronously.
@@ -121,12 +121,12 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// <param name="isolationLevel">The <see cref="IsolationLevel"/> for the transaction.</param>
 	/// <param name="isReadOnly">If <c>true</c>, changes to tables used in the transaction are prohibited; otherwise, they are permitted.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="Task{MySqlTransaction}"/> representing the new database transaction.</returns>
+	/// <returns>A <see cref="Task{SingleStoreTransaction}"/> representing the new database transaction.</returns>
 	/// <remarks>Transactions may not be nested.</remarks>
-	public ValueTask<MySqlTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, bool isReadOnly, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, isReadOnly, AsyncIOBehavior, cancellationToken);
+	public ValueTask<SingleStoreTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, bool isReadOnly, CancellationToken cancellationToken = default) => BeginTransactionAsync(isolationLevel, isReadOnly, AsyncIOBehavior, cancellationToken);
 #endif
 
-	private async ValueTask<MySqlTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, bool? isReadOnly, IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private async ValueTask<SingleStoreTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, bool? isReadOnly, IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		if (State != ConnectionState.Open)
 			throw new InvalidOperationException("Connection is not open.");
@@ -165,7 +165,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			await cmd.ExecuteNonQueryAsync(ioBehavior, cancellationToken).ConfigureAwait(false);
 		}
 
-		var transaction = new MySqlTransaction(this, isolationLevel);
+		var transaction = new SingleStoreTransaction(this, isolationLevel);
 		CurrentTransaction = transaction;
 		return transaction;
 	}
@@ -180,9 +180,9 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			return;
 
 		if (m_enlistedTransaction is not null)
-			throw new MySqlException("Already enlisted in a Transaction.");
+			throw new SingleStoreException("Already enlisted in a Transaction.");
 		if (CurrentTransaction is not null)
-			throw new InvalidOperationException("Can't enlist in a Transaction when there is an active MySqlTransaction.");
+			throw new InvalidOperationException("Can't enlist in a Transaction when there is an active SingleStoreTransaction.");
 
 		if (transaction is not null)
 		{
@@ -384,7 +384,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			SetState(ConnectionState.Connecting);
 
 			var pool = ConnectionPool.GetPool(m_connectionString);
-			m_connectionSettings ??= pool?.ConnectionSettings ?? new ConnectionSettings(new MySqlConnectionStringBuilder(m_connectionString));
+			m_connectionSettings ??= pool?.ConnectionSettings ?? new ConnectionSettings(new SingleStoreConnectionStringBuilder(m_connectionString));
 
 			// check if there is an open session (in the current transaction) that can be adopted
 			if (m_connectionSettings.AutoEnlist && System.Transactions.Transaction.Current is not null)
@@ -413,7 +413,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 				SetState(ConnectionState.Closed);
 				throw;
 			}
-			catch (MySqlException)
+			catch (SingleStoreException)
 			{
 				SetState(ConnectionState.Closed);
 				cancellationToken.ThrowIfCancellationRequested();
@@ -422,7 +422,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			catch (SocketException)
 			{
 				SetState(ConnectionState.Closed);
-				throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Unable to connect to any of the specified MySQL hosts.");
+				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Unable to connect to any of the specified MySQL hosts.");
 			}
 
 			if (m_connectionSettings.AutoEnlist && System.Transactions.Transaction.Current is not null)
@@ -520,7 +520,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// <para>This delegate is executed when a new database connection is opened that requires a password. Due to
 	/// connection pooling, this delegate is only executed when a new physical connection is established with a database
 	/// server, not when a connection is retrieved from the pool.</para>
-	/// <para>The <see cref="MySqlConnectionStringBuilder.Password"/> option takes precedence over this
+	/// <para>The <see cref="SingleStoreConnectionStringBuilder.Password"/> option takes precedence over this
 	/// delegate if it is specified.</para>
 	/// <para>Using this delegate can make more efficient use of connection pooling for servers that require
 	/// frequently-changing passwords or authentication tokens. Changing the password in the connection string
@@ -531,7 +531,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// <summary>
 	/// Gets or sets the delegate used to verify that the server's certificate is valid.
 	/// </summary>
-	/// <remarks><see cref="MySqlConnectionStringBuilder.SslMode"/> must be set to <see cref="MySqlSslMode.Preferred"/>
+	/// <remarks><see cref="SingleStoreConnectionStringBuilder.SslMode"/> must be set to <see cref="MySqlSslMode.Preferred"/>
 	/// or <see cref="MySqlSslMode.Required"/> in order for this delegate to be invoked. See the documentation for
 	/// <see cref="RemoteCertificateValidationCallback"/> for more information on the values passed to this delegate.</remarks>
 	public RemoteCertificateValidationCallback? RemoteCertificateValidationCallback { get; set; }
@@ -646,7 +646,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// <summary>
 	/// Gets the time (in seconds) to wait while trying to establish a connection
 	/// before terminating the attempt and generating an error. This value
-	/// is controlled by <see cref="MySqlConnectionStringBuilder.ConnectionTimeout"/>,
+	/// is controlled by <see cref="SingleStoreConnectionStringBuilder.ConnectionTimeout"/>,
 	/// which defaults to 15 seconds.
 	/// </summary>
 	public override int ConnectionTimeout => GetConnectionSettings().ConnectionTimeout;
@@ -714,8 +714,8 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// the same password as this connection (unless overridden by <paramref name="connectionString"/>).</returns>
 	public SingleStoreConnection CloneWith(string connectionString)
 	{
-		var newBuilder = new MySqlConnectionStringBuilder(connectionString ?? throw new ArgumentNullException(nameof(connectionString)));
-		var currentBuilder = new MySqlConnectionStringBuilder(m_connectionString);
+		var newBuilder = new SingleStoreConnectionStringBuilder(connectionString ?? throw new ArgumentNullException(nameof(connectionString)));
+		var currentBuilder = new SingleStoreConnectionStringBuilder(m_connectionString);
 		var shouldCopyPassword = newBuilder.Password.Length == 0 && (!newBuilder.PersistSecurityInfo || currentBuilder.PersistSecurityInfo);
 		if (shouldCopyPassword)
 			newBuilder.Password = currentBuilder.Password;
@@ -752,7 +752,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 		try
 		{
 			// open a dedicated connection to the server to kill the active query
-			var csb = new MySqlConnectionStringBuilder(m_connectionString)
+			var csb = new SingleStoreConnectionStringBuilder(m_connectionString)
 			{
 				AutoEnlist = false,
 				Pooling = false,
@@ -775,7 +775,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			Log.Info(ex, "Session{0} ignoring cancellation for closed connection.", m_session!.Id);
 			m_session.AbortCancel(command);
 		}
-		catch (MySqlException ex)
+		catch (SingleStoreException ex)
 		{
 			// cancelling the query failed; setting the state back to 'Querying' will allow another call to 'Cancel' to try again
 			Log.Info(ex, "Session{0} cancelling CommandId {1} failed", m_session!.Id, command.CommandId);
@@ -838,7 +838,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 		return cachedProcedure;
 	}
 
-	internal MySqlTransaction? CurrentTransaction { get; set; }
+	internal SingleStoreTransaction? CurrentTransaction { get; set; }
 	internal bool AllowLoadLocalInfile => GetInitializedConnectionSettings().AllowLoadLocalInfile;
 	internal bool AllowUserVariables => GetInitializedConnectionSettings().AllowUserVariables;
 	internal bool AllowZeroDateTime => GetInitializedConnectionSettings().AllowZeroDateTime;
@@ -877,7 +877,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 
 		if (hasWarnings && InfoMessage is not null)
 		{
-			var errors = new List<MySqlError>();
+			var errors = new List<SingleStoreError>();
 			using (var command = new SingleStoreCommand("SHOW WARNINGS;", this))
 			{
 				command.Transaction = CurrentTransaction;
@@ -929,11 +929,11 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 		catch (OperationCanceledException) when (timeoutSource?.IsCancellationRequested ?? false)
 		{
 			var messageSuffix = (pool?.IsEmpty ?? false) ? " All pooled connections are in use." : "";
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired." + messageSuffix);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired." + messageSuffix);
 		}
-		catch (MySqlException ex) when ((timeoutSource?.IsCancellationRequested ?? false) || (ex.ErrorCode == MySqlErrorCode.CommandTimeoutExpired))
+		catch (SingleStoreException ex) when ((timeoutSource?.IsCancellationRequested ?? false) || (ex.ErrorCode == MySqlErrorCode.CommandTimeoutExpired))
 		{
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.", ex);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.", ex);
 		}
 		finally
 		{
@@ -1088,7 +1088,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	}
 
 	private ConnectionSettings GetConnectionSettings() =>
-		m_connectionSettings ??= new(new MySqlConnectionStringBuilder(m_connectionString));
+		m_connectionSettings ??= new(new SingleStoreConnectionStringBuilder(m_connectionString));
 
 	// This method may be called when it's known that the connection settings have been initialized.
 	private ConnectionSettings GetInitializedConnectionSettings() => m_connectionSettings!;

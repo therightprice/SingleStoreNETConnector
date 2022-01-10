@@ -159,7 +159,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.CertificateFile = Path.Combine(AppConfig.CertsPath, "ssl-client-cert.pem");
 		csb.SslMode = MySqlSslMode.Required;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 	}
 
 	[SkippableFact(ServerFeatures.KnownCertificateAuthority, ConfigSettings.RequiresSsl)]
@@ -170,7 +170,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.CertificatePassword = "";
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 #if !BASELINE
-		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 #else
 		await Assert.ThrowsAsync<AuthenticationException>(async () => await connection.OpenAsync());
 #endif
@@ -189,7 +189,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.SslMode = MySqlSslMode.VerifyCA;
 		csb.SslCa = Path.Combine(AppConfig.CertsPath, "non-ca-client-cert.pem");
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 	}
 
 #if !BASELINE
@@ -209,7 +209,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		if (expectedSuccess)
 			await connection.OpenAsync();
 		else
-			await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+			await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 	}
 #endif
 
@@ -278,7 +278,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 #if !BASELINE
-		await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 #else
 		await Assert.ThrowsAsync<Win32Exception>(async () => await connection.OpenAsync());
 #endif

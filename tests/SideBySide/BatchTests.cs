@@ -225,7 +225,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 		Assert.Equal(1, reader.GetInt32(0));
 		Assert.False(reader.Read());
 
-		var ex = Assert.Throws<MySqlException>(() => reader.NextResult());
+		var ex = Assert.Throws<SingleStoreException>(() => reader.NextResult());
 		Assert.Equal(MySqlErrorCode.ParseError, ex.ErrorCode);
 	}
 
@@ -324,7 +324,7 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 	}
 
 	private static string GetIgnoreCommandTransactionConnectionString() =>
-		new MySqlConnectionStringBuilder(AppConfig.ConnectionString)
+		new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString)
 		{
 			IgnoreCommandTransaction = true
 		}.ConnectionString;

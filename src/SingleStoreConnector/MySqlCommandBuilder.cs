@@ -4,7 +4,7 @@ using SingleStoreConnector.Utilities;
 
 namespace SingleStoreConnector;
 
-public sealed class MySqlCommandBuilder : DbCommandBuilder
+public sealed class SingleStoreCommandBuilder : DbCommandBuilder
 {
 	public static void DeriveParameters(SingleStoreCommand command) => DeriveParametersAsync(IOBehavior.Synchronous, command, CancellationToken.None).GetAwaiter().GetResult();
 	public static Task DeriveParametersAsync(SingleStoreCommand command) => DeriveParametersAsync(command?.Connection?.AsyncIOBehavior ?? IOBehavior.Asynchronous, command!, CancellationToken.None);
@@ -27,7 +27,7 @@ public sealed class MySqlCommandBuilder : DbCommandBuilder
 		if (cachedProcedure is null)
 		{
 			var name = NormalizedSchema.MustNormalize(command.CommandText!, command.Connection.Database);
-			throw new MySqlException("Procedure or function '{0}' cannot be found in database '{1}'.".FormatInvariant(name.Component, name.Schema));
+			throw new SingleStoreException("Procedure or function '{0}' cannot be found in database '{1}'.".FormatInvariant(name.Component, name.Schema));
 		}
 
 		command.Parameters.Clear();
@@ -38,14 +38,14 @@ public sealed class MySqlCommandBuilder : DbCommandBuilder
 		}
 	}
 
-	public MySqlCommandBuilder()
+	public SingleStoreCommandBuilder()
 	{
 		GC.SuppressFinalize(this);
 		QuotePrefix = "`";
 		QuoteSuffix = "`";
 	}
 
-	public MySqlCommandBuilder(SingleStoreDataAdapter dataAdapter)
+	public SingleStoreCommandBuilder(SingleStoreDataAdapter dataAdapter)
 		: this()
 	{
 		DataAdapter = dataAdapter;
@@ -63,7 +63,7 @@ public sealed class MySqlCommandBuilder : DbCommandBuilder
 
 	protected override void ApplyParameterInfo(DbParameter parameter, DataRow row, StatementType statementType, bool whereClause)
 	{
-		((MySqlParameter) parameter).MySqlDbType = (MySqlDbType) row[SchemaTableColumn.ProviderType];
+		((SingleStoreParameter) parameter).MySqlDbType = (MySqlDbType) row[SchemaTableColumn.ProviderType];
 	}
 
 	protected override string GetParameterName(int parameterOrdinal) => "@p{0}".FormatInvariant(parameterOrdinal);

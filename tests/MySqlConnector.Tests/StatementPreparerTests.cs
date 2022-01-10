@@ -64,7 +64,7 @@ public class StatementPreparerTests
 	{
 		const string sql = "SELECT @param;";
 		var parameters = new MySqlParameterCollection();
-		var parameter = new MySqlParameter("@param", value);
+		var parameter = new SingleStoreParameter("@param", value);
 
 		if (type is not null)
 		{

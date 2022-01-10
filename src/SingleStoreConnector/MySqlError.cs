@@ -1,11 +1,11 @@
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlError"/> represents an error or warning that occurred during the execution of a SQL statement.
+/// <see cref="SingleStoreError"/> represents an error or warning that occurred during the execution of a SQL statement.
 /// </summary>
-public sealed class MySqlError
+public sealed class SingleStoreError
 {
-	internal MySqlError(string level, int code, string message)
+	internal SingleStoreError(string level, int code, string message)
 	{
 		Level = level;
 #pragma warning disable 618

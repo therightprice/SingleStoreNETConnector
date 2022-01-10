@@ -21,19 +21,19 @@ public sealed class MySqlConnectorFactory : DbProviderFactory
 	public override DbConnection CreateConnection() => new SingleStoreConnection();
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlConnectionStringBuilder"/> object.
+	/// Creates a new <see cref="SingleStoreConnectionStringBuilder"/> object.
 	/// </summary>
-	public override DbConnectionStringBuilder CreateConnectionStringBuilder() => new MySqlConnectionStringBuilder();
+	public override DbConnectionStringBuilder CreateConnectionStringBuilder() => new SingleStoreConnectionStringBuilder();
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlParameter"/> object.
+	/// Creates a new <see cref="SingleStoreParameter"/> object.
 	/// </summary>
-	public override DbParameter CreateParameter() => new MySqlParameter();
+	public override DbParameter CreateParameter() => new SingleStoreParameter();
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlCommandBuilder"/> object.
+	/// Creates a new <see cref="SingleStoreCommandBuilder"/> object.
 	/// </summary>
-	public override DbCommandBuilder CreateCommandBuilder() => new MySqlCommandBuilder();
+	public override DbCommandBuilder CreateCommandBuilder() => new SingleStoreCommandBuilder();
 
 	/// <summary>
 	/// Creates a new <see cref="SingleStoreDataAdapter"/> object.

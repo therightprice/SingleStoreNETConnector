@@ -106,7 +106,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 		using (var extraConnection = new SingleStoreConnection(csb.ConnectionString))
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Assert.Throws<MySqlException>(() => extraConnection.Open());
+			Assert.Throws<SingleStoreException>(() => extraConnection.Open());
 			stopwatch.Stop();
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 4500, 6000);
 		}

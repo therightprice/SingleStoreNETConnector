@@ -416,7 +416,7 @@ internal sealed class ConnectionPool
 		if (ConnectionSettings.ServerRedirectionMode == MySqlServerRedirectionMode.Required)
 		{
 			Log.Error("Pool{0} requires server redirection but server doesn't support it", m_logArguments);
-			throw new MySqlException(MySqlErrorCode.UnableToConnectToHost, "Server does not support redirection", redirectionException);
+			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Server does not support redirection", redirectionException);
 		}
 		return session;
 	}
@@ -437,7 +437,7 @@ internal sealed class ConnectionPool
 		}
 
 		// parse connection string and check for 'Pooling' setting; return 'null' if pooling is disabled
-		var connectionStringBuilder = new MySqlConnectionStringBuilder(connectionString);
+		var connectionStringBuilder = new SingleStoreConnectionStringBuilder(connectionString);
 		if (!connectionStringBuilder.Pooling)
 		{
 			s_pools.GetOrAdd(connectionString, default(ConnectionPool));

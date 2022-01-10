@@ -5,9 +5,9 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlTransaction"/> represents an in-progress transaction on a MySQL Server.
+/// <see cref="SingleStoreTransaction"/> represents an in-progress transaction on a MySQL Server.
 /// </summary>
-public sealed class MySqlTransaction : DbTransaction
+public sealed class SingleStoreTransaction : DbTransaction
 {
 	/// <summary>
 	/// Commits the database transaction.
@@ -247,7 +247,7 @@ public sealed class MySqlTransaction : DbTransaction
 		Connection = null;
 	}
 
-	internal MySqlTransaction(SingleStoreConnection connection, IsolationLevel isolationLevel)
+	internal SingleStoreTransaction(SingleStoreConnection connection, IsolationLevel isolationLevel)
 	{
 		Connection = connection;
 		IsolationLevel = isolationLevel;
@@ -272,7 +272,7 @@ public sealed class MySqlTransaction : DbTransaction
 	private void VerifyValid()
 	{
 		if (m_isDisposed)
-			throw new ObjectDisposedException(nameof(MySqlTransaction));
+			throw new ObjectDisposedException(nameof(SingleStoreTransaction));
 		if (Connection is null)
 			throw new InvalidOperationException("Already committed or rolled back.");
 		if (Connection.CurrentTransaction is null)

@@ -16,7 +16,7 @@ internal interface IMySqlCommand
 	long LastInsertedId { get; }
 	void SetLastInsertedId(long lastInsertedId);
 	MySqlParameterCollection? OutParameters { get; set; }
-	MySqlParameter? ReturnParameter { get; set; }
+	SingleStoreParameter? ReturnParameter { get; set; }
 	ICancellableCommand CancellableCommand { get; }
 }
 

@@ -94,7 +94,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 			m_schemaTable = null;
 			return m_hasMoreResults;
 		}
-		catch (MySqlException)
+		catch (SingleStoreException)
 		{
 			m_resultSet!.Reset();
 			m_hasMoreResults = false;
@@ -107,7 +107,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 	{
 		if (m_resultSet!.ReadResultSetHeaderException is not null)
 		{
-			var mySqlException = m_resultSet.ReadResultSetHeaderException.SourceException as MySqlException;
+			var mySqlException = m_resultSet.ReadResultSetHeaderException.SourceException as SingleStoreException;
 
 			// for any exception not created from an ErrorPayload, mark the session as failed (because we can't guarantee that all data
 			// has been read from the connection and that the socket is still usable)
@@ -118,7 +118,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 				throw new OperationCanceledException(mySqlException.Message, mySqlException, cancellationToken);
 
 			if (mySqlException?.ErrorCode == MySqlErrorCode.QueryInterrupted && Command!.CancellableCommand.IsTimedOut)
-				throw MySqlException.CreateForTimeout(mySqlException);
+				throw SingleStoreException.CreateForTimeout(mySqlException);
 
 			if (mySqlException is not null)
 			{
@@ -127,7 +127,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 				m_resultSet.ReadResultSetHeaderException.Throw();
 			}
 
-			throw new MySqlException("Failed to read the result set.", m_resultSet.ReadResultSetHeaderException.SourceException);
+			throw new SingleStoreException("Failed to read the result set.", m_resultSet.ReadResultSetHeaderException.SourceException);
 		}
 
 		m_hasWarnings = m_resultSet.WarningCount != 0;
@@ -160,7 +160,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 				m_hasMoreResults = resultSet.BufferState != ResultSetState.NoMoreData;
 				return 0;
 			}
-			catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted)
+			catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted)
 			{
 				m_hasMoreResults = false;
 				cancellationToken.ThrowIfCancellationRequested();
@@ -594,7 +594,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 					{
 					}
 				}
-				catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted)
+				catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted)
 				{
 					// ignore "Query execution was interrupted" exceptions when closing a data reader
 				}

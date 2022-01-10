@@ -41,7 +41,7 @@ internal static class ICancellableCommandExtensions
 
 	/// <summary>
 	/// Causes the effective command timeout to be reset back to the value specified by <see cref="ICancellableCommand.CommandTimeout"/>
-	/// plus <see cref="MySqlConnectionStringBuilder.CancellationTimeout"/>. This allows for the command to time out, a cancellation to attempt
+	/// plus <see cref="SingleStoreConnectionStringBuilder.CancellationTimeout"/>. This allows for the command to time out, a cancellation to attempt
 	/// to happen, then the "hard" timeout to occur.
 	/// </summary>
 	/// <remarks>As per the <a href="https://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlcommand.commandtimeout.aspx">MSDN documentation</a>,

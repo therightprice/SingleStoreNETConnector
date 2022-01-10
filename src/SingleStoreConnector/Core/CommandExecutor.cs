@@ -55,7 +55,7 @@ internal static class CommandExecutor
 				await connection.Session.SendAsync(payload, ioBehavior, CancellationToken.None).ConfigureAwait(false);
 				return await SingleStoreDataReader.CreateAsync(commandListPosition, payloadCreator, cachedProcedures, command, behavior, activity, ioBehavior, cancellationToken).ConfigureAwait(false);
 			}
-			catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
+			catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
 			{
 				Log.Info("Session{0} query was interrupted", connection.Session.Id);
 				throw new OperationCanceledException(ex.Message, ex, cancellationToken);
@@ -65,7 +65,7 @@ internal static class CommandExecutor
 				// the default MySQL Server value for max_allowed_packet (in MySQL 5.7) is 4MiB: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_max_allowed_packet
 				// use "decimal megabytes" (to round up) when creating the exception message
 				int megabytes = payload.Span.Length / 1_000_000;
-				throw new MySqlException("Error submitting {0}MB packet; ensure 'max_allowed_packet' is greater than {0}MB.".FormatInvariant(megabytes), ex);
+				throw new SingleStoreException("Error submitting {0}MB packet; ensure 'max_allowed_packet' is greater than {0}MB.".FormatInvariant(megabytes), ex);
 			}
 		}
 		catch (Exception ex) when (activity is { IsAllDataRequested: true })

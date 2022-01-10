@@ -60,7 +60,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 				while (reader.Read())
 					rows++;
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Assert.Equal((int) MySqlErrorCode.QueryInterrupted, ex.Number);
 			}
@@ -86,7 +86,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 			while (reader.Read())
 				rows++;
 		}
-		catch (MySqlException ex)
+		catch (SingleStoreException ex)
 		{
 			Assert.Equal((int) MySqlErrorCode.QueryInterrupted, ex.Number);
 		}
@@ -117,7 +117,7 @@ public class CancelTests : IClassFixture<CancelFixture>, IDisposable
 				while (reader.Read())
 					rows++;
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Assert.Equal((int) MySqlErrorCode.QueryInterrupted, ex.Number);
 			}
@@ -431,7 +431,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 				while (reader.Read())
 					rows++;
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Assert.Equal(MySqlErrorCode.QueryInterrupted, ex.ErrorCode);
 			}
@@ -463,7 +463,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 			while (reader.Read())
 				rows++;
 		}
-		catch (MySqlException ex)
+		catch (SingleStoreException ex)
 		{
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, ex.ErrorCode);
 		}
@@ -502,7 +502,7 @@ create table cancel_completed_command(id integer not null primary key, value tex
 				while (reader.Read())
 					rows++;
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Assert.Equal(MySqlErrorCode.QueryInterrupted, ex.ErrorCode);
 			}

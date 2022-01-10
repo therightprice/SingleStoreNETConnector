@@ -65,7 +65,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		returnParameter.Direction = ParameterDirection.ReturnValue;
 		command.Parameters.Add(returnParameter);
 
-		Assert.Throws<MySqlException>(() => command.ExecuteNonQuery());
+		Assert.Throws<SingleStoreException>(() => command.ExecuteNonQuery());
 	}
 
 	[Fact]
@@ -82,7 +82,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		returnParameter.Direction = ParameterDirection.ReturnValue;
 		command.Parameters.Add(returnParameter);
 
-		Assert.Throws<MySqlException>(() => command.ExecuteNonQuery());
+		Assert.Throws<SingleStoreException>(() => command.ExecuteNonQuery());
 		transaction.Commit();
 	}
 
@@ -527,7 +527,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	public async Task InOut(bool prepare)
 	{
 		using var connection = CreateOpenConnection();
-		var parameter = new MySqlParameter
+		var parameter = new SingleStoreParameter
 		{
 			ParameterName = "high",
 			DbType = DbType.Int32,
@@ -585,9 +585,9 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		using var cmd = new SingleStoreCommand("circle", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
-		MySqlCommandBuilder.DeriveParameters(cmd);
+		SingleStoreCommandBuilder.DeriveParameters(cmd);
 
-		Assert.Collection(cmd.Parameters.Cast<MySqlParameter>(),
+		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
 			AssertParameter("@radius", ParameterDirection.Input, MySqlDbType.Double),
 			AssertParameter("@height", ParameterDirection.Input, MySqlDbType.Double),
 			AssertParameter("@name", ParameterDirection.Input, MySqlDbType.VarChar),
@@ -603,9 +603,9 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		using var cmd = new SingleStoreCommand("number_lister", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
-		MySqlCommandBuilder.DeriveParameters(cmd);
+		SingleStoreCommandBuilder.DeriveParameters(cmd);
 
-		Assert.Collection(cmd.Parameters.Cast<MySqlParameter>(),
+		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
 			AssertParameter("@high", ParameterDirection.InputOutput, MySqlDbType.Int32));
 	}
 
@@ -618,8 +618,8 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		cmd.Parameters.AddWithValue("test2", 2);
 		cmd.Parameters.AddWithValue("test3", 3);
 
-		MySqlCommandBuilder.DeriveParameters(cmd);
-		Assert.Collection(cmd.Parameters.Cast<MySqlParameter>(),
+		SingleStoreCommandBuilder.DeriveParameters(cmd);
+		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
 			AssertParameter("@high", ParameterDirection.InputOutput, MySqlDbType.Int32));
 	}
 
@@ -628,7 +628,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		using var cmd = new SingleStoreCommand("xx_does_not_exist", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
-		Assert.Throws<MySqlException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
+		Assert.Throws<SingleStoreException>(() => SingleStoreCommandBuilder.DeriveParameters(cmd));
 	}
 
 	[Fact]
@@ -640,7 +640,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		using (var cmd = new SingleStoreCommand("xx_does_not_exist_2", m_database.Connection))
 		{
 			cmd.CommandType = CommandType.StoredProcedure;
-			Assert.Throws<MySqlException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
+			Assert.Throws<SingleStoreException>(() => SingleStoreCommandBuilder.DeriveParameters(cmd));
 		}
 
 		using (var cmd = new SingleStoreCommand(@"create procedure xx_does_not_exist_2(
@@ -656,8 +656,8 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		using (var cmd = new SingleStoreCommand("xx_does_not_exist_2", m_database.Connection))
 		{
 			cmd.CommandType = CommandType.StoredProcedure;
-			MySqlCommandBuilder.DeriveParameters(cmd);
-			Assert.Collection(cmd.Parameters.Cast<MySqlParameter>(),
+			SingleStoreCommandBuilder.DeriveParameters(cmd);
+			Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
 				AssertParameter("@param1", ParameterDirection.Input, MySqlDbType.Int32),
 				AssertParameter("@param2", ParameterDirection.Output, MySqlDbType.VarChar));
 		}
@@ -668,9 +668,9 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		using var cmd = new SingleStoreCommand("SetJson", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
-		MySqlCommandBuilder.DeriveParameters(cmd);
+		SingleStoreCommandBuilder.DeriveParameters(cmd);
 
-		Assert.Collection(cmd.Parameters.Cast<MySqlParameter>(),
+		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
 			AssertParameter("@vJson", ParameterDirection.Input, MySqlDbType.JSON));
 	}
 
@@ -687,7 +687,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		Assert.False(reader.Read());
 	}
 
-	private static Action<MySqlParameter> AssertParameter(string name, ParameterDirection direction, MySqlDbType mySqlDbType)
+	private static Action<SingleStoreParameter> AssertParameter(string name, ParameterDirection direction, MySqlDbType mySqlDbType)
 	{
 		return x =>
 		{
@@ -723,7 +723,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 	{
 		using var command = new SingleStoreCommand("NonExistentStoredProcedure", m_database.Connection);
 		command.CommandType = CommandType.StoredProcedure;
-		Assert.Throws<MySqlException>(() => command.ExecuteNonQuery());
+		Assert.Throws<SingleStoreException>(() => command.ExecuteNonQuery());
 	}
 
 	[Fact]
@@ -732,7 +732,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		using var connection = CreateOpenConnection();
 		using var command = new SingleStoreCommand("NonExistentStoredProcedure", connection);
 		command.CommandType = CommandType.StoredProcedure;
-		Assert.Throws<MySqlException>(command.Prepare);
+		Assert.Throws<SingleStoreException>(command.Prepare);
 	}
 
 	[Theory]

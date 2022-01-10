@@ -46,8 +46,8 @@ public sealed class MySqlBulkCopy
 	/// Initializes a <see cref="MySqlBulkCopy"/> object with the specified connection, and optionally the active transaction.
 	/// </summary>
 	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
-	/// <param name="transaction">(Optional) The <see cref="MySqlTransaction"/> to use.</param>
-	public MySqlBulkCopy(SingleStoreConnection connection, MySqlTransaction? transaction = null)
+	/// <param name="transaction">(Optional) The <see cref="SingleStoreTransaction"/> to use.</param>
+	public MySqlBulkCopy(SingleStoreConnection connection, SingleStoreTransaction? transaction = null)
 	{
 		m_connection = connection ?? throw new ArgumentNullException(nameof(connection));
 		m_transaction = transaction;
@@ -317,7 +317,7 @@ public sealed class MySqlBulkCopy
 				throw new InvalidOperationException("SourceOrdinal {0} is an invalid value".FormatInvariant(columnMapping.SourceOrdinal));
 		}
 
-		var errors = new List<MySqlError>();
+		var errors = new List<SingleStoreError>();
 		MySqlInfoMessageEventHandler infoMessageHandler = (s, e) => errors.AddRange(e.Errors);
 		m_connection.InfoMessage += infoMessageHandler;
 
@@ -339,7 +339,7 @@ public sealed class MySqlBulkCopy
 		if (!m_wasAborted && rowsInserted != m_rowsCopied)
 		{
 			Log.Error("Bulk copy to DestinationTableName={0} failed; RowsCopied={1}; RowsInserted={2}", tableName, m_rowsCopied, rowsInserted);
-			throw new MySqlException(MySqlErrorCode.BulkCopyFailed, "{0} rows were copied to {1} but only {2} were inserted.".FormatInvariant(m_rowsCopied, tableName, rowsInserted));
+			throw new SingleStoreException(MySqlErrorCode.BulkCopyFailed, "{0} rows were copied to {1} but only {2} were inserted.".FormatInvariant(m_rowsCopied, tableName, rowsInserted));
 		}
 
 		return new(errors, rowsInserted);
@@ -539,9 +539,9 @@ public sealed class MySqlBulkCopy
 			else if (value is DateTime dateTimeValue)
 			{
 				if (connection.DateTimeKind == DateTimeKind.Utc && dateTimeValue.Kind == DateTimeKind.Local)
-					throw new MySqlException("DateTime.Kind must not be Local when DateTimeKind setting is Utc");
+					throw new SingleStoreException("DateTime.Kind must not be Local when DateTimeKind setting is Utc");
 				else if (connection.DateTimeKind == DateTimeKind.Local && dateTimeValue.Kind == DateTimeKind.Utc)
-					throw new MySqlException("DateTime.Kind must not be Utc when DateTimeKind setting is Local");
+					throw new SingleStoreException("DateTime.Kind must not be Utc when DateTimeKind setting is Local");
 
 				return WriteString("{0:yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'ffffff}".FormatInvariant(dateTimeValue), ref utf8Encoder, output, out bytesWritten);
 			}
@@ -672,7 +672,7 @@ public sealed class MySqlBulkCopy
 	private static readonly Encoding s_utf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
 	readonly SingleStoreConnection m_connection;
-	readonly MySqlTransaction? m_transaction;
+	readonly SingleStoreTransaction? m_transaction;
 	int m_rowsCopied;
 	IValuesEnumerator? m_valuesEnumerator;
 	bool m_wasAborted;

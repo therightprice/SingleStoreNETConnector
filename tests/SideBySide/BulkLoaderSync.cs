@@ -183,11 +183,11 @@ public class BulkLoaderSync : IClassFixture<DatabaseFixture>
 		{
 			int rowCount = bl.Load();
 		}
-		catch (MySqlException mySqlException)
+		catch (SingleStoreException mySqlException)
 		{
 			while (mySqlException.InnerException is not null)
 			{
-				if (mySqlException.InnerException is MySqlException innerException)
+				if (mySqlException.InnerException is SingleStoreException innerException)
 				{
 					mySqlException = innerException;
 				}
@@ -204,8 +204,8 @@ public class BulkLoaderSync : IClassFixture<DatabaseFixture>
 		}
 		catch (Exception exception)
 		{
-			//We know that the exception is not a MySqlException, just use the assertion to fail the test
-			Assert.IsType<MySqlException>(exception);
+			//We know that the exception is not a SingleStoreException, just use the assertion to fail the test
+			Assert.IsType<SingleStoreException>(exception);
 		}
 	}
 
@@ -372,7 +372,7 @@ public class BulkLoaderSync : IClassFixture<DatabaseFixture>
 		bl.Expressions.Add("five = UNHEX(five)");
 		bl.Local = false;
 #if BASELINE
-		Assert.Throws<MySqlException>(() =>
+		Assert.Throws<SingleStoreException>(() =>
 		{
 			int rowCount = bl.Load();
 		});
@@ -918,7 +918,7 @@ create table bulk_copy_duplicate_pk(id integer primary key, value text not null)
 			}
 		};
 
-		var ex = Assert.Throws<MySqlException>(() => bcp.WriteToServer(dataTable));
+		var ex = Assert.Throws<SingleStoreException>(() => bcp.WriteToServer(dataTable));
 		Assert.Equal(MySqlErrorCode.BulkCopyFailed, ex.ErrorCode);
 	}
 

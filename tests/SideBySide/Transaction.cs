@@ -106,7 +106,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	[Fact]
 	public async Task CommitDisposeAsync()
 	{
-		MySqlTransaction trans = null;
+		SingleStoreTransaction trans = null;
 		try
 		{
 			trans = await m_connection.BeginTransactionAsync().ConfigureAwait(false);
@@ -125,7 +125,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	public void ReadOnlyTransaction()
 	{
 		using var trans = m_connection.BeginTransaction(IsolationLevel.Serializable, isReadOnly: true);
-		var exception = Assert.Throws<MySqlException>(() => m_connection.Execute("insert into transactions_test values(1), (2)", transaction: trans));
+		var exception = Assert.Throws<SingleStoreException>(() => m_connection.Execute("insert into transactions_test values(1), (2)", transaction: trans));
 		Assert.Equal(MySqlErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
 	}
 
@@ -133,7 +133,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	public void ReadOnlySnapshotTransaction()
 	{
 		using var trans = m_connection.BeginTransaction(IsolationLevel.Snapshot, isReadOnly: true);
-		var exception = Assert.Throws<MySqlException>(() => m_connection.Execute("insert into transactions_test values(1), (2)", transaction: trans));
+		var exception = Assert.Throws<SingleStoreException>(() => m_connection.Execute("insert into transactions_test values(1), (2)", transaction: trans));
 		Assert.Equal(MySqlErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
 	}
 
@@ -153,7 +153,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	public async Task ReadOnlyTransactionAsync()
 	{
 		using var trans = await m_connection.BeginTransactionAsync(IsolationLevel.Serializable, isReadOnly: true);
-		var exception = await Assert.ThrowsAsync<MySqlException>(async () => await m_connection.ExecuteAsync("insert into transactions_test values(1), (2)", transaction: trans));
+		var exception = await Assert.ThrowsAsync<SingleStoreException>(async () => await m_connection.ExecuteAsync("insert into transactions_test values(1), (2)", transaction: trans));
 		Assert.Equal(MySqlErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
 	}
 
@@ -226,7 +226,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	[Fact]
 	public async Task RollbackDisposeAsync()
 	{
-		MySqlTransaction trans = null;
+		SingleStoreTransaction trans = null;
 		try
 		{
 			trans = await m_connection.BeginTransactionAsync().ConfigureAwait(false);
@@ -291,7 +291,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	public void SavepointRollbackUnknownName()
 	{
 		using var transaction = m_connection.BeginTransaction();
-		var ex = Assert.Throws<MySqlException>(() => transaction.Rollback("a"));
+		var ex = Assert.Throws<SingleStoreException>(() => transaction.Rollback("a"));
 		Assert.Equal(MySqlErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
 	}
 
@@ -299,7 +299,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	public void SavepointReleaseUnknownName()
 	{
 		using var transaction = m_connection.BeginTransaction();
-		var ex = Assert.Throws<MySqlException>(() => transaction.Release("a"));
+		var ex = Assert.Throws<SingleStoreException>(() => transaction.Release("a"));
 		Assert.Equal(MySqlErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
 	}
 
@@ -309,7 +309,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 		using var transaction = m_connection.BeginTransaction();
 		transaction.Save("a");
 		transaction.Release("a");
-		var ex = Assert.Throws<MySqlException>(() => transaction.Rollback("a"));
+		var ex = Assert.Throws<SingleStoreException>(() => transaction.Rollback("a"));
 		Assert.Equal(MySqlErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
 	}
 
@@ -370,7 +370,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	[Fact]
 	public async Task DisposeAsync()
 	{
-		MySqlTransaction trans = null;
+		SingleStoreTransaction trans = null;
 		try
 		{
 			trans = await m_connection.BeginTransactionAsync().ConfigureAwait(false);

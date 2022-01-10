@@ -16,7 +16,7 @@ public class CommandBuilderTests : IClassFixture<DatabaseFixture>, IDisposable
 	[SkippableFact(Baseline = "Throws NullReferenceException")]
 	public void DeriveParametersNull()
 	{
-		Assert.Throws<ArgumentNullException>(() => MySqlCommandBuilder.DeriveParameters(null));
+		Assert.Throws<ArgumentNullException>(() => SingleStoreCommandBuilder.DeriveParameters(null));
 	}
 
 	[SkippableFact(Baseline = "Throws NullReferenceException")]
@@ -24,7 +24,7 @@ public class CommandBuilderTests : IClassFixture<DatabaseFixture>, IDisposable
 	{
 		using var cmd = new SingleStoreCommand("test");
 		cmd.CommandType = CommandType.StoredProcedure;
-		Assert.Throws<ArgumentException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
+		Assert.Throws<ArgumentException>(() => SingleStoreCommandBuilder.DeriveParameters(cmd));
 	}
 
 	[SkippableFact(Baseline = "Throws InvalidOperationException")]
@@ -32,15 +32,15 @@ public class CommandBuilderTests : IClassFixture<DatabaseFixture>, IDisposable
 	{
 		using var cmd = m_database.Connection.CreateCommand();
 		cmd.CommandText = "select 1;";
-		Assert.Throws<ArgumentException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
+		Assert.Throws<ArgumentException>(() => SingleStoreCommandBuilder.DeriveParameters(cmd));
 	}
 
-	[SkippableFact(Baseline = "Throws MySqlException")]
+	[SkippableFact(Baseline = "Throws SingleStoreException")]
 	public void DeriveParametersNoCommandText()
 	{
 		using var cmd = m_database.Connection.CreateCommand();
 		cmd.CommandType = CommandType.StoredProcedure;
-		Assert.Throws<ArgumentException>(() => MySqlCommandBuilder.DeriveParameters(cmd));
+		Assert.Throws<ArgumentException>(() => SingleStoreCommandBuilder.DeriveParameters(cmd));
 	}
 
 	[Fact]
@@ -53,7 +53,7 @@ create table command_builder_insert
 	value varchar(100)
 );");
 		using (var dataAdapter = new SingleStoreDataAdapter("select * from command_builder_insert", m_database.Connection))
-		using (new MySqlCommandBuilder(dataAdapter))
+		using (new SingleStoreCommandBuilder(dataAdapter))
 		{
 			var dataTable = new DataTable();
 			dataAdapter.Fill(dataTable);
@@ -82,7 +82,7 @@ create table command_builder_update
 insert into command_builder_update values(1, 'one'), (2, 'two');
 ");
 		using (var dataAdapter = new SingleStoreDataAdapter("select * from command_builder_update", m_database.Connection))
-		using (new MySqlCommandBuilder(dataAdapter))
+		using (new SingleStoreCommandBuilder(dataAdapter))
 		{
 			var dataTable = new DataTable();
 			dataAdapter.Fill(dataTable);
@@ -106,7 +106,7 @@ create table command_builder_delete
 insert into command_builder_delete values(1, 'one'), (2, 'two');
 ");
 		using (var dataAdapter = new SingleStoreDataAdapter("select * from command_builder_delete", m_database.Connection))
-		using (new MySqlCommandBuilder(dataAdapter))
+		using (new SingleStoreCommandBuilder(dataAdapter))
 		{
 			var dataTable = new DataTable();
 			dataAdapter.Fill(dataTable);
@@ -129,7 +129,7 @@ insert into command_builder_delete values(1, 'one'), (2, 'two');
 	)]
 	public void QuoteIdentifier(string input, string expected)
 	{
-		var cb = new MySqlCommandBuilder();
+		var cb = new SingleStoreCommandBuilder();
 		Assert.Equal(expected, cb.QuoteIdentifier(input));
 	}
 
@@ -140,7 +140,7 @@ insert into command_builder_delete values(1, 'one'), (2, 'two');
 	[InlineData("```test```", "`test`")]
 	public void UnquoteIdentifier(string input, string expected)
 	{
-		var cb = new MySqlCommandBuilder();
+		var cb = new SingleStoreCommandBuilder();
 		Assert.Equal(expected, cb.UnquoteIdentifier(input));
 	}
 

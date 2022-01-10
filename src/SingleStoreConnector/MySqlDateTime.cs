@@ -2,7 +2,7 @@ namespace SingleStoreConnector;
 
 /// <summary>
 /// Represents a MySQL date/time value. This type can be used to store <c>DATETIME</c> values such
-/// as <c>0000-00-00</c> that can be stored in MySQL (when <see cref="MySqlConnectionStringBuilder.AllowZeroDateTime"/>
+/// as <c>0000-00-00</c> that can be stored in MySQL (when <see cref="SingleStoreConnectionStringBuilder.AllowZeroDateTime"/>
 /// is true) but can't be stored in a <see cref="DateTime"/> value.
 /// </summary>
 public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConvertible, IEquatable<MySqlDateTime>

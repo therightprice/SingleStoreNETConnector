@@ -164,11 +164,11 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 		{
 			int rowCount = await bl.LoadAsync();
 		}
-		catch (MySqlException mySqlException)
+		catch (SingleStoreException mySqlException)
 		{
 			while (mySqlException.InnerException is not null)
 			{
-				if (mySqlException.InnerException is MySqlException innerException)
+				if (mySqlException.InnerException is SingleStoreException innerException)
 				{
 					mySqlException = innerException;
 				}
@@ -185,8 +185,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 		}
 		catch (Exception exception)
 		{
-			//We know that the exception is not a MySqlException, just use the assertion to fail the test
-			Assert.IsType<MySqlException>(exception);
+			//We know that the exception is not a SingleStoreException, just use the assertion to fail the test
+			Assert.IsType<SingleStoreException>(exception);
 		}
 	}
 
@@ -292,7 +292,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 		bl.Expressions.Add("five = UNHEX(five)");
 		bl.Local = false;
 #if BASELINE
-		await Assert.ThrowsAsync<MySqlException>(async () =>
+		await Assert.ThrowsAsync<SingleStoreException>(async () =>
 		{
 			int rowCount = await bl.LoadAsync();
 		});

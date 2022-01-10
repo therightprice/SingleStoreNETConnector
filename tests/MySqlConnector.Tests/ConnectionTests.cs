@@ -159,7 +159,7 @@ public class ConnectionTests : IDisposable
 		{
 			m_server.SendIncompletePostHandshakeResponse = true;
 			using var connection = new SingleStoreConnection(m_csb.ConnectionString);
-			Assert.Throws<MySqlException>(() => connection.Open());
+			Assert.Throws<SingleStoreException>(() => connection.Open());
 		}
 
 		[Fact]
@@ -187,7 +187,7 @@ public class ConnectionTests : IDisposable
 		public void ConnectionTimeout()
 		{
 			m_server.BlockOnConnect = true;
-			var csb = new MySqlConnectionStringBuilder(m_csb.ConnectionString);
+			var csb = new SingleStoreConnectionStringBuilder(m_csb.ConnectionString);
 			csb.ConnectionTimeout = 4;
 			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			var stopwatch = Stopwatch.StartNew();
@@ -196,7 +196,7 @@ public class ConnectionTests : IDisposable
 				connection.Open();
 				Assert.False(true);
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Assert.InRange(stopwatch.ElapsedMilliseconds, 3900, 4100);
 				Assert.Equal(MySqlErrorCode.UnableToConnectToHost, (MySqlErrorCode) ex.Number);
@@ -212,5 +212,5 @@ public class ConnectionTests : IDisposable
 		}
 
 		readonly FakeMySqlServer m_server;
-		readonly MySqlConnectionStringBuilder m_csb;
+		readonly SingleStoreConnectionStringBuilder m_csb;
 	}

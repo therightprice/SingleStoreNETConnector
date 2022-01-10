@@ -59,7 +59,7 @@ internal sealed class SocketByteHandler : IByteHandler
 				}
 				RemainingTimeout -= unchecked(Environment.TickCount - startTime);
 			}
-			return ValueTaskExtensions.FromException<int>(MySqlException.CreateForTimeout());
+			return ValueTaskExtensions.FromException<int>(SingleStoreException.CreateForTimeout());
 		}
 		catch (Exception ex)
 		{
@@ -73,7 +73,7 @@ internal sealed class SocketByteHandler : IByteHandler
 		var timerId = RemainingTimeout switch
 		{
 			Constants.InfiniteTimeout => 0u,
-			<= 0 => throw MySqlException.CreateForTimeout(),
+			<= 0 => throw SingleStoreException.CreateForTimeout(),
 			_ => TimerQueue.Instance.Add(RemainingTimeout, m_closeSocket),
 		};
 #if !NETCOREAPP2_1_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
@@ -95,7 +95,7 @@ internal sealed class SocketByteHandler : IByteHandler
 			{
 				RemainingTimeout -= unchecked(Environment.TickCount - startTime);
 				if (!TimerQueue.Instance.Remove(timerId))
-					throw MySqlException.CreateForTimeout(ex);
+					throw SingleStoreException.CreateForTimeout(ex);
 			}
 			throw;
 		}
@@ -103,7 +103,7 @@ internal sealed class SocketByteHandler : IByteHandler
 		{
 			RemainingTimeout -= unchecked(Environment.TickCount - startTime);
 			if (!TimerQueue.Instance.Remove(timerId))
-				throw MySqlException.CreateForTimeout();
+				throw SingleStoreException.CreateForTimeout();
 		}
 		return bytesRead;
 	}

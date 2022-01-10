@@ -109,7 +109,7 @@ internal sealed class ResultSet
 					catch (Exception ex)
 					{
 						// store the exception, to be thrown after reading the response packet from the server
-						ReadResultSetHeaderException = ExceptionDispatchInfo.Capture(new MySqlException("Error during LOAD DATA LOCAL INFILE", ex));
+						ReadResultSetHeaderException = ExceptionDispatchInfo.Capture(new SingleStoreException("Error during LOAD DATA LOCAL INFILE", ex));
 					}
 
 					await Session.SendReplyAsync(EmptyPayload.Instance, ioBehavior, CancellationToken.None).ConfigureAwait(false);
@@ -121,7 +121,7 @@ internal sealed class ResultSet
 						var reader = new ByteArrayReader(span);
 						var columnCount_ = (int) reader.ReadLengthEncodedInteger();
 						if (reader.BytesRemaining != 0)
-							throw new MySqlException("Unexpected data at end of column_count packet; see https://github.com/mysql-net/MySqlConnector/issues/324");
+							throw new SingleStoreException("Unexpected data at end of column_count packet; see https://github.com/mysql-net/MySqlConnector/issues/324");
 						return columnCount_;
 					}
 					var columnCount = ReadColumnCount(payload.Span);
@@ -243,13 +243,13 @@ internal sealed class ResultSet
 			{
 				payloadData = await payloadTask.ConfigureAwait(false);
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				resultSet.BufferState = resultSet.State = ResultSetState.NoMoreData;
 				if (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && token.IsCancellationRequested)
 					throw new OperationCanceledException(ex.Message, ex, token);
 				if (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && resultSet.Command.CancellableCommand.IsTimedOut)
-					throw MySqlException.CreateForTimeout(ex);
+					throw SingleStoreException.CreateForTimeout(ex);
 				throw;
 			}
 			return ScanRowAsyncRemainder(resultSet, payloadData, row);

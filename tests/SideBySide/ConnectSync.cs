@@ -12,13 +12,13 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void ConnectBadHost()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "invalid.example.com",
 		};
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
-		var ex = Assert.Throws<MySqlException>(connection.Open);
+		var ex = Assert.Throws<SingleStoreException>(connection.Open);
 #if !BASELINE
 		Assert.True(ex.IsTransient);
 #endif
@@ -30,27 +30,27 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void ConnectBadPort()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "localhost",
 			Port = 65000,
 		};
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
-		Assert.Throws<MySqlException>(() => connection.Open());
+		Assert.Throws<SingleStoreException>(() => connection.Open());
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
 
 	[Fact]
 	public void ConnectInvalidPort()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "localhost",
 			Port = 1000000,
 		};
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		Assert.Throws<MySqlException>(() => connection.Open());
+		Assert.Throws<SingleStoreException>(() => connection.Open());
 	}
 
 	[Fact]
@@ -59,7 +59,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Database = "wrong_database";
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		var ex = Assert.Throws<MySqlException>(connection.Open);
+		var ex = Assert.Throws<SingleStoreException>(connection.Open);
 #if !BASELINE // https://bugs.mysql.com/bug.php?id=78426
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.ErrorCodes) || ex.ErrorCode != default)
 			Assert.Equal(MySqlErrorCode.UnknownDatabase, ex.ErrorCode);
@@ -73,7 +73,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Password = "wrong";
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		var ex = Assert.Throws<MySqlException>(connection.Open);
+		var ex = Assert.Throws<SingleStoreException>(connection.Open);
 #if !BASELINE // https://bugs.mysql.com/bug.php?id=78426
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.ErrorCodes) || ex.ErrorCode != default)
 			Assert.Equal(MySqlErrorCode.AccessDenied, ex.ErrorCode);
@@ -95,7 +95,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void NonExistentPipe()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			PipeName = "nonexistingpipe",
 			ConnectionProtocol = MySqlConnectionProtocol.NamedPipe,
@@ -105,7 +105,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 
 		var sw = Stopwatch.StartNew();
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		Assert.Throws<MySqlException>(connection.Open);
+		Assert.Throws<SingleStoreException>(connection.Open);
 #if !BASELINE
 		TestUtilities.AssertDuration(sw, 900, 500);
 #else
@@ -217,7 +217,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ServerFeatures.Timeout)]
 	public void ConnectTimeout()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "www.mysql.com",
 			Pooling = false,
@@ -226,7 +226,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		var stopwatch = Stopwatch.StartNew();
-		Assert.Throws<MySqlException>(() => connection.Open());
+		Assert.Throws<SingleStoreException>(() => connection.Open());
 		stopwatch.Stop();
 		TestUtilities.AssertDuration(stopwatch, 2900, 1500);
 	}
@@ -285,7 +285,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 
 		connection.ProvidePasswordCallback = _ => $"wrong_{password}";
 
-		var ex = Assert.Throws<MySqlException>(() => connection.Open());
+		var ex = Assert.Throws<SingleStoreException>(() => connection.Open());
 		Assert.Equal(MySqlErrorCode.AccessDenied, ex.ErrorCode);
 	}
 
@@ -303,7 +303,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var innerException = new NotSupportedException();
 		connection.ProvidePasswordCallback = _ => throw innerException;
 
-		var ex = Assert.Throws<MySqlException>(() => connection.Open());
+		var ex = Assert.Throws<SingleStoreException>(() => connection.Open());
 		Assert.Equal(MySqlErrorCode.ProvidePasswordCallbackFailed, ex.ErrorCode);
 		Assert.Same(innerException, ex.InnerException);
 	}
@@ -402,7 +402,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
-		Assert.Throws<MySqlException>(() => connection.ChangeDatabase($"not_a_real_database_1234"));
+		Assert.Throws<SingleStoreException>(() => connection.ChangeDatabase($"not_a_real_database_1234"));
 
 		Assert.Equal(ConnectionState.Open, connection.State);
 		Assert.Equal(csb.Database, connection.Database);
@@ -509,7 +509,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 
 		csb.Database = AppConfig.SecondaryDatabase;
 #if BASELINE
-		Assert.Throws<MySqlException>(() =>
+		Assert.Throws<SingleStoreException>(() =>
 #else
 		Assert.Throws<InvalidOperationException>(() =>
 #endif
@@ -556,7 +556,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.RsaEncryption))
 			connection.Open();
 		else
-			Assert.Throws<MySqlException>(() => connection.Open());
+			Assert.Throws<SingleStoreException>(() => connection.Open());
 #endif
 	}
 

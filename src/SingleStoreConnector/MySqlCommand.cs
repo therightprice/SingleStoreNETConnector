@@ -30,11 +30,11 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified <see cref="SingleStoreConnection"/> and <see cref="MySqlTransaction"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified <see cref="SingleStoreConnection"/> and <see cref="SingleStoreTransaction"/>.
 	/// </summary>
 	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
-	/// <param name="transaction">The active <see cref="MySqlTransaction"/>, if any.</param>
-	public SingleStoreCommand(SingleStoreConnection? connection, MySqlTransaction? transaction)
+	/// <param name="transaction">The active <see cref="SingleStoreTransaction"/>, if any.</param>
+	public SingleStoreCommand(SingleStoreConnection? connection, SingleStoreTransaction? transaction)
 		: this(null, connection, transaction)
 	{
 	}
@@ -50,12 +50,12 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified command text,<see cref="SingleStoreConnection"/>, and <see cref="MySqlTransaction"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreCommand"/> class with the specified command text,<see cref="SingleStoreConnection"/>, and <see cref="SingleStoreTransaction"/>.
 	/// </summary>
 	/// <param name="commandText">The text to assign to <see cref="CommandText"/>.</param>
 	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
-	/// <param name="transaction">The active <see cref="MySqlTransaction"/>, if any.</param>
-	public SingleStoreCommand(string? commandText, SingleStoreConnection? connection, MySqlTransaction? transaction)
+	/// <param name="transaction">The active <see cref="SingleStoreTransaction"/>, if any.</param>
+	public SingleStoreCommand(string? commandText, SingleStoreConnection? connection, SingleStoreTransaction? transaction)
 	{
 		GC.SuppressFinalize(this);
 		m_commandId = ICancellableCommandExtensions.GetNextId();
@@ -78,7 +78,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	}
 
 	/// <summary>
-	/// The collection of <see cref="MySqlParameter"/> objects for this command.
+	/// The collection of <see cref="SingleStoreParameter"/> objects for this command.
 	/// </summary>
 	public new MySqlParameterCollection Parameters => m_parameterCollection ??= new();
 
@@ -91,7 +91,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 
 	MySqlAttributeCollection? IMySqlCommand.RawAttributes => m_attributeCollection;
 
-	public new MySqlParameter CreateParameter() => (MySqlParameter) base.CreateParameter();
+	public new SingleStoreParameter CreateParameter() => (SingleStoreParameter) base.CreateParameter();
 
 	/// <inheritdoc/>
 	public override void Cancel() => Connection?.Cancel(this, m_commandId, true);
@@ -130,7 +130,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 		if (m_parameterCollection is null)
 			return null;
 		var parameters = new MySqlParameterCollection();
-		foreach (var parameter in (IEnumerable<MySqlParameter>) m_parameterCollection)
+		foreach (var parameter in (IEnumerable<SingleStoreParameter>) m_parameterCollection)
 			parameters.Add(parameter.Clone());
 		return parameters;
 	}
@@ -203,7 +203,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 
 	public bool IsPrepared => ((IMySqlCommand) this).TryGetPreparedStatements() is not null;
 
-	public new MySqlTransaction? Transaction { get; set; }
+	public new SingleStoreTransaction? Transaction { get; set; }
 
 	public new SingleStoreConnection? Connection
 	{
@@ -262,10 +262,10 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	protected override DbTransaction? DbTransaction
 	{
 		get => Transaction;
-		set => Transaction = (MySqlTransaction?) value;
+		set => Transaction = (SingleStoreTransaction?) value;
 	}
 
-	protected override DbParameter CreateDbParameter() => new MySqlParameter();
+	protected override DbParameter CreateDbParameter() => new SingleStoreParameter();
 
 	protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior) =>
 		ExecuteReaderAsync(behavior, IOBehavior.Synchronous, CancellationToken.None).GetAwaiter().GetResult();
@@ -429,7 +429,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 
 	CommandBehavior IMySqlCommand.CommandBehavior => m_commandBehavior;
 	MySqlParameterCollection? IMySqlCommand.OutParameters { get; set; }
-	MySqlParameter? IMySqlCommand.ReturnParameter { get; set; }
+	SingleStoreParameter? IMySqlCommand.ReturnParameter { get; set; }
 
 	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(SingleStoreCommand));
 

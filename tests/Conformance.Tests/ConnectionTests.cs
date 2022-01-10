@@ -10,12 +10,12 @@ public sealed class ConnectionTests : ConnectionTestBase<DbFactoryFixture>
 	{
 	}
 
-	[Fact(Skip = "Throws MySqlException when it attempts to connect.")]
+	[Fact(Skip = "Throws SingleStoreException when it attempts to connect.")]
 	public override void Set_ConnectionString_throws_when_invalid()
 	{
 	}
 
-	[Fact(Skip = "Throws MySqlException when it attempts to connect, not InvalidOperationException before connecting")]
+	[Fact(Skip = "Throws SingleStoreException when it attempts to connect, not InvalidOperationException before connecting")]
 	public override void Open_throws_when_no_connection_string()
 	{
 	}

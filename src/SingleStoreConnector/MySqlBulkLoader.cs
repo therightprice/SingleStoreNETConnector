@@ -288,7 +288,7 @@ public sealed class MySqlBulkLoader
 		}
 		catch (Exception ex)
 		{
-			throw new MySqlException($"Could not access file \"{fileName}\"", ex);
+			throw new SingleStoreException($"Could not access file \"{fileName}\"", ex);
 		}
 	}
 

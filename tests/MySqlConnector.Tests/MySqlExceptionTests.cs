@@ -10,7 +10,7 @@ public class MySqlExceptionTests
 	[Fact]
 	public void Data()
 	{
-		var exception = new MySqlException(MySqlErrorCode.No, "two", "three");
+		var exception = new SingleStoreException(MySqlErrorCode.No, "two", "three");
 		Assert.Equal(1002, exception.Data["Server Error Code"]);
 		Assert.Equal("two", exception.Data["SqlState"]);
 	}

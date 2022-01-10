@@ -8,23 +8,23 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlConnectionStringBuilder"/> allows you to construct a MySQL connection string by setting properties on the builder then reading the <see cref="DbConnectionStringBuilder.ConnectionString"/> property.
+/// <see cref="SingleStoreConnectionStringBuilder"/> allows you to construct a MySQL connection string by setting properties on the builder then reading the <see cref="DbConnectionStringBuilder.ConnectionString"/> property.
 /// </summary>
 /// <remarks>See <a href="https://mysqlconnector.net/connection-options/">Connection String Options</a> for more documentation on the options.</remarks>
-public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
+public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuilder
 {
 	/// <summary>
-	/// Initializes a new <see cref="MySqlConnectionStringBuilder"/>.
+	/// Initializes a new <see cref="SingleStoreConnectionStringBuilder"/>.
 	/// </summary>
-	public MySqlConnectionStringBuilder()
+	public SingleStoreConnectionStringBuilder()
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new <see cref="MySqlConnectionStringBuilder"/> with properties set from the specified connection string.
+	/// Initializes a new <see cref="SingleStoreConnectionStringBuilder"/> with properties set from the specified connection string.
 	/// </summary>
 	/// <param name="connectionString">The connection string to use to set property values on this object.</param>
-	public MySqlConnectionStringBuilder(string connectionString)
+	public SingleStoreConnectionStringBuilder(string connectionString)
 	{
 		ConnectionString = connectionString;
 	}
@@ -786,7 +786,7 @@ public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
 	// Other Methods
 
 	/// <summary>
-	/// Whether this <see cref="MySqlConnectionStringBuilder"/> contains a set option with the specified name.
+	/// Whether this <see cref="SingleStoreConnectionStringBuilder"/> contains a set option with the specified name.
 	/// </summary>
 	/// <param name="keyword">The option name.</param>
 	/// <returns><c>true</c> if an option with that name is set; otherwise, <c>false</c>.</returns>
@@ -835,7 +835,7 @@ public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
 
 		if (m_cachedConnectionString != connectionString)
 		{
-			var csb = new MySqlConnectionStringBuilder(connectionString);
+			var csb = new SingleStoreConnectionStringBuilder(connectionString);
 			foreach (string? key in Keys)
 				foreach (var passwordKey in MySqlConnectionStringOption.Password.Keys)
 					if (string.Equals(key, passwordKey, StringComparison.OrdinalIgnoreCase))
@@ -942,8 +942,8 @@ internal abstract class MySqlConnectionStringOption
 	public string Key => m_keys[0];
 	public IReadOnlyList<string> Keys => m_keys;
 
-	public abstract object GetObject(MySqlConnectionStringBuilder builder);
-	public abstract void SetObject(MySqlConnectionStringBuilder builder, object value);
+	public abstract object GetObject(SingleStoreConnectionStringBuilder builder);
+	public abstract void SetObject(SingleStoreConnectionStringBuilder builder, object value);
 
 	protected MySqlConnectionStringOption(IReadOnlyList<string> keys)
 	{
@@ -1241,15 +1241,15 @@ internal sealed class MySqlConnectionStringValueOption<T> : MySqlConnectionStrin
 		m_coerce = coerce;
 	}
 
-	public T GetValue(MySqlConnectionStringBuilder builder) =>
+	public T GetValue(SingleStoreConnectionStringBuilder builder) =>
 		builder.TryGetValue(Key, out var objectValue) ? ChangeType(objectValue) : m_defaultValue;
 
-	public void SetValue(MySqlConnectionStringBuilder builder, T value) =>
+	public void SetValue(SingleStoreConnectionStringBuilder builder, T value) =>
 		builder.DoSetValue(Key, m_coerce is null ? value : m_coerce(value));
 
-	public override object GetObject(MySqlConnectionStringBuilder builder) => GetValue(builder);
+	public override object GetObject(SingleStoreConnectionStringBuilder builder) => GetValue(builder);
 
-	public override void SetObject(MySqlConnectionStringBuilder builder, object value) => SetValue(builder, ChangeType(value));
+	public override void SetObject(SingleStoreConnectionStringBuilder builder, object value) => SetValue(builder, ChangeType(value));
 
 	private T ChangeType(object objectValue)
 	{
@@ -1301,15 +1301,15 @@ internal sealed class MySqlConnectionStringReferenceOption<T> : MySqlConnectionS
 		m_coerce = coerce;
 	}
 
-	public T GetValue(MySqlConnectionStringBuilder builder) =>
+	public T GetValue(SingleStoreConnectionStringBuilder builder) =>
 		builder.TryGetValue(Key, out var objectValue) ? ChangeType(objectValue) : m_defaultValue;
 
-	public void SetValue(MySqlConnectionStringBuilder builder, T? value) =>
+	public void SetValue(SingleStoreConnectionStringBuilder builder, T? value) =>
 		builder.DoSetValue(Key, m_coerce is null ? value : m_coerce(value));
 
-	public override object GetObject(MySqlConnectionStringBuilder builder) => GetValue(builder);
+	public override object GetObject(SingleStoreConnectionStringBuilder builder) => GetValue(builder);
 
-	public override void SetObject(MySqlConnectionStringBuilder builder, object value) => SetValue(builder, ChangeType(value));
+	public override void SetObject(SingleStoreConnectionStringBuilder builder, object value) => SetValue(builder, ChangeType(value));
 
 	private static T ChangeType(object objectValue) =>
 		(T) Convert.ChangeType(objectValue, typeof(T), CultureInfo.InvariantCulture);

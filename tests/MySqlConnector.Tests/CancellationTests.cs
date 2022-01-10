@@ -39,10 +39,10 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 4000, {step}, 0;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = Assert.Throws<MySqlException>(() => s_executeMethods[method](command));
+			var ex = Assert.Throws<SingleStoreException>(() => s_executeMethods[method](command));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
-			var inner = Assert.IsType<MySqlException>(ex.InnerException);
+			var inner = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, inner.ErrorCode);
 
 			// connection should still be usable
@@ -61,10 +61,10 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 4000, {step}, 0;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await s_executeAsyncMethods[method](command, default));
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await s_executeAsyncMethods[method](command, default));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
-			var inner = Assert.IsType<MySqlException>(ex.InnerException);
+			var inner = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, inner.ErrorCode);
 
 			// connection should still be usable
@@ -86,10 +86,10 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 4000, {step}, 2;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = Assert.Throws<MySqlException>(() => s_executeMethods[method](command));
+			var ex = Assert.Throws<SingleStoreException>(() => s_executeMethods[method](command));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
-			var inner = Assert.IsType<MySqlException>(ex.InnerException);
+			var inner = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, inner.ErrorCode);
 
 			// connection should still be usable
@@ -108,10 +108,10 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 4000, {step}, 2;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await s_executeAsyncMethods[method](command, default));
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await s_executeAsyncMethods[method](command, default));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
-			var inner = Assert.IsType<MySqlException>(ex.InnerException);
+			var inner = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, inner.ErrorCode);
 
 			// connection should still be usable
@@ -138,7 +138,7 @@ public class CancellationTests : IDisposable
 				command.Cancel();
 			});
 			var stopwatch = Stopwatch.StartNew();
-			var ex = Assert.Throws<MySqlException>(() => s_executeMethods[method](command));
+			var ex = Assert.Throws<SingleStoreException>(() => s_executeMethods[method](command));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, ex.ErrorCode);
 			Assert.Null(ex.InnerException);
@@ -165,7 +165,7 @@ public class CancellationTests : IDisposable
 				command.Cancel();
 			});
 			var stopwatch = Stopwatch.StartNew();
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await s_executeAsyncMethods[method](command, default));
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await s_executeAsyncMethods[method](command, default));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, ex.ErrorCode);
 			Assert.Null(ex.InnerException);
@@ -193,7 +193,7 @@ public class CancellationTests : IDisposable
 			var stopwatch = Stopwatch.StartNew();
 			var ex = await Assert.ThrowsAsync<OperationCanceledException>(async () => await s_executeAsyncMethods[method](command, source.Token));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
-			var mySqlException = Assert.IsType<MySqlException>(ex.InnerException);
+			var mySqlException = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, mySqlException.ErrorCode);
 
 			// connection should still be usable
@@ -259,10 +259,10 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 100, -1, 0;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = Assert.Throws<MySqlException>(() => s_executeMethods[method](command));
+			var ex = Assert.Throws<SingleStoreException>(() => s_executeMethods[method](command));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
-			var inner = Assert.IsType<MySqlException>(ex.InnerException);
+			var inner = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, inner.ErrorCode);
 		}
 
@@ -295,10 +295,10 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 100, -1, 0;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await s_executeAsyncMethods[method](command, default));
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await s_executeAsyncMethods[method](command, default));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
-			var inner = Assert.IsType<MySqlException>(ex.InnerException);
+			var inner = Assert.IsType<SingleStoreException>(ex.InnerException);
 			Assert.Equal(MySqlErrorCode.QueryInterrupted, inner.ErrorCode);
 		}
 
@@ -330,7 +330,7 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 10000, {step}, 1;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = Assert.Throws<MySqlException>(() => s_executeMethods[method](command));
+			var ex = Assert.Throws<SingleStoreException>(() => s_executeMethods[method](command));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 2900, 3500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
 			Assert.Null(ex.InnerException);
@@ -352,7 +352,7 @@ public class CancellationTests : IDisposable
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 10000, {step}, 1;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await s_executeAsyncMethods[method](command, default));
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await s_executeAsyncMethods[method](command, default));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 2900, 3500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
 			Assert.IsType<SocketException>(ex.InnerException);
@@ -368,14 +368,14 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetSyncMethodSteps))]
 		public void Execute(int step, int method)
 		{
-			var csb = new MySqlConnectionStringBuilder(m_csb.ConnectionString) { CancellationTimeout = -1 };
+			var csb = new SingleStoreConnectionStringBuilder(m_csb.ConnectionString) { CancellationTimeout = -1 };
 			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 10000, {step}, 1;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = Assert.Throws<MySqlException>(() => s_executeMethods[method](command));
+			var ex = Assert.Throws<SingleStoreException>(() => s_executeMethods[method](command));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
 			Assert.Null(ex.InnerException);
@@ -388,14 +388,14 @@ public class CancellationTests : IDisposable
 		[MemberData(nameof(GetAsyncMethodSteps))]
 		public async Task ExecuteAsync(int step, int method)
 		{
-			var csb = new MySqlConnectionStringBuilder(m_csb.ConnectionString) { CancellationTimeout = -1 };
+			var csb = new SingleStoreConnectionStringBuilder(m_csb.ConnectionString) { CancellationTimeout = -1 };
 			using var connection = new SingleStoreConnection(csb.ConnectionString);
 			connection.Open();
 			using var command = connection.CreateCommand();
 			command.CommandTimeout = 1;
 			command.CommandText = $"SELECT 0, 10000, {step}, 1;";
 			var stopwatch = Stopwatch.StartNew();
-			var ex = await Assert.ThrowsAsync<MySqlException>(async () => await s_executeAsyncMethods[method](command, default));
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await s_executeAsyncMethods[method](command, default));
 			Assert.InRange(stopwatch.ElapsedMilliseconds, 900, 1500);
 			Assert.Equal(MySqlErrorCode.CommandTimeoutExpired, ex.ErrorCode);
 			Assert.IsType<SocketException>(ex.InnerException);
@@ -458,5 +458,5 @@ public class CancellationTests : IDisposable
 	}
 
 	readonly FakeMySqlServer m_server;
-	readonly MySqlConnectionStringBuilder m_csb;
+	readonly SingleStoreConnectionStringBuilder m_csb;
 }

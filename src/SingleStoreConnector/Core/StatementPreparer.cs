@@ -42,17 +42,17 @@ internal sealed class StatementPreparer
 	{
 		var index = m_parameters?.NormalizedIndexOf(name) ?? -1;
 		if (index == -1 && (Options & StatementPreparerOptions.AllowUserVariables) == 0)
-			throw new MySqlException("Parameter '{0}' must be defined. To use this as a variable, set 'Allow User Variables=true' in the connection string.".FormatInvariant(name));
+			throw new SingleStoreException("Parameter '{0}' must be defined. To use this as a variable, set 'Allow User Variables=true' in the connection string.".FormatInvariant(name));
 		return index;
 	}
 
-	private MySqlParameter GetInputParameter(int index)
+	private SingleStoreParameter GetInputParameter(int index)
 	{
 		if (index >= (m_parameters?.Count ?? 0))
-			throw new MySqlException("Parameter index {0} is invalid when only {1} parameter{2} defined.".FormatInvariant(index, m_parameters?.Count ?? 0, m_parameters?.Count == 1 ? " is" : "s are"));
+			throw new SingleStoreException("Parameter index {0} is invalid when only {1} parameter{2} defined.".FormatInvariant(index, m_parameters?.Count ?? 0, m_parameters?.Count == 1 ? " is" : "s are"));
 		var parameter = m_parameters![index];
 		if (parameter.Direction != ParameterDirection.Input && (Options & StatementPreparerOptions.AllowOutputParameters) == 0)
-			throw new MySqlException("Only ParameterDirection.Input is supported when CommandType is Text (parameter name: {0})".FormatInvariant(parameter.ParameterName));
+			throw new SingleStoreException("Only ParameterDirection.Input is supported when CommandType is Text (parameter name: {0})".FormatInvariant(parameter.ParameterName));
 		return parameter;
 	}
 

@@ -202,7 +202,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		using var cmd = new SingleStoreCommand("SELECT @param;", connection);
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 	}
 
 	[Fact]
@@ -214,7 +214,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 #if BASELINE
 		Assert.Throws<IndexOutOfRangeException>(() => cmd.ExecuteScalar());
 #else
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 #endif
 	}
 
@@ -225,7 +225,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		connection.Open();
 		using var cmd = new SingleStoreCommand("SELECT @param;", connection);
 		cmd.Parameters.AddWithValue("@name", "test");
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 	}
 
 	[Fact]
@@ -238,7 +238,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 #if BASELINE
 		Assert.Throws<IndexOutOfRangeException>(() => cmd.ExecuteScalar());
 #else
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 #endif
 	}
 
@@ -248,7 +248,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		using var transaction = connection.BeginTransaction();
-		var param = new MySqlParameter("@param", MySqlDbType.Decimal) { Value = 12.3m };
+		var param = new SingleStoreParameter("@param", MySqlDbType.Decimal) { Value = 12.3m };
 		var attr = new MySqlAttribute("attr_name", 1.23);
 		using var cmd = new SingleStoreCommand("SELECT @param;", connection, transaction)
 		{
@@ -267,7 +267,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		Assert.Equal(cmd.Transaction, cmd2.Transaction);
 		Assert.Equal(cmd.CommandText, cmd2.CommandText);
 		Assert.Equal(cmd.CommandType, cmd2.CommandType);
-		var param2 = (MySqlParameter) Assert.Single(cmd2.Parameters);
+		var param2 = (SingleStoreParameter) Assert.Single(cmd2.Parameters);
 
 		Assert.Equal(param.ParameterName, param2.ParameterName);
 		Assert.Equal(param.MySqlDbType, param2.MySqlDbType);
@@ -348,7 +348,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		cmd2.CommandText = "SELECT 'abc';";
 
 #if BASELINE
-		Assert.Throws<MySqlException>(() => cmd2.ExecuteReader());
+		Assert.Throws<SingleStoreException>(() => cmd2.ExecuteReader());
 #else
 		Assert.Throws<InvalidOperationException>(() => cmd2.ExecuteReader());
 #endif
@@ -359,7 +359,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 #if BASELINE
 		return AppConfig.ConnectionString;
 #else
-		return new MySqlConnectionStringBuilder(AppConfig.ConnectionString)
+		return new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString)
 		{
 			IgnoreCommandTransaction = true
 		}.ConnectionString;

@@ -93,7 +93,7 @@ public class ParameterCollection : IDisposable
 	public void AddDuplicateParameter(string parameterName)
 	{
 		m_parameterCollection.AddWithValue("@test", 1);
-		Assert.Throws<MySqlException>(() => { m_parameterCollection.AddWithValue(parameterName, 2); });
+		Assert.Throws<SingleStoreException>(() => { m_parameterCollection.AddWithValue(parameterName, 2); });
 	}
 
 	[Fact]
@@ -179,7 +179,7 @@ public class ParameterCollection : IDisposable
 	[Fact]
 	public void AddMySqlParameter()
 	{
-		var parameter = new MySqlParameter("test", MySqlDbType.Double, 3);
+		var parameter = new SingleStoreParameter("test", MySqlDbType.Double, 3);
 		var parameter2 = m_parameterCollection.Add(parameter);
 		Assert.Same(parameter, parameter2);
 		Assert.Same(parameter, m_parameterCollection[0]);
@@ -293,7 +293,7 @@ public class ParameterCollection : IDisposable
 		cmd.Parameters.Add(parameter2);
 		parameter1.ParameterName = "@a";
 #if !BASELINE
-		Assert.Throws<MySqlException>(() => parameter2.ParameterName = "@a");
+		Assert.Throws<SingleStoreException>(() => parameter2.ParameterName = "@a");
 #else
 		Assert.Throws<ArgumentException>(() => parameter2.ParameterName = "@a");
 #endif

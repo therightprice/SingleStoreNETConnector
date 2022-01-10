@@ -3,7 +3,7 @@ using SingleStoreConnector.Utilities;
 
 namespace SingleStoreConnector;
 
-public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerable<MySqlParameter>
+public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerable<SingleStoreParameter>
 {
 	internal MySqlParameterCollection()
 	{
@@ -11,9 +11,9 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 		m_nameToIndex = new(StringComparer.OrdinalIgnoreCase);
 	}
 
-	public MySqlParameter Add(string parameterName, DbType dbType)
+	public SingleStoreParameter Add(string parameterName, DbType dbType)
 	{
-		var parameter = new MySqlParameter
+		var parameter = new SingleStoreParameter
 		{
 			ParameterName = parameterName,
 			DbType = dbType,
@@ -24,18 +24,18 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 
 	public override int Add(object value)
 	{
-		AddParameter((MySqlParameter) (value ?? throw new ArgumentNullException(nameof(value))), m_parameters.Count);
+		AddParameter((SingleStoreParameter) (value ?? throw new ArgumentNullException(nameof(value))), m_parameters.Count);
 		return m_parameters.Count - 1;
 	}
 
-	public MySqlParameter Add(MySqlParameter parameter)
+	public SingleStoreParameter Add(SingleStoreParameter parameter)
 	{
 		AddParameter(parameter ?? throw new ArgumentNullException(nameof(parameter)), m_parameters.Count);
 		return parameter;
 	}
 
-	public MySqlParameter Add(string parameterName, MySqlDbType mySqlDbType) => Add(new(parameterName, mySqlDbType));
-	public MySqlParameter Add(string parameterName, MySqlDbType mySqlDbType, int size) => Add(new(parameterName, mySqlDbType, size));
+	public SingleStoreParameter Add(string parameterName, MySqlDbType mySqlDbType) => Add(new(parameterName, mySqlDbType));
+	public SingleStoreParameter Add(string parameterName, MySqlDbType mySqlDbType, int size) => Add(new(parameterName, mySqlDbType, size));
 
 	public override void AddRange(Array values)
 	{
@@ -43,9 +43,9 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 			Add(obj!);
 	}
 
-	public MySqlParameter AddWithValue(string parameterName, object? value)
+	public SingleStoreParameter AddWithValue(string parameterName, object? value)
 	{
-		var parameter = new MySqlParameter
+		var parameter = new SingleStoreParameter
 		{
 			ParameterName = parameterName,
 			Value = value,
@@ -54,7 +54,7 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 		return parameter;
 	}
 
-	public override bool Contains(object value) => value is MySqlParameter parameter && m_parameters.Contains(parameter);
+	public override bool Contains(object value) => value is SingleStoreParameter parameter && m_parameters.Contains(parameter);
 
 	public override bool Contains(string value) => IndexOf(value) != -1;
 
@@ -70,7 +70,7 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 
 	public override IEnumerator GetEnumerator() => m_parameters.GetEnumerator();
 
-	IEnumerator<MySqlParameter> IEnumerable<MySqlParameter>.GetEnumerator() => m_parameters.GetEnumerator();
+	IEnumerator<SingleStoreParameter> IEnumerable<SingleStoreParameter>.GetEnumerator() => m_parameters.GetEnumerator();
 
 	protected override DbParameter GetParameter(int index) => m_parameters[index];
 
@@ -82,19 +82,19 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 		return m_parameters[index];
 	}
 
-	public override int IndexOf(object value) => value is MySqlParameter parameter ? m_parameters.IndexOf(parameter) : -1;
+	public override int IndexOf(object value) => value is SingleStoreParameter parameter ? m_parameters.IndexOf(parameter) : -1;
 
 	public override int IndexOf(string parameterName) => NormalizedIndexOf(parameterName);
 
 	// Finds the index of a parameter by name, regardless of whether 'parameterName' or the matching
-	// MySqlParameter.ParameterName has a leading '?' or '@'.
+	// SingleStoreParameter.ParameterName has a leading '?' or '@'.
 	internal int NormalizedIndexOf(string? parameterName)
 	{
-		var normalizedName = MySqlParameter.NormalizeParameterName(parameterName ?? "");
+		var normalizedName = SingleStoreParameter.NormalizeParameterName(parameterName ?? "");
 		return m_nameToIndex.TryGetValue(normalizedName, out var index) ? index : -1;
 	}
 
-	public override void Insert(int index, object value) => AddParameter((MySqlParameter) (value ?? throw new ArgumentNullException(nameof(value))), index);
+	public override void Insert(int index, object value) => AddParameter((SingleStoreParameter) (value ?? throw new ArgumentNullException(nameof(value))), index);
 
 	public override bool IsFixedSize => false;
 	public override bool IsReadOnly => false;
@@ -121,7 +121,7 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 
 	protected override void SetParameter(int index, DbParameter value)
 	{
-		var newParameter = (MySqlParameter) (value ?? throw new ArgumentNullException(nameof(value)));
+		var newParameter = (SingleStoreParameter) (value ?? throw new ArgumentNullException(nameof(value)));
 		var oldParameter = m_parameters[index];
 		if (oldParameter.NormalizedParameterName is not null)
 			m_nameToIndex.Remove(oldParameter.NormalizedParameterName);
@@ -138,19 +138,19 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 
 	public override object SyncRoot => throw new NotSupportedException();
 
-	public new MySqlParameter this[int index]
+	public new SingleStoreParameter this[int index]
 	{
 		get => m_parameters[index];
 		set => SetParameter(index, value);
 	}
 
-	public new MySqlParameter this[string name]
+	public new SingleStoreParameter this[string name]
 	{
-		get => (MySqlParameter) GetParameter(name);
+		get => (SingleStoreParameter) GetParameter(name);
 		set => SetParameter(name, value);
 	}
 
-	internal void ChangeParameterName(MySqlParameter parameter, string oldName, string newName)
+	internal void ChangeParameterName(SingleStoreParameter parameter, string oldName, string newName)
 	{
 		if (m_nameToIndex.TryGetValue(oldName, out var index) && m_parameters[index] == parameter)
 			m_nameToIndex.Remove(oldName);
@@ -160,15 +160,15 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 		if (newName.Length != 0)
 		{
 			if (m_nameToIndex.ContainsKey(newName))
-				throw new MySqlException(@"There is already a parameter with the name '{0}' in this collection.".FormatInvariant(parameter.ParameterName));
+				throw new SingleStoreException(@"There is already a parameter with the name '{0}' in this collection.".FormatInvariant(parameter.ParameterName));
 			m_nameToIndex[newName] = index;
 		}
 	}
 
-	private void AddParameter(MySqlParameter parameter, int index)
+	private void AddParameter(SingleStoreParameter parameter, int index)
 	{
 		if (!string.IsNullOrEmpty(parameter.NormalizedParameterName) && NormalizedIndexOf(parameter.NormalizedParameterName) != -1)
-			throw new MySqlException(@"Parameter '{0}' has already been defined.".FormatInvariant(parameter.ParameterName));
+			throw new SingleStoreException(@"Parameter '{0}' has already been defined.".FormatInvariant(parameter.ParameterName));
 		if (index < m_parameters.Count)
 		{
 			foreach (var pair in m_nameToIndex.ToList())
@@ -183,6 +183,6 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 		parameter.ParameterCollection = this;
 	}
 
-	readonly List<MySqlParameter> m_parameters;
+	readonly List<SingleStoreParameter> m_parameters;
 	readonly Dictionary<string, int> m_nameToIndex;
 }

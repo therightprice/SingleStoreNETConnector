@@ -25,7 +25,7 @@ namespace SingleStoreConnector;
 /// 		{
 /// 			Parameters =
 /// 			{
-/// 				new MySqlParameter("@name", "Sales"),
+/// 				new SingleStoreParameter("@name", "Sales"),
 /// 			},
 /// 		},
 /// 		new MySqlBatchCommand("SET @dept_id = last_insert_id()"),
@@ -33,14 +33,14 @@ namespace SingleStoreConnector;
 /// 		{
 /// 			Parameters =
 /// 			{
-/// 				new MySqlParameter("@name", "Jim Halpert"),
+/// 				new SingleStoreParameter("@name", "Jim Halpert"),
 /// 			},
 /// 		},
 /// 	 	new MySqlBatchCommand("INSERT INTO employees(name, department_id) VALUES(@name, @dept_id);")
 /// 		{
 /// 			Parameters =
 /// 			{
-/// 				new MySqlParameter("@name", "Dwight Schrute"),
+/// 				new SingleStoreParameter("@name", "Dwight Schrute"),
 /// 			},
 /// 		},
 /// 	},
@@ -67,8 +67,8 @@ public sealed class MySqlBatch :
 	/// Initializes a new <see cref="MySqlBatch"/> object, setting the <see cref="Connection"/> and <see cref="Transaction"/> if specified.
 	/// </summary>
 	/// <param name="connection">(Optional) The <see cref="SingleStoreConnection"/> to use.</param>
-	/// <param name="transaction">(Optional) The <see cref="MySqlTransaction"/> to use.</param>
-	public MySqlBatch(SingleStoreConnection? connection = null, MySqlTransaction? transaction = null)
+	/// <param name="transaction">(Optional) The <see cref="SingleStoreTransaction"/> to use.</param>
+	public MySqlBatch(SingleStoreConnection? connection = null, SingleStoreTransaction? transaction = null)
 	{
 		Connection = connection;
 		Transaction = transaction;
@@ -79,11 +79,11 @@ public sealed class MySqlBatch :
 #if NET6_0_OR_GREATER
 	public new SingleStoreConnection? Connection { get; set; }
 	protected override DbConnection? DbConnection { get => Connection; set => Connection = (SingleStoreConnection?) value; }
-	public new MySqlTransaction? Transaction { get; set; }
-	protected override DbTransaction? DbTransaction { get => Transaction; set => Transaction = (MySqlTransaction?) value; }
+	public new SingleStoreTransaction? Transaction { get; set; }
+	protected override DbTransaction? DbTransaction { get => Transaction; set => Transaction = (SingleStoreTransaction?) value; }
 #else
 	public SingleStoreConnection? Connection { get; set; }
-	public MySqlTransaction? Transaction { get; set; }
+	public SingleStoreTransaction? Transaction { get; set; }
 #endif
 
 	/// <summary>

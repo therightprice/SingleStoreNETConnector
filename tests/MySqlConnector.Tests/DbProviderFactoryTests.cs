@@ -12,11 +12,11 @@ public class DbProviderFactoryTests
 	public void CreatesExpectedTypes()
 	{
 		Assert.IsType<SingleStoreConnection>(MySqlConnectorFactory.Instance.CreateConnection());
-		Assert.IsType<MySqlConnectionStringBuilder>(MySqlConnectorFactory.Instance.CreateConnectionStringBuilder());
+		Assert.IsType<SingleStoreConnectionStringBuilder>(MySqlConnectorFactory.Instance.CreateConnectionStringBuilder());
 		Assert.IsType<SingleStoreCommand>(MySqlConnectorFactory.Instance.CreateCommand());
-		Assert.IsType<MySqlCommandBuilder>(MySqlConnectorFactory.Instance.CreateCommandBuilder());
+		Assert.IsType<SingleStoreCommandBuilder>(MySqlConnectorFactory.Instance.CreateCommandBuilder());
 		Assert.IsType<SingleStoreDataAdapter>(MySqlConnectorFactory.Instance.CreateDataAdapter());
-		Assert.IsType<MySqlParameter>(MySqlConnectorFactory.Instance.CreateParameter());
+		Assert.IsType<SingleStoreParameter>(MySqlConnectorFactory.Instance.CreateParameter());
 	}
 
 	[Fact]

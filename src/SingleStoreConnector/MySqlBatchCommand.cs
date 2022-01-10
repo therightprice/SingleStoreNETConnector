@@ -65,7 +65,7 @@ public sealed class MySqlBatchCommand :
 
 	MySqlParameterCollection? IMySqlCommand.OutParameters { get; set; }
 
-	MySqlParameter? IMySqlCommand.ReturnParameter { get; set; }
+	SingleStoreParameter? IMySqlCommand.ReturnParameter { get; set; }
 
 	ICancellableCommand IMySqlCommand.CancellableCommand => Batch!;
 

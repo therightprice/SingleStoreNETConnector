@@ -7,7 +7,7 @@ namespace SingleStoreConnector.Core;
 
 internal sealed class ConnectionSettings
 {
-	public ConnectionSettings(MySqlConnectionStringBuilder csb)
+	public ConnectionSettings(SingleStoreConnectionStringBuilder csb)
 	{
 		ConnectionStringBuilder = csb;
 		ConnectionString = csb.ConnectionString;
@@ -17,7 +17,7 @@ internal sealed class ConnectionSettings
 			if (csb.LoadBalance != MySqlLoadBalance.RoundRobin)
 				throw new NotSupportedException("LoadBalance not supported when ConnectionProtocol=UnixSocket");
 			if (!File.Exists(csb.Server))
-				throw new MySqlException("Cannot find Unix Socket at " + csb.Server);
+				throw new SingleStoreException("Cannot find Unix Socket at " + csb.Server);
 			ConnectionProtocol = MySqlConnectionProtocol.UnixSocket;
 			UnixSocket = Path.GetFullPath(csb.Server);
 			PipeName = "";
@@ -116,7 +116,7 @@ internal sealed class ConnectionSettings
 			Log.Warn("DeferConnectionReset=false is not supported; using regular connection reset behavior.");
 #pragma warning restore 618
 		if (csb.MinimumPoolSize > csb.MaximumPoolSize)
-			throw new MySqlException("MaximumPoolSize must be greater than or equal to MinimumPoolSize");
+			throw new SingleStoreException("MaximumPoolSize must be greater than or equal to MinimumPoolSize");
 		MinimumPoolSize = ToSigned(csb.MinimumPoolSize);
 		MaximumPoolSize = ToSigned(csb.MaximumPoolSize);
 
@@ -167,18 +167,18 @@ internal sealed class ConnectionSettings
 		case MySqlGuidFormat.TimeSwapBinary16:
 		case MySqlGuidFormat.LittleEndianBinary16:
 			if (oldGuids)
-				throw new MySqlException("OldGuids cannot be used with GuidFormat");
+				throw new SingleStoreException("OldGuids cannot be used with GuidFormat");
 			return guidFormat;
 		default:
-			throw new MySqlException("Unknown GuidFormat");
+			throw new SingleStoreException("Unknown GuidFormat");
 		}
 	}
 
 	/// <summary>
-	/// The <see cref="MySqlConnectionStringBuilder" /> that was used to create this <see cref="ConnectionSettings" />.!--
+	/// The <see cref="SingleStoreConnectionStringBuilder" /> that was used to create this <see cref="ConnectionSettings" />.!--
 	/// This object must not be mutated.
 	/// </summary>
-	public MySqlConnectionStringBuilder ConnectionStringBuilder { get; }
+	public SingleStoreConnectionStringBuilder ConnectionStringBuilder { get; }
 
 	// Base Options
 	public string ConnectionString { get; }

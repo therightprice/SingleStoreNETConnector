@@ -5,12 +5,12 @@ namespace SingleStoreConnector;
 /// </summary>
 public sealed class MySqlInfoMessageEventArgs : EventArgs
 {
-	internal MySqlInfoMessageEventArgs(IReadOnlyList<MySqlError> errors) => Errors = errors;
+	internal MySqlInfoMessageEventArgs(IReadOnlyList<SingleStoreError> errors) => Errors = errors;
 
 	/// <summary>
 	/// The list of errors being reported.
 	/// </summary>
-	public IReadOnlyList<MySqlError> Errors { get; }
+	public IReadOnlyList<SingleStoreError> Errors { get; }
 }
 
 /// <summary>

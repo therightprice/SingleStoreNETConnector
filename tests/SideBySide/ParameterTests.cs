@@ -13,11 +13,11 @@ public class ParameterTests
 	[InlineData(DbType.Guid, MySqlDbType.Guid)]
 	public void DbTypeToMySqlDbType(DbType dbType, MySqlDbType mySqlDbType)
 	{
-		var parameter = new MySqlParameter { DbType = dbType };
+		var parameter = new SingleStoreParameter { DbType = dbType };
 		Assert.Equal(dbType, parameter.DbType);
 		Assert.Equal(mySqlDbType, parameter.MySqlDbType);
 
-		parameter = new MySqlParameter { MySqlDbType = mySqlDbType };
+		parameter = new SingleStoreParameter { MySqlDbType = mySqlDbType };
 		Assert.Equal(mySqlDbType, parameter.MySqlDbType);
 		Assert.Equal(dbType, parameter.DbType);
 	}
@@ -42,14 +42,14 @@ public class ParameterTests
 	{
 		foreach (var dbType in dbTypes)
 		{
-			var parameter = new MySqlParameter { DbType = dbType };
+			var parameter = new SingleStoreParameter { DbType = dbType };
 			Assert.Equal(dbType, parameter.DbType);
 			Assert.Equal(mySqlDbTypes[0], parameter.MySqlDbType);
 		}
 
 		foreach (var mySqlDbType in mySqlDbTypes)
 		{
-			var parameter = new MySqlParameter { MySqlDbType = mySqlDbType };
+			var parameter = new SingleStoreParameter { MySqlDbType = mySqlDbType };
 			Assert.Equal(mySqlDbType, parameter.MySqlDbType);
 			Assert.Equal(dbTypes[0], parameter.DbType);
 		}
@@ -58,7 +58,7 @@ public class ParameterTests
 	[Fact]
 	public void ConstructorSimple()
 	{
-		var parameter = new MySqlParameter();
+		var parameter = new SingleStoreParameter();
 #if BASELINE
 		Assert.Null(parameter.ParameterName);
 		Assert.Equal(MySqlDbType.Decimal, parameter.MySqlDbType);
@@ -86,7 +86,7 @@ public class ParameterTests
 	[Fact]
 	public void ConstructorNameValue()
 	{
-		var parameter = new MySqlParameter("@name", 1.0);
+		var parameter = new SingleStoreParameter("@name", 1.0);
 		Assert.Equal("@name", parameter.ParameterName);
 		Assert.Equal(MySqlDbType.Double, parameter.MySqlDbType);
 		Assert.Equal(DbType.Double, parameter.DbType);
@@ -111,7 +111,7 @@ public class ParameterTests
 	[Fact]
 	public void ConstructorNameType()
 	{
-		var parameter = new MySqlParameter("@name", MySqlDbType.Double);
+		var parameter = new SingleStoreParameter("@name", MySqlDbType.Double);
 		Assert.Equal("@name", parameter.ParameterName);
 		Assert.Equal(MySqlDbType.Double, parameter.MySqlDbType);
 		Assert.Equal(DbType.Double, parameter.DbType);
@@ -140,7 +140,7 @@ public class ParameterTests
 	[Fact]
 	public void ConstructorNameTypeSize()
 	{
-		var parameter = new MySqlParameter("@name", MySqlDbType.Double, 4);
+		var parameter = new SingleStoreParameter("@name", MySqlDbType.Double, 4);
 		Assert.Equal("@name", parameter.ParameterName);
 		Assert.Equal(MySqlDbType.Double, parameter.MySqlDbType);
 		Assert.Equal(DbType.Double, parameter.DbType);
@@ -169,7 +169,7 @@ public class ParameterTests
 	[Fact]
 	public void ConstructorNameTypeSizeSourceColumn()
 	{
-		var parameter = new MySqlParameter("@name", MySqlDbType.Int32, 4, "source");
+		var parameter = new SingleStoreParameter("@name", MySqlDbType.Int32, 4, "source");
 		Assert.Equal("@name", parameter.ParameterName);
 		Assert.Equal(MySqlDbType.Int32, parameter.MySqlDbType);
 		Assert.Equal(DbType.Int32, parameter.DbType);
@@ -195,12 +195,12 @@ public class ParameterTests
 	public void ConstructorEverything()
 	{
 #if !NET452
-		var parameter = new MySqlParameter("@name", MySqlDbType.Float, 4, ParameterDirection.Output, true, 1, 2, "source", DataRowVersion.Original, 3.0);
+		var parameter = new SingleStoreParameter("@name", MySqlDbType.Float, 4, ParameterDirection.Output, true, 1, 2, "source", DataRowVersion.Original, 3.0);
 		Assert.Equal(1, parameter.Precision);
 		Assert.Equal(2, parameter.Scale);
 #else
 		// The .NET 4.5.2 tests use the .NET 4.5 library, which does not support Precision and Scale (they were added in .NET 4.5.1)
-		var parameter = new MySqlParameter("@name", MySqlDbType.Float, 4, ParameterDirection.Output, true, 0, 0, "source", DataRowVersion.Original, 3.0);
+		var parameter = new SingleStoreParameter("@name", MySqlDbType.Float, 4, ParameterDirection.Output, true, 0, 0, "source", DataRowVersion.Original, 3.0);
 #endif
 		Assert.Equal("@name", parameter.ParameterName);
 		Assert.Equal(MySqlDbType.Float, parameter.MySqlDbType);
@@ -216,7 +216,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneParameterName()
 	{
-		var parameter = new MySqlParameter { ParameterName = "test" };
+		var parameter = new SingleStoreParameter { ParameterName = "test" };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.ParameterName, clone.ParameterName);
 	}
@@ -224,7 +224,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneDbType()
 	{
-		var parameter = new MySqlParameter { DbType = DbType.Int64 };
+		var parameter = new SingleStoreParameter { DbType = DbType.Int64 };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.DbType, clone.DbType);
 	}
@@ -232,7 +232,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneMySqlDbType()
 	{
-		var parameter = new MySqlParameter { MySqlDbType = MySqlDbType.MediumText };
+		var parameter = new SingleStoreParameter { MySqlDbType = MySqlDbType.MediumText };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.MySqlDbType, clone.MySqlDbType);
 	}
@@ -240,7 +240,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneDirection()
 	{
-		var parameter = new MySqlParameter { Direction = ParameterDirection.InputOutput };
+		var parameter = new SingleStoreParameter { Direction = ParameterDirection.InputOutput };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.Direction, clone.Direction);
 	}
@@ -248,7 +248,7 @@ public class ParameterTests
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=92734")]
 	public void CloneIsNullable()
 	{
-		var parameter = new MySqlParameter { IsNullable = true };
+		var parameter = new SingleStoreParameter { IsNullable = true };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.IsNullable, clone.IsNullable);
 	}
@@ -256,7 +256,7 @@ public class ParameterTests
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=92734")]
 	public void ClonePrecision()
 	{
-		var parameter = new MySqlParameter { Precision = 10 };
+		var parameter = new SingleStoreParameter { Precision = 10 };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.Precision, clone.Precision);
 	}
@@ -264,7 +264,7 @@ public class ParameterTests
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=92734")]
 	public void CloneScale()
 	{
-		var parameter = new MySqlParameter { Scale = 12 };
+		var parameter = new SingleStoreParameter { Scale = 12 };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.Scale, clone.Scale);
 	}
@@ -272,7 +272,7 @@ public class ParameterTests
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=92734")]
 	public void CloneSize()
 	{
-		var parameter = new MySqlParameter { Size = 8 };
+		var parameter = new SingleStoreParameter { Size = 8 };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.Size, clone.Size);
 	}
@@ -280,7 +280,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneSourceColumn()
 	{
-		var parameter = new MySqlParameter { SourceColumn = "test" };
+		var parameter = new SingleStoreParameter { SourceColumn = "test" };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.SourceColumn, clone.SourceColumn);
 	}
@@ -288,7 +288,7 @@ public class ParameterTests
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=92734")]
 	public void CloneSourceColumnNullMapping()
 	{
-		var parameter = new MySqlParameter { SourceColumnNullMapping = true };
+		var parameter = new SingleStoreParameter { SourceColumnNullMapping = true };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.SourceColumnNullMapping, clone.SourceColumnNullMapping);
 	}
@@ -296,7 +296,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneSourceVersion()
 	{
-		var parameter = new MySqlParameter { SourceVersion = DataRowVersion.Proposed };
+		var parameter = new SingleStoreParameter { SourceVersion = DataRowVersion.Proposed };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.SourceVersion, clone.SourceVersion);
 	}
@@ -304,7 +304,7 @@ public class ParameterTests
 	[Fact]
 	public void CloneValue()
 	{
-		var parameter = new MySqlParameter { Value = "test" };
+		var parameter = new SingleStoreParameter { Value = "test" };
 		var clone = parameter.Clone();
 		Assert.Equal(parameter.Value, clone.Value);
 	}
@@ -321,7 +321,7 @@ public class ParameterTests
 #endif
 	public void SetValueInfersType(object value, DbType expectedDbType, MySqlDbType expectedMySqlDbType)
 	{
-		var parameter = new MySqlParameter { Value = value };
+		var parameter = new SingleStoreParameter { Value = value };
 		Assert.Equal(expectedDbType, parameter.DbType);
 		Assert.Equal(expectedMySqlDbType, parameter.MySqlDbType);
 	}
@@ -329,7 +329,7 @@ public class ParameterTests
 	[Fact]
 	public void SetValueToByteArrayInfersType()
 	{
-		var parameter = new MySqlParameter { Value = new byte[1] };
+		var parameter = new SingleStoreParameter { Value = new byte[1] };
 #if BASELINE
 		Assert.Equal(DbType.Object, parameter.DbType);
 #else
@@ -342,7 +342,7 @@ public class ParameterTests
 	[Fact]
 	public void SetValueDoesNotInferType()
 	{
-		var parameter = new MySqlParameter("@name", MySqlDbType.Int32);
+		var parameter = new SingleStoreParameter("@name", MySqlDbType.Int32);
 		Assert.Equal(DbType.Int32, parameter.DbType);
 		Assert.Equal(MySqlDbType.Int32, parameter.MySqlDbType);
 
@@ -354,7 +354,7 @@ public class ParameterTests
 	[Fact]
 	public void ResetDbType()
 	{
-		var parameter = new MySqlParameter("@name", 1);
+		var parameter = new SingleStoreParameter("@name", 1);
 		Assert.Equal(DbType.Int32, parameter.DbType);
 		Assert.Equal(MySqlDbType.Int32, parameter.MySqlDbType);
 
@@ -394,7 +394,7 @@ public class ParameterTests
 	public void PrecisionDirect()
 	{
 		SingleStoreCommand command = new SingleStoreCommand();
-		MySqlParameter parameter = command.CreateParameter();
+		SingleStoreParameter parameter = command.CreateParameter();
 		parameter.Precision = 11;
 		Assert.Equal((byte) 11, parameter.Precision);
 	}
@@ -405,7 +405,7 @@ public class ParameterTests
 		SingleStoreCommand command = new SingleStoreCommand();
 		DbParameter parameter = command.CreateParameter();
 		((IDbDataParameter) parameter).Precision = 11;
-		Assert.Equal((byte) 11, ((MySqlParameter) parameter).Precision);
+		Assert.Equal((byte) 11, ((SingleStoreParameter) parameter).Precision);
 	}
 
 	[Fact]
@@ -430,7 +430,7 @@ public class ParameterTests
 	public void ScaleDirect()
 	{
 		SingleStoreCommand command = new SingleStoreCommand();
-		MySqlParameter parameter = command.CreateParameter();
+		SingleStoreParameter parameter = command.CreateParameter();
 		parameter.Scale = 12;
 		Assert.Equal((byte) 12, parameter.Scale);
 	}
@@ -441,6 +441,6 @@ public class ParameterTests
 		SingleStoreCommand command = new SingleStoreCommand();
 		DbParameter parameter = command.CreateParameter();
 		((IDbDataParameter) parameter).Scale = 12;
-		Assert.Equal((byte) 12, ((MySqlParameter) parameter).Scale);
+		Assert.Equal((byte) 12, ((SingleStoreParameter) parameter).Scale);
 	}
 }

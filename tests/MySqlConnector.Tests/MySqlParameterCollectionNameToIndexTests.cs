@@ -8,9 +8,9 @@ public class MySqlParameterCollectionNameToIndexTests
 	{
 		m_collection = new MySqlParameterCollection
 		{
-			new MySqlParameter { ParameterName = "A", Value = 1 },
-			new MySqlParameter { ParameterName = "B", Value = 2 },
-			new MySqlParameter { ParameterName = "C", Value = 3 },
+			new SingleStoreParameter { ParameterName = "A", Value = 1 },
+			new SingleStoreParameter { ParameterName = "B", Value = 2 },
+			new SingleStoreParameter { ParameterName = "C", Value = 3 },
 		};
 	}
 
@@ -79,7 +79,7 @@ public class MySqlParameterCollectionNameToIndexTests
 	[Fact]
 	public void InsertBeginning()
 	{
-		m_collection.Insert(0, new MySqlParameter { ParameterName = "D", Value = 4 });
+		m_collection.Insert(0, new SingleStoreParameter { ParameterName = "D", Value = 4 });
 		Assert.Equal(1, m_collection.NormalizedIndexOf("A"));
 		Assert.Equal(2, m_collection.NormalizedIndexOf("B"));
 		Assert.Equal(3, m_collection.NormalizedIndexOf("C"));
@@ -89,7 +89,7 @@ public class MySqlParameterCollectionNameToIndexTests
 	[Fact]
 	public void InsertMiddle()
 	{
-		m_collection.Insert(1, new MySqlParameter { ParameterName = "D", Value = 4 });
+		m_collection.Insert(1, new SingleStoreParameter { ParameterName = "D", Value = 4 });
 		Assert.Equal(0, m_collection.NormalizedIndexOf("A"));
 		Assert.Equal(2, m_collection.NormalizedIndexOf("B"));
 		Assert.Equal(3, m_collection.NormalizedIndexOf("C"));
@@ -99,7 +99,7 @@ public class MySqlParameterCollectionNameToIndexTests
 	[Fact]
 	public void InsertEnd()
 	{
-		m_collection.Insert(3, new MySqlParameter { ParameterName = "D", Value = 4 });
+		m_collection.Insert(3, new SingleStoreParameter { ParameterName = "D", Value = 4 });
 		Assert.Equal(0, m_collection.NormalizedIndexOf("A"));
 		Assert.Equal(1, m_collection.NormalizedIndexOf("B"));
 		Assert.Equal(2, m_collection.NormalizedIndexOf("C"));
@@ -109,7 +109,7 @@ public class MySqlParameterCollectionNameToIndexTests
 	[Fact]
 	public void AddEnd()
 	{
-		m_collection.Add(new MySqlParameter { ParameterName = "D", Value = 4 });
+		m_collection.Add(new SingleStoreParameter { ParameterName = "D", Value = 4 });
 		Assert.Equal(0, m_collection.NormalizedIndexOf("A"));
 		Assert.Equal(1, m_collection.NormalizedIndexOf("B"));
 		Assert.Equal(2, m_collection.NormalizedIndexOf("C"));
@@ -119,7 +119,7 @@ public class MySqlParameterCollectionNameToIndexTests
 	[Fact]
 	public void ChangeParameter()
 	{
-		m_collection[1] = new MySqlParameter { ParameterName = "D", Value = 4 };
+		m_collection[1] = new SingleStoreParameter { ParameterName = "D", Value = 4 };
 		Assert.Equal(0, m_collection.NormalizedIndexOf("A"));
 		Assert.Equal(-1, m_collection.NormalizedIndexOf("B"));
 		Assert.Equal(2, m_collection.NormalizedIndexOf("C"));

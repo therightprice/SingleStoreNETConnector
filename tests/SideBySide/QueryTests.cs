@@ -19,7 +19,7 @@ public class QueryTests : IClassFixture<DatabaseFixture>, IDisposable
 	[InlineData(false, false, true)]
 	public void Bug1096(bool sprocBeforeInsert, bool sprocAfterInsert, bool sprocTwiceBeforeInsert)
 	{
-		var csb = new MySqlConnectionStringBuilder(AppConfig.ConnectionString);
+		var csb = new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString);
 		csb.UseAffectedRows = true;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
@@ -142,7 +142,7 @@ INSERT INTO bug_1096 (`Name`) VALUES ('Demo-Name');");
 
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = "set @var = 1; select @var + 1;";
-		Assert.Throws<MySqlException>(() => cmd.ExecuteScalar());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteScalar());
 	}
 
 	[Fact]
@@ -186,7 +186,7 @@ insert into query_test (value) VALUES (1);
 		using var reader = cmd.ExecuteReader();
 		reader.Dispose();
 #if BASELINE
-		Assert.Throws<MySqlException>(() => reader.Read());
+		Assert.Throws<SingleStoreException>(() => reader.Read());
 #else
 		Assert.Throws<InvalidOperationException>(() => reader.Read());
 #endif
@@ -200,7 +200,7 @@ insert into query_test (value) VALUES (1);
 		using var reader = cmd.ExecuteReader();
 		reader.Dispose();
 #if BASELINE
-		await Assert.ThrowsAsync<MySqlException>(() => reader.ReadAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(() => reader.ReadAsync());
 #else
 		await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAsync());
 #endif
@@ -214,7 +214,7 @@ insert into query_test (value) VALUES (1);
 		using var reader = cmd.ExecuteReader();
 		reader.Dispose();
 #if BASELINE
-		Assert.Throws<MySqlException>(() => reader.NextResult());
+		Assert.Throws<SingleStoreException>(() => reader.NextResult());
 #else
 		Assert.Throws<InvalidOperationException>(() => reader.NextResult());
 #endif
@@ -228,7 +228,7 @@ insert into query_test (value) VALUES (1);
 		using var reader = cmd.ExecuteReader();
 		reader.Dispose();
 #if BASELINE
-		await Assert.ThrowsAsync<MySqlException>(() => reader.NextResultAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(() => reader.NextResultAsync());
 #else
 		await Assert.ThrowsAsync<InvalidOperationException>(() => reader.NextResultAsync());
 #endif
@@ -247,13 +247,13 @@ create table query_invalid_sql(id integer not null primary key auto_increment);"
 		using (var cmd = m_database.Connection.CreateCommand())
 		{
 			cmd.CommandText = @"select id from query_invalid_sql limit 1 where id is not null";
-			var ex = await Assert.ThrowsAsync<MySqlException>(cmd.ExecuteNonQueryAsync);
+			var ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteNonQueryAsync);
 			Assert.Equal((int) MySqlErrorCode.ParseError, ex.Number);
 
-			ex = await Assert.ThrowsAsync<MySqlException>(cmd.ExecuteReaderAsync);
+			ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteReaderAsync);
 			Assert.Equal((int) MySqlErrorCode.ParseError, ex.Number);
 
-			ex = await Assert.ThrowsAsync<MySqlException>(cmd.ExecuteScalarAsync);
+			ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteScalarAsync);
 			Assert.Equal((int) MySqlErrorCode.ParseError, ex.Number);
 		}
 
@@ -268,7 +268,7 @@ create table query_invalid_sql(id integer not null primary key auto_increment);"
 	public async Task MultipleReaders()
 	{
 #if BASELINE
-		var exceptionType = typeof(MySqlException);
+		var exceptionType = typeof(SingleStoreException);
 #else
 		var exceptionType = typeof(InvalidOperationException);
 #endif
@@ -479,7 +479,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 		Assert.Equal(1, reader.GetInt32(0));
 		Assert.False(await reader.ReadAsync().ConfigureAwait(false));
 
-		await Assert.ThrowsAsync<MySqlException>(() => reader.NextResultAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(() => reader.NextResultAsync());
 		Assert.False(await reader.ReadAsync().ConfigureAwait(false));
 
 		Assert.False(await reader.NextResultAsync().ConfigureAwait(false));
@@ -878,7 +878,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 			Value = 123,
 		});
 
-		Assert.Throws<MySqlException>(() => cmd.ExecuteNonQuery());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteNonQuery());
 
 		// Issue #231: Assert.Equal(1234, cmd.Parameters["@param"].Value);
 	}
@@ -895,7 +895,7 @@ insert into query_null_parameter (id, value) VALUES (1, 'one'), (2, 'two'), (3, 
 			Direction = ParameterDirection.Output,
 		});
 
-		Assert.Throws<MySqlException>(() => cmd.ExecuteNonQuery());
+		Assert.Throws<SingleStoreException>(() => cmd.ExecuteNonQuery());
 
 		// Issue #231: Assert.Equal(1234, cmd.Parameters["@param"].Value);
 	}
@@ -987,22 +987,22 @@ insert into long_enum_test (id, value) VALUES (0x7FFFFFFFFFFFFFFF, 1);
 	[Fact]
 	public void ReturnDerivedTypes()
 	{
-		using MySqlTransaction transaction = m_database.Connection.BeginTransaction();
+		using SingleStoreTransaction transaction = m_database.Connection.BeginTransaction();
 		using SingleStoreCommand command = m_database.Connection.CreateCommand();
 		command.Transaction = transaction;
 		command.CommandText = "select @param + @param2";
 
-		MySqlParameter parameter = command.CreateParameter();
+		SingleStoreParameter parameter = command.CreateParameter();
 		parameter.ParameterName = "param";
 		parameter.Value = 1;
 		MySqlParameterCollection parameterCollection = command.Parameters;
 		parameterCollection.Add(parameter);
 
-		MySqlParameter parameter2 = parameterCollection.AddWithValue("param2", 2);
+		SingleStoreParameter parameter2 = parameterCollection.AddWithValue("param2", 2);
 
-		MySqlParameter parameterB = parameterCollection[0];
+		SingleStoreParameter parameterB = parameterCollection[0];
 		Assert.Same(parameter, parameterB);
-		MySqlParameter parameter2B = parameterCollection["param2"];
+		SingleStoreParameter parameter2B = parameterCollection["param2"];
 		Assert.Same(parameter2, parameter2B);
 
 		using (SingleStoreDataReader reader = command.ExecuteReader())
@@ -1304,16 +1304,16 @@ BEGIN
     RETURN name;
 END
 $$";
-		MySqlException exception;
+		SingleStoreException exception;
 		if (prepareCommand)
 		{
-			exception = isAsync ? (await Assert.ThrowsAsync<MySqlException>(async () => await command.PrepareAsync())) :
-				Assert.Throws<MySqlException>(() => command.Prepare());
+			exception = isAsync ? (await Assert.ThrowsAsync<SingleStoreException>(async () => await command.PrepareAsync())) :
+				Assert.Throws<SingleStoreException>(() => command.Prepare());
 		}
 		else
 		{
-			exception = isAsync ? (await Assert.ThrowsAsync<MySqlException>(async () => await command.ExecuteNonQueryAsync())) :
-				Assert.Throws<MySqlException>(() => command.ExecuteNonQuery());
+			exception = isAsync ? (await Assert.ThrowsAsync<SingleStoreException>(async () => await command.ExecuteNonQueryAsync())) :
+				Assert.Throws<SingleStoreException>(() => command.ExecuteNonQuery());
 		}
 
 #if !BASELINE
@@ -1460,7 +1460,7 @@ select mysql_query_attribute_string('attr2') as attribute, @param2 as parameter;
 
 	class UseReaderWithoutDisposingThreadData
 	{
-		public UseReaderWithoutDisposingThreadData(List<Exception> exceptions, MySqlConnectionStringBuilder csb)
+		public UseReaderWithoutDisposingThreadData(List<Exception> exceptions, SingleStoreConnectionStringBuilder csb)
 		{
 			Exceptions = exceptions;
 			ConnectionStringBuilder = csb;
@@ -1468,7 +1468,7 @@ select mysql_query_attribute_string('attr2') as attribute, @param2 as parameter;
 
 		public List<Exception> Exceptions { get; }
 
-		public MySqlConnectionStringBuilder ConnectionStringBuilder { get; }
+		public SingleStoreConnectionStringBuilder ConnectionStringBuilder { get; }
 	}
 
 	enum TestLongEnum : long

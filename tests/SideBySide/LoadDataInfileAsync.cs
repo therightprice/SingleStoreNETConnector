@@ -62,7 +62,7 @@ public class LoadDataInfileAsync : IClassFixture<DatabaseFixture>
 		if (m_database.Connection.State != ConnectionState.Open)
 			await m_database.Connection.OpenAsync();
 
-		await Assert.ThrowsAsync<MySqlException>(async () => await command.ExecuteNonQueryAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(async () => await command.ExecuteNonQueryAsync());
 	}
 
 	readonly DatabaseFixture m_database;

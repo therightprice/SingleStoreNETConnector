@@ -49,9 +49,9 @@ public static class AppConfig
 	public static string MySqlBulkLoaderTsvFile => Config.GetValue<string>("Data:MySqlBulkLoaderTsvFile");
 	public static string MySqlBulkLoaderLocalTsvFile => Config.GetValue<string>("Data:MySqlBulkLoaderLocalTsvFile");
 
-	public static MySqlConnectionStringBuilder CreateConnectionStringBuilder() => new MySqlConnectionStringBuilder(ConnectionString);
+	public static SingleStoreConnectionStringBuilder CreateConnectionStringBuilder() => new SingleStoreConnectionStringBuilder(ConnectionString);
 
-	public static MySqlConnectionStringBuilder CreateSha256ConnectionStringBuilder()
+	public static SingleStoreConnectionStringBuilder CreateSha256ConnectionStringBuilder()
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.UserID = "sha256user";
@@ -60,7 +60,7 @@ public static class AppConfig
 		return csb;
 	}
 
-	public static MySqlConnectionStringBuilder CreateCachingSha2ConnectionStringBuilder()
+	public static SingleStoreConnectionStringBuilder CreateCachingSha2ConnectionStringBuilder()
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.UserID = "caching-sha2-user";
@@ -69,7 +69,7 @@ public static class AppConfig
 		return csb;
 	}
 
-	public static MySqlConnectionStringBuilder CreateGSSAPIConnectionStringBuilder()
+	public static SingleStoreConnectionStringBuilder CreateGSSAPIConnectionStringBuilder()
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.UserID = GSSAPIUser;

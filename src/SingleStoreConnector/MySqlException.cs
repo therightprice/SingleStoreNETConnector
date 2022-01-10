@@ -4,11 +4,11 @@ using System.Runtime.Serialization;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlException"/> is thrown when MySQL Server returns an error code, or there is a
+/// <see cref="SingleStoreException"/> is thrown when MySQL Server returns an error code, or there is a
 /// communication error with the server.
 /// </summary>
 [Serializable]
-public sealed class MySqlException : DbException
+public sealed class SingleStoreException : DbException
 {
 	/// <summary>
 	/// A <see cref="MySqlErrorCode"/> value identifying the kind of error. Prefer to use the <see cref="ErrorCode"/> property.
@@ -39,7 +39,7 @@ public sealed class MySqlException : DbException
 	public bool IsTransient => IsErrorTransient(ErrorCode);
 #endif
 
-	private MySqlException(SerializationInfo info, StreamingContext context)
+	private SingleStoreException(SerializationInfo info, StreamingContext context)
 		: base(info, context)
 	{
 		Number = info.GetInt32("Number");
@@ -76,32 +76,32 @@ public sealed class MySqlException : DbException
 		}
 	}
 
-	internal MySqlException(string message)
+	internal SingleStoreException(string message)
 		: this(message, null)
 	{
 	}
 
-	internal MySqlException(string message, Exception? innerException)
+	internal SingleStoreException(string message, Exception? innerException)
 		: this(default, null, message, innerException)
 	{
 	}
 
-	internal MySqlException(MySqlErrorCode errorCode, string message)
+	internal SingleStoreException(MySqlErrorCode errorCode, string message)
 		: this(errorCode, null, message, null)
 	{
 	}
 
-	internal MySqlException(MySqlErrorCode errorCode, string message, Exception? innerException)
+	internal SingleStoreException(MySqlErrorCode errorCode, string message, Exception? innerException)
 		: this(errorCode, null, message, innerException)
 	{
 	}
 
-	internal MySqlException(MySqlErrorCode errorCode, string sqlState, string message)
+	internal SingleStoreException(MySqlErrorCode errorCode, string sqlState, string message)
 		: this(errorCode, sqlState, message, null)
 	{
 	}
 
-	internal MySqlException(MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException)
+	internal SingleStoreException(MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException)
 		: base(message, innerException)
 	{
 		ErrorCode = errorCode;
@@ -109,9 +109,9 @@ public sealed class MySqlException : DbException
 		SqlState = sqlState;
 	}
 
-	internal static MySqlException CreateForTimeout() => CreateForTimeout(null);
+	internal static SingleStoreException CreateForTimeout() => CreateForTimeout(null);
 
-	internal static MySqlException CreateForTimeout(Exception? innerException) =>
+	internal static SingleStoreException CreateForTimeout(Exception? innerException) =>
 		new(MySqlErrorCode.CommandTimeoutExpired, "The Command Timeout expired before the operation completed.", innerException);
 
 	private static bool IsErrorTransient(MySqlErrorCode errorCode) => errorCode

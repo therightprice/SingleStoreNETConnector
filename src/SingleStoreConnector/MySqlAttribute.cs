@@ -33,7 +33,7 @@ namespace SingleStoreConnector
 		/// </summary>
 		public object? Value { get; set; }
 
-		internal MySqlParameter ToParameter()
+		internal SingleStoreParameter ToParameter()
 		{
 			if (string.IsNullOrEmpty(AttributeName))
 				throw new InvalidOperationException("AttributeName must not be null or empty");

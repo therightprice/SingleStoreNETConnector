@@ -6,7 +6,7 @@ SingleStoreConnector is an [ADO.NET](https://docs.microsoft.com/en-us/dotnet/fra
 
 ```csharp
 // set these values correctly for your database server
-var builder = new MySqlConnectionStringBuilder
+var builder = new SingleStoreConnectionStringBuilder
 {
 	Server = "your-server",
 	UserID = "database-user",
@@ -48,11 +48,11 @@ The main types provided by this library are:
 * `SingleStoreDataReader` (implementation of `DbDataReader`)
 * `MySqlBulkCopy`
 * `MySqlBulkLoader`
-* `MySqlConnectionStringBuilder`
+* `SingleStoreConnectionStringBuilder`
 * `MySqlConnectorFactory`
 * `SingleStoreDataAdapter`
-* `MySqlException`
-* `MySqlTransaction` (implementation of `DbTransaction`)
+* `SingleStoreException`
+* `SingleStoreTransaction` (implementation of `DbTransaction`)
 
 ## Feedback
 

@@ -15,13 +15,13 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task ConnectBadHost()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "invalid.example.com",
 		};
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
-		var ex = await Assert.ThrowsAsync<MySqlException>(connection.OpenAsync);
+		var ex = await Assert.ThrowsAsync<SingleStoreException>(connection.OpenAsync);
 		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Number);
 		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Data["Server Error Code"]);
 		Assert.Equal(ConnectionState.Closed, connection.State);
@@ -30,14 +30,14 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 	[Fact]
 	public async Task ConnectBadPort()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "localhost",
 			Port = 65000,
 		};
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
-		await Assert.ThrowsAsync<MySqlException>(() => connection.OpenAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(() => connection.OpenAsync());
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
 
@@ -47,7 +47,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Password = "wrong";
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
-		await Assert.ThrowsAsync<MySqlException>(() => connection.OpenAsync());
+		await Assert.ThrowsAsync<SingleStoreException>(() => connection.OpenAsync());
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
 
@@ -120,7 +120,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task ConnectTimeoutAsync()
 	{
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "www.mysql.com",
 			Pooling = false,
@@ -129,7 +129,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		var stopwatch = Stopwatch.StartNew();
-		var ex = await Assert.ThrowsAsync<MySqlException>(connection.OpenAsync);
+		var ex = await Assert.ThrowsAsync<SingleStoreException>(connection.OpenAsync);
 		stopwatch.Stop();
 		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Number);
 		TestUtilities.AssertDuration(stopwatch, 1900, 1500);
@@ -143,7 +143,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		if (Environment.GetEnvironmentVariable("TF_BUILD") == "True")
 			return;
 
-		var csb = new MySqlConnectionStringBuilder
+		var csb = new SingleStoreConnectionStringBuilder
 		{
 			Server = "www.mysql.com",
 			Pooling = false,
@@ -214,7 +214,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 
 		connection.ProvidePasswordCallback = _ => $"wrong_{password}";
 
-		var ex = await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+		var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 		Assert.Equal(MySqlErrorCode.AccessDenied, ex.ErrorCode);
 	}
 
@@ -231,7 +231,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		var innerException = new NotSupportedException();
 		connection.ProvidePasswordCallback = _ => throw innerException;
 
-		var ex = await Assert.ThrowsAsync<MySqlException>(async () => await connection.OpenAsync());
+		var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 		Assert.Equal(MySqlErrorCode.ProvidePasswordCallbackFailed, ex.ErrorCode);
 		Assert.Same(innerException, ex.InnerException);
 	}
@@ -330,7 +330,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 
-		await Assert.ThrowsAsync<MySqlException>(() => connection.ChangeDatabaseAsync($"not_a_real_database_1234"));
+		await Assert.ThrowsAsync<SingleStoreException>(() => connection.ChangeDatabaseAsync($"not_a_real_database_1234"));
 
 		Assert.Equal(ConnectionState.Open, connection.State);
 		Assert.Equal(csb.Database, connection.Database);
@@ -405,7 +405,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.RsaEncryption))
 			await connection.OpenAsync();
 		else
-			await Assert.ThrowsAsync<MySqlException>(() => connection.OpenAsync());
+			await Assert.ThrowsAsync<SingleStoreException>(() => connection.OpenAsync());
 	}
 
 	[SkippableFact(ServerFeatures.CachingSha2Password, ConfigSettings.RequiresSsl)]

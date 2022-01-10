@@ -56,7 +56,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 		if (m_database.Connection.State != ConnectionState.Open)
 			m_database.Connection.Open();
 
-		Assert.Throws<MySqlException>(() => command.ExecuteNonQuery());
+		Assert.Throws<SingleStoreException>(() => command.ExecuteNonQuery());
 
 		m_database.Connection.Close();
 	}

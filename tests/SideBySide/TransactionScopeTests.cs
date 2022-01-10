@@ -57,7 +57,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 		using var transaction1 = new CommittableTransaction();
 		using var transaction2 = new CommittableTransaction();
 		connection.EnlistTransaction(transaction1);
-		Assert.Throws<MySqlException>(() => connection.EnlistTransaction(transaction2));
+		Assert.Throws<SingleStoreException>(() => connection.EnlistTransaction(transaction2));
 	}
 
 	[Theory]
@@ -246,7 +246,7 @@ public class TransactionScopeTests : IClassFixture<DatabaseFixture>
 			conn.Execute("insert into transaction_scope_test(value) values(1), (2);", transaction: dbTransaction);
 
 #if BASELINE
-			// With Connector/NET a MySqlTransaction can't roll back after TransactionScope has been completed;
+			// With Connector/NET a SingleStoreTransaction can't roll back after TransactionScope has been completed;
 			// workaround is to explicitly dispose it first. In SingleStoreConnector (with AutoEnlist=false) they have
 			// independent lifetimes.
 			dbTransaction.Dispose();

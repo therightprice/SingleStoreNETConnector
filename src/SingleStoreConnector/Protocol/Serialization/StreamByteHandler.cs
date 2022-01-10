@@ -19,7 +19,7 @@ internal sealed class StreamByteHandler : IByteHandler
 	public ValueTask<int> ReadBytesAsync(Memory<byte> buffer, IOBehavior ioBehavior)
 	{
 		return ioBehavior == IOBehavior.Asynchronous ? new ValueTask<int>(DoReadBytesAsync(buffer)) :
-			RemainingTimeout <= 0 ? ValueTaskExtensions.FromException<int>(MySqlException.CreateForTimeout()) :
+			RemainingTimeout <= 0 ? ValueTaskExtensions.FromException<int>(SingleStoreException.CreateForTimeout()) :
 			m_stream.CanTimeout ? DoReadBytesSync(buffer) :
 			DoReadBytesSyncOverAsync(buffer);
 
@@ -35,7 +35,7 @@ internal sealed class StreamByteHandler : IByteHandler
 			catch (Exception ex)
 			{
 				if (RemainingTimeout != Constants.InfiniteTimeout && ex is IOException { InnerException: SocketException { SocketErrorCode: SocketError.TimedOut } })
-					return ValueTaskExtensions.FromException<int>(MySqlException.CreateForTimeout(ex));
+					return ValueTaskExtensions.FromException<int>(SingleStoreException.CreateForTimeout(ex));
 				return ValueTaskExtensions.FromException<int>(ex);
 			}
 			if (RemainingTimeout != Constants.InfiniteTimeout)
@@ -71,7 +71,7 @@ internal sealed class StreamByteHandler : IByteHandler
 				{
 					RemainingTimeout -= unchecked(Environment.TickCount - startTime);
 					if (!TimerQueue.Instance.Remove(timerId))
-						throw MySqlException.CreateForTimeout(ex);
+						throw SingleStoreException.CreateForTimeout(ex);
 				}
 				throw;
 			}
@@ -79,7 +79,7 @@ internal sealed class StreamByteHandler : IByteHandler
 			{
 				RemainingTimeout -= unchecked(Environment.TickCount - startTime);
 				if (!TimerQueue.Instance.Remove(timerId))
-					throw MySqlException.CreateForTimeout();
+					throw SingleStoreException.CreateForTimeout();
 			}
 			return bytesRead;
 		}

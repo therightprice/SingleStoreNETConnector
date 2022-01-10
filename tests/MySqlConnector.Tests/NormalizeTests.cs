@@ -48,7 +48,7 @@ public class NormalizeTests
 	[InlineData(" @PaRaM1 ", "PaRaM1")]
 	public void NormalizeParameterName(string input, string expectedName)
 	{
-		var normalized = MySqlParameter.NormalizeParameterName(input);
+		var normalized = SingleStoreParameter.NormalizeParameterName(input);
 		Assert.Equal(expectedName, normalized);
 	}
 }

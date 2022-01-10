@@ -79,7 +79,7 @@ public class BlogPostQuery
 	{
 		var cmd = Db.Connection.CreateCommand();
 		cmd.CommandText = @"SELECT `Id`, `Title`, `Content` FROM `BlogPost` WHERE `Id` = @id";
-		cmd.Parameters.Add(new MySqlParameter
+		cmd.Parameters.Add(new SingleStoreParameter
 		{
 			ParameterName = "@id",
 			DbType = DbType.Int32,
@@ -92,7 +92,7 @@ public class BlogPostQuery
 	{
 		var cmd = Db.Connection.CreateCommand();
 		cmd.CommandText = @"SELECT `Id`, `Title`, `Content` FROM `BlogPost` ORDER BY `Id` DESC LIMIT @limit;";
-		cmd.Parameters.Add(new MySqlParameter
+		cmd.Parameters.Add(new SingleStoreParameter
 		{
 			ParameterName = "@limit",
 			DbType = DbType.Int32,

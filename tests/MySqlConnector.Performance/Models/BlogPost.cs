@@ -59,7 +59,7 @@ public class BlogPost
 
 	private void BindId(SingleStoreCommand cmd)
 	{
-		cmd.Parameters.Add(new MySqlParameter
+		cmd.Parameters.Add(new SingleStoreParameter
 		{
 			ParameterName = "@id",
 			DbType = DbType.Int32,
@@ -69,13 +69,13 @@ public class BlogPost
 
 	private void BindParams(SingleStoreCommand cmd)
 	{
-		cmd.Parameters.Add(new MySqlParameter
+		cmd.Parameters.Add(new SingleStoreParameter
 		{
 			ParameterName = "@title",
 			DbType = DbType.String,
 			Value = Title,
 		});
-		cmd.Parameters.Add(new MySqlParameter
+		cmd.Parameters.Add(new SingleStoreParameter
 		{
 			ParameterName = "@content",
 			DbType = DbType.String,

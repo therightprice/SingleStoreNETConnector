@@ -43,7 +43,7 @@ internal sealed class CachedProcedure
 
 				return new CachedProcedure(schema, component, parsedParameters);
 			}
-			catch (MySqlException ex)
+			catch (SingleStoreException ex)
 			{
 				Log.Info("Session{0} failed to retrieve metadata for Schema={1} Component={2}; falling back to INFORMATION_SCHEMA. Error: {3}", connection.Session.Id, schema, component, ex.Message);
 				if (ex.ErrorCode == MySqlErrorCode.TableAccessDenied)
@@ -112,7 +112,7 @@ internal sealed class CachedProcedure
 
 		foreach (var cachedParam in Parameters)
 		{
-			MySqlParameter alignParam;
+			SingleStoreParameter alignParam;
 			if (cachedParam.Direction == ParameterDirection.ReturnValue)
 			{
 				alignParam = returnParam ?? throw new InvalidOperationException($"Attempt to call stored function {FullyQualified} without specifying a return parameter");
@@ -226,7 +226,7 @@ internal sealed class CachedProcedure
 		}
 		catch (NullReferenceException ex)
 		{
-			throw new MySqlException("Failed to parse stored procedure parameter '{0}'; extracted data type was {1}".FormatInvariant(originalSql, dataType), ex);
+			throw new SingleStoreException("Failed to parse stored procedure parameter '{0}'; extracted data type was {1}".FormatInvariant(originalSql, dataType), ex);
 		}
 	}
 

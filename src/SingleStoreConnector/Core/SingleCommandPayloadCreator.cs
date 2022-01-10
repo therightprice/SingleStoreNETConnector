@@ -112,15 +112,15 @@ internal sealed class SingleCommandPayloadCreator : ICommandPayloadCreator
 			// TODO: How to handle incorrect number of parameters?
 
 			// build subset of parameters for this statement
-			var parameters = new MySqlParameter[commandParameterCount + attributeCount];
+			var parameters = new SingleStoreParameter[commandParameterCount + attributeCount];
 			for (var i = 0; i < commandParameterCount; i++)
 			{
 				var parameterName = preparedStatement.Statement.ParameterNames![i];
 				var parameterIndex = parameterName is not null ? (parameterCollection?.NormalizedIndexOf(parameterName) ?? -1) : preparedStatement.Statement.ParameterIndexes[i];
 				if (parameterIndex == -1 && parameterName is not null)
-					throw new MySqlException("Parameter '{0}' must be defined.".FormatInvariant(parameterName));
+					throw new SingleStoreException("Parameter '{0}' must be defined.".FormatInvariant(parameterName));
 				else if (parameterIndex < 0 || parameterIndex >= (parameterCollection?.Count ?? 0))
-					throw new MySqlException("Parameter index {0} is invalid when only {1} parameter{2} defined.".FormatInvariant(parameterIndex, parameterCollection?.Count ?? 0, parameterCollection?.Count == 1 ? " is" : "s are"));
+					throw new SingleStoreException("Parameter index {0} is invalid when only {1} parameter{2} defined.".FormatInvariant(parameterIndex, parameterCollection?.Count ?? 0, parameterCollection?.Count == 1 ? " is" : "s are"));
 				parameters[i] = parameterCollection![parameterIndex];
 			}
 			for (var i = 0; i < attributeCount; i++)
@@ -129,7 +129,7 @@ internal sealed class SingleCommandPayloadCreator : ICommandPayloadCreator
 		}
 	}
 
-	private static void WriteBinaryParameters(ByteBufferWriter writer, MySqlParameter[] parameters, IMySqlCommand command, bool supportsQueryAttributes, int parameterCount)
+	private static void WriteBinaryParameters(ByteBufferWriter writer, SingleStoreParameter[] parameters, IMySqlCommand command, bool supportsQueryAttributes, int parameterCount)
 	{
 		// write null bitmap
 		byte nullBitmap = 0;
@@ -186,7 +186,7 @@ internal sealed class SingleCommandPayloadCreator : ICommandPayloadCreator
 		if (cachedProcedure is not null)
 			parameterCollection = cachedProcedure.AlignParamsWithDb(parameterCollection);
 
-		MySqlParameter? returnParameter = null;
+		SingleStoreParameter? returnParameter = null;
 		var outParameters = new MySqlParameterCollection();
 		var outParameterNames = new List<string>();
 		var inParameters = new MySqlParameterCollection();
