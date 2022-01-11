@@ -4,19 +4,19 @@ using NLog;
 
 namespace SingleStoreConnector.Logging;
 
-public sealed class NLogLoggerProvider : IMySqlConnectorLoggerProvider
+public sealed class NLogLoggerProvider : ISingleStoreConnectorLoggerProvider
 {
-	public IMySqlConnectorLogger CreateLogger(string name) => new NLogLogger(LogManager.GetLogger("SingleStoreConnector." + name));
+	public ISingleStoreConnectorLogger CreateLogger(string name) => new NLogLogger(LogManager.GetLogger("SingleStoreConnector." + name));
 
 	static readonly Type s_loggerType = typeof(NLogLogger);
 
-	private sealed class NLogLogger : IMySqlConnectorLogger
+	private sealed class NLogLogger : ISingleStoreConnectorLogger
 	{
 		public NLogLogger(Logger logger) => m_logger = logger;
 
-		public bool IsEnabled(MySqlConnectorLogLevel level) => m_logger.IsEnabled(GetLevel(level));
+		public bool IsEnabled(SingleStoreConnectorLogLevel level) => m_logger.IsEnabled(GetLevel(level));
 
-		public void Log(MySqlConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null)
+		public void Log(SingleStoreConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null)
 		{
 			LogLevel logLevel = GetLevel(level);
 			if (m_logger.IsEnabled(logLevel))
@@ -25,14 +25,14 @@ public sealed class NLogLoggerProvider : IMySqlConnectorLoggerProvider
 			}
 		}
 
-		private static LogLevel GetLevel(MySqlConnectorLogLevel level) => level switch
+		private static LogLevel GetLevel(SingleStoreConnectorLogLevel level) => level switch
 		{
-			MySqlConnectorLogLevel.Trace => LogLevel.Trace,
-			MySqlConnectorLogLevel.Debug => LogLevel.Debug,
-			MySqlConnectorLogLevel.Info => LogLevel.Info,
-			MySqlConnectorLogLevel.Warn => LogLevel.Warn,
-			MySqlConnectorLogLevel.Error => LogLevel.Error,
-			MySqlConnectorLogLevel.Fatal => LogLevel.Fatal,
+			SingleStoreConnectorLogLevel.Trace => LogLevel.Trace,
+			SingleStoreConnectorLogLevel.Debug => LogLevel.Debug,
+			SingleStoreConnectorLogLevel.Info => LogLevel.Info,
+			SingleStoreConnectorLogLevel.Warn => LogLevel.Warn,
+			SingleStoreConnectorLogLevel.Error => LogLevel.Error,
+			SingleStoreConnectorLogLevel.Fatal => LogLevel.Fatal,
 			_ => throw new ArgumentOutOfRangeException(nameof(level), level, "Invalid value for 'level'."),
 		};
 

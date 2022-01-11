@@ -7,5 +7,5 @@ This package integrates SingleStoreConnector logging with [NLog](https://www.nug
 Add the following line of code to your application startup routine (before any `SingleStoreConnector` objects have been used):
 
 ```csharp
-MySqlConnectorLogManager.Provider = new NLogLoggerProvider();
+SingleStoreConnectorLogManager.Provider = new NLogLoggerProvider();
 ```

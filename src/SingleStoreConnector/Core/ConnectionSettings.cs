@@ -328,6 +328,6 @@ internal sealed class ConnectionSettings
 		UseXaTransactions = other.UseXaTransactions;
 	}
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(ConnectionSettings));
+	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(ConnectionSettings));
 	static readonly string[] s_localhostPipeServer = { "." };
 }

@@ -1,6 +1,6 @@
 namespace SingleStoreConnector.Logging;
 
-public enum MySqlConnectorLogLevel
+public enum SingleStoreConnectorLogLevel
 {
 	Trace = 1,
 	Debug = 2,

@@ -1,12 +1,12 @@
 namespace SingleStoreConnector.Logging;
 
 /// <summary>
-/// Implementations of <see cref="IMySqlConnectorLoggerProvider"/> create logger instances.
+/// Implementations of <see cref="ISingleStoreConnectorLoggerProvider"/> create logger instances.
 /// </summary>
-public interface IMySqlConnectorLoggerProvider
+public interface ISingleStoreConnectorLoggerProvider
 {
 	/// <summary>
 	/// Creates a logger with the specified name. This method may be called from multiple threads and must be thread-safe.
 	/// </summary>
-	IMySqlConnectorLogger CreateLogger(string name);
+	ISingleStoreConnectorLogger CreateLogger(string name);
 }

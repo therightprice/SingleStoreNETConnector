@@ -41,5 +41,5 @@ internal sealed class ConcatenatedCommandPayloadCreator : ICommandPayloadCreator
 		return true;
 	}
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(ConcatenatedCommandPayloadCreator));
+	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(ConcatenatedCommandPayloadCreator));
 }

@@ -76,5 +76,5 @@ internal static class CommandExecutor
 		}
 	}
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(CommandExecutor));
+	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(CommandExecutor));
 }

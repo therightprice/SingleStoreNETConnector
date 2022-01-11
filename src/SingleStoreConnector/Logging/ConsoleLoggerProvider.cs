@@ -3,20 +3,20 @@ using System.Text;
 
 namespace SingleStoreConnector.Logging;
 
-public class ConsoleLoggerProvider : IMySqlConnectorLoggerProvider
+public class ConsoleLoggerProvider : ISingleStoreConnectorLoggerProvider
 {
-	public ConsoleLoggerProvider(MySqlConnectorLogLevel minimumLevel = MySqlConnectorLogLevel.Info, bool isColored = true)
+	public ConsoleLoggerProvider(SingleStoreConnectorLogLevel minimumLevel = SingleStoreConnectorLogLevel.Info, bool isColored = true)
 	{
-		if (minimumLevel < MySqlConnectorLogLevel.Trace || minimumLevel > MySqlConnectorLogLevel.Fatal)
+		if (minimumLevel < SingleStoreConnectorLogLevel.Trace || minimumLevel > SingleStoreConnectorLogLevel.Fatal)
 			throw new ArgumentOutOfRangeException(nameof(minimumLevel), "minimumLevel must be between Trace and Fatal");
 
 		m_minimumLevel = minimumLevel;
 		m_isColored = isColored;
 	}
 
-	public IMySqlConnectorLogger CreateLogger(string name) => new ConsoleLogger(this, name);
+	public ISingleStoreConnectorLogger CreateLogger(string name) => new ConsoleLogger(this, name);
 
-	private sealed class ConsoleLogger : IMySqlConnectorLogger
+	private sealed class ConsoleLogger : ISingleStoreConnectorLogger
 	{
 		public ConsoleLogger(ConsoleLoggerProvider provider, string name)
 		{
@@ -24,9 +24,9 @@ public class ConsoleLoggerProvider : IMySqlConnectorLoggerProvider
 			m_name = name;
 		}
 
-		public bool IsEnabled(MySqlConnectorLogLevel level) => level >= m_provider.m_minimumLevel && level <= MySqlConnectorLogLevel.Fatal;
+		public bool IsEnabled(SingleStoreConnectorLogLevel level) => level >= m_provider.m_minimumLevel && level <= SingleStoreConnectorLogLevel.Fatal;
 
-		public void Log(MySqlConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null)
+		public void Log(SingleStoreConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null)
 		{
 			if (!IsEnabled(level))
 				return;
@@ -88,6 +88,6 @@ public class ConsoleLoggerProvider : IMySqlConnectorLoggerProvider
 		readonly string m_name;
 	}
 
-	readonly MySqlConnectorLogLevel m_minimumLevel;
+	readonly SingleStoreConnectorLogLevel m_minimumLevel;
 	readonly bool m_isColored;
 }

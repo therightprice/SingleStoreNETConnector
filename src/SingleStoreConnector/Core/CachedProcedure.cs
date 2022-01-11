@@ -232,7 +232,7 @@ internal sealed class CachedProcedure
 
 	string FullyQualified => $"`{m_schema}`.`{m_component}`";
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(CachedProcedure));
+	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(CachedProcedure));
 	static readonly IReadOnlyDictionary<string, string> s_typeMapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 	{
 		{ "BOOL", "TINYINT" },

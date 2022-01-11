@@ -3,10 +3,10 @@ namespace SingleStoreConnector.Logging;
 /// <summary>
 /// Creates loggers that do nothing.
 /// </summary>
-public sealed class NoOpLoggerProvider : IMySqlConnectorLoggerProvider
+public sealed class NoOpLoggerProvider : ISingleStoreConnectorLoggerProvider
 {
 	/// <summary>
 	/// Returns a <see cref="NoOpLogger"/>.
 	/// </summary>
-	public IMySqlConnectorLogger CreateLogger(string name) => NoOpLogger.Instance;
+	public ISingleStoreConnectorLogger CreateLogger(string name) => NoOpLogger.Instance;
 }

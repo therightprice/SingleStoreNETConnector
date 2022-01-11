@@ -3,13 +3,13 @@ namespace SingleStoreConnector.Logging;
 /// <summary>
 /// Controls logging for SingleStoreConnector.
 /// </summary>
-public static class MySqlConnectorLogManager
+public static class SingleStoreConnectorLogManager
 {
 	/// <summary>
-	/// Allows the <see cref="IMySqlConnectorLoggerProvider"/> to be set for this library. <see cref="Provider"/> can
+	/// Allows the <see cref="ISingleStoreConnectorLoggerProvider"/> to be set for this library. <see cref="Provider"/> can
 	/// be set once, and must be set before any other library methods are used.
 	/// </summary>
-	public static IMySqlConnectorLoggerProvider Provider
+	public static ISingleStoreConnectorLoggerProvider Provider
 	{
 		internal get
 		{
@@ -25,8 +25,8 @@ public static class MySqlConnectorLogManager
 		}
 	}
 
-	internal static IMySqlConnectorLogger CreateLogger(string name) => Provider.CreateLogger(name);
+	internal static ISingleStoreConnectorLogger CreateLogger(string name) => Provider.CreateLogger(name);
 
-	static IMySqlConnectorLoggerProvider s_provider = new NoOpLoggerProvider();
+	static ISingleStoreConnectorLoggerProvider s_provider = new NoOpLoggerProvider();
 	static bool s_providerRetrieved;
 }

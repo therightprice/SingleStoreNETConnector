@@ -7,7 +7,7 @@ namespace SingleStoreConnector.Logging;
 /// <summary>
 /// Implements SingleStoreConnector logging using the Microsoft.Extensions.Logging abstraction.
 /// </summary>
-public sealed class MicrosoftExtensionsLoggingLoggerProvider : IMySqlConnectorLoggerProvider
+public sealed class MicrosoftExtensionsLoggingLoggerProvider : ISingleStoreConnectorLoggerProvider
 {
 	/// <summary>
 	/// Initializes a new instance of the <see cref="MicrosoftExtensionsLoggingLoggerProvider"/>.
@@ -30,19 +30,19 @@ public sealed class MicrosoftExtensionsLoggingLoggerProvider : IMySqlConnectorLo
 	}
 
 	/// <summary>
-	/// Creates a new <see cref="IMySqlConnectorLogger"/> with the specified name.
+	/// Creates a new <see cref="ISingleStoreConnectorLogger"/> with the specified name.
 	/// </summary>
 	/// <param name="name">The logger name.</param>
-	/// <returns>A <see cref="IMySqlConnectorLogger"/> that logs with the specified logger name.</returns>
-	public IMySqlConnectorLogger CreateLogger(string name) => new MicrosoftExtensionsLoggingLogger(m_loggerFactory.CreateLogger(m_prefix + name));
+	/// <returns>A <see cref="ISingleStoreConnectorLogger"/> that logs with the specified logger name.</returns>
+	public ISingleStoreConnectorLogger CreateLogger(string name) => new MicrosoftExtensionsLoggingLogger(m_loggerFactory.CreateLogger(m_prefix + name));
 
-	private sealed class MicrosoftExtensionsLoggingLogger : IMySqlConnectorLogger
+	private sealed class MicrosoftExtensionsLoggingLogger : ISingleStoreConnectorLogger
 	{
 		public MicrosoftExtensionsLoggingLogger(ILogger logger) => m_logger = logger;
 
-		public bool IsEnabled(MySqlConnectorLogLevel level) => m_logger.IsEnabled(GetLevel(level));
+		public bool IsEnabled(SingleStoreConnectorLogLevel level) => m_logger.IsEnabled(GetLevel(level));
 
-		public void Log(MySqlConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null)
+		public void Log(SingleStoreConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null)
 		{
 			if (args is null || args.Length == 0)
 				m_logger.Log(GetLevel(level), 0, message, exception, s_getMessage);
@@ -50,14 +50,14 @@ public sealed class MicrosoftExtensionsLoggingLoggerProvider : IMySqlConnectorLo
 				m_logger.Log(GetLevel(level), 0, (message, args), exception, s_messageFormatter);
 		}
 
-		private static LogLevel GetLevel(MySqlConnectorLogLevel level) => level switch
+		private static LogLevel GetLevel(SingleStoreConnectorLogLevel level) => level switch
 		{
-			MySqlConnectorLogLevel.Trace => LogLevel.Trace,
-			MySqlConnectorLogLevel.Debug => LogLevel.Debug,
-			MySqlConnectorLogLevel.Info => LogLevel.Information,
-			MySqlConnectorLogLevel.Warn => LogLevel.Warning,
-			MySqlConnectorLogLevel.Error => LogLevel.Error,
-			MySqlConnectorLogLevel.Fatal => LogLevel.Critical,
+			SingleStoreConnectorLogLevel.Trace => LogLevel.Trace,
+			SingleStoreConnectorLogLevel.Debug => LogLevel.Debug,
+			SingleStoreConnectorLogLevel.Info => LogLevel.Information,
+			SingleStoreConnectorLogLevel.Warn => LogLevel.Warning,
+			SingleStoreConnectorLogLevel.Error => LogLevel.Error,
+			SingleStoreConnectorLogLevel.Fatal => LogLevel.Critical,
 			_ => throw new ArgumentOutOfRangeException(nameof(level), level, "Invalid value for 'level'."),
 		};
 

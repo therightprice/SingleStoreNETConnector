@@ -1093,7 +1093,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	// This method may be called when it's known that the connection settings have been initialized.
 	private ConnectionSettings GetInitializedConnectionSettings() => m_connectionSettings!;
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(SingleStoreConnection));
+	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(SingleStoreConnection));
 	static readonly StateChangeEventArgs s_stateChangeClosedConnecting = new(ConnectionState.Closed, ConnectionState.Connecting);
 	static readonly StateChangeEventArgs s_stateChangeConnectingOpen = new(ConnectionState.Connecting, ConnectionState.Open);
 	static readonly StateChangeEventArgs s_stateChangeOpenClosed = new(ConnectionState.Open, ConnectionState.Closed);

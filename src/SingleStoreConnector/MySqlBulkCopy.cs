@@ -668,7 +668,7 @@ public sealed class MySqlBulkCopy
 	}
 
 	private static readonly char[] s_specialCharacters = new char[] { '\t', '\\', '\n' };
-	private static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(MySqlBulkCopy));
+	private static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(MySqlBulkCopy));
 	private static readonly Encoding s_utf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
 	readonly SingleStoreConnection m_connection;

@@ -7,11 +7,11 @@ This package integrates SingleStoreConnector logging with the Microsoft.Extensio
 Add the following line of code to `Program.cs` method (before any `SingleStoreConnector` objects have been used):
 
 ```csharp
-app.Services.UseMySqlConnectorLogging();
+app.Services.UseSingleStoreConnectorLogging();
 ```
 
 Alternatively, obtain an `ILoggerFactory` through dependency injection and add:
 
 ```csharp
-MySqlConnectorLogManager.Provider = new MicrosoftExtensionsLoggingLoggerProvider(loggerFactory);
+SingleStoreConnectorLogManager.Provider = new MicrosoftExtensionsLoggingLoggerProvider(loggerFactory);
 ```

@@ -431,7 +431,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	MySqlParameterCollection? IMySqlCommand.OutParameters { get; set; }
 	SingleStoreParameter? IMySqlCommand.ReturnParameter { get; set; }
 
-	static readonly IMySqlConnectorLogger Log = MySqlConnectorLogManager.CreateLogger(nameof(SingleStoreCommand));
+	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(SingleStoreCommand));
 
 	readonly int m_commandId;
 	bool m_isDisposed;

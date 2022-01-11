@@ -1,16 +1,16 @@
 namespace SingleStoreConnector.Logging;
 
 /// <summary>
-/// Implementations of <see cref="IMySqlConnectorLogger"/> write logs to a particular target.
+/// Implementations of <see cref="ISingleStoreConnectorLogger"/> write logs to a particular target.
 /// </summary>
-public interface IMySqlConnectorLogger
+public interface ISingleStoreConnectorLogger
 {
 	/// <summary>
 	/// Returns <c>true</c> if logging for this logger is enabled at the specified level.
 	/// </summary>
 	/// <param name="level">The log level.</param>
 	/// <returns><c>true</c> if logging is enabled; otherwise, <c>false</c>.</returns>
-	bool IsEnabled(MySqlConnectorLogLevel level);
+	bool IsEnabled(SingleStoreConnectorLogLevel level);
 
 	/// <summary>
 	/// Writes a log message to the target.
@@ -25,5 +25,5 @@ public interface IMySqlConnectorLogger
 	/// <remarks>This method may be called from multiple threads and must be thread-safe. This method may be called
 	/// even if <see cref="IsEnabled"/> would return <c>false</c> for <paramref name="level"/>; the implementation must
 	/// check if logging is enabled for that level.</remarks>
-	void Log(MySqlConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null);
+	void Log(SingleStoreConnectorLogLevel level, string message, object?[]? args = null, Exception? exception = null);
 }

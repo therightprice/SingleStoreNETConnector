@@ -7,7 +7,7 @@ This package integrates SingleStoreConnector logging with [log4net](https://www.
 Add the following line of code to your application startup routine (before any `SingleStoreConnector` objects have been used):
 
 ```csharp
-MySqlConnectorLogManager.Provider = new Log4netLoggerProvider();
+SingleStoreConnectorLogManager.Provider = new Log4netLoggerProvider();
 ```
 
 To reduce the verbosity of MySqlConnector logging, add the following element to your log4net config:
@@ -15,7 +15,7 @@ To reduce the verbosity of MySqlConnector logging, add the following element to 
 ```xml
 <log4net>
   ...
-  <logger name="MySqlConnector">
+  <logger name="SingleStoreConnector">
     <level value="WARN" />
   </logger>
 ```
