@@ -80,9 +80,10 @@ public static class AppConfig
 	public static bool IsCiBuild =>
 		Environment.GetEnvironmentVariable("APPVEYOR") == "True" ||
 		Environment.GetEnvironmentVariable("TRAVIS") == "true" ||
-		Environment.GetEnvironmentVariable("TF_BUILD") == "True";
+		Environment.GetEnvironmentVariable("TF_BUILD") == "True" ||
+		Environment.GetEnvironmentVariable("CIRCLECI") == "true";
 
 	// tests can run much slower in CI environments
 	public static int TimeoutDelayFactor { get; } = Environment.GetEnvironmentVariable("APPVEYOR") == "True" || Environment.GetEnvironmentVariable("TRAVIS") == "true" ? 6 :
-		Environment.GetEnvironmentVariable("TF_BUILD") == "True" ? 10 : 1;
+		Environment.GetEnvironmentVariable("TF_BUILD") == "True" || Environment.GetEnvironmentVariable("CIRCLECI") == "true" ? 10 : 1;
 }
