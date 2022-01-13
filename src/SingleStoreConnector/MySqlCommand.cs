@@ -85,11 +85,11 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	MySqlParameterCollection? IMySqlCommand.RawParameters => m_parameterCollection;
 
 	/// <summary>
-	/// The collection of <see cref="MySqlAttribute"/> objects for this command.
+	/// The collection of <see cref="SingleStoreAttribute"/> objects for this command.
 	/// </summary>
-	public MySqlAttributeCollection Attributes => m_attributeCollection ??= new();
+	public SingleStoreAttributeCollection Attributes => m_attributeCollection ??= new();
 
-	MySqlAttributeCollection? IMySqlCommand.RawAttributes => m_attributeCollection;
+	SingleStoreAttributeCollection? IMySqlCommand.RawAttributes => m_attributeCollection;
 
 	public new SingleStoreParameter CreateParameter() => (SingleStoreParameter) base.CreateParameter();
 
@@ -135,13 +135,13 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 		return parameters;
 	}
 
-	private MySqlAttributeCollection? CloneRawAttributes()
+	private SingleStoreAttributeCollection? CloneRawAttributes()
 	{
 		if (m_attributeCollection is null)
 			return null;
-		var attributes = new MySqlAttributeCollection();
+		var attributes = new SingleStoreAttributeCollection();
 		foreach (var attribute in m_attributeCollection)
-			attributes.Add(new MySqlAttribute(attribute.AttributeName, attribute.Value));
+			attributes.Add(new SingleStoreAttribute(attribute.AttributeName, attribute.Value));
 		return attributes;
 	}
 
@@ -438,7 +438,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	SingleStoreConnection? m_connection;
 	string m_commandText;
 	MySqlParameterCollection? m_parameterCollection;
-	MySqlAttributeCollection? m_attributeCollection;
+	SingleStoreAttributeCollection? m_attributeCollection;
 	int? m_commandTimeout;
 	CommandType m_commandType;
 	CommandBehavior m_commandBehavior;

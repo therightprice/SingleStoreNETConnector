@@ -118,17 +118,17 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	/// The protocol to use to connect to the MySQL Server.
 	/// </summary>
 	[Category("Connection")]
-	[DefaultValue(MySqlConnectionProtocol.Socket)]
+	[DefaultValue(SingleStoreConnectionProtocol.Socket)]
 	[Description("The protocol to use to connect to the MySQL Server.")]
 	[DisplayName("Connection Protocol")]
-	public MySqlConnectionProtocol ConnectionProtocol
+	public SingleStoreConnectionProtocol ConnectionProtocol
 	{
 		get => MySqlConnectionStringOption.ConnectionProtocol.GetValue(this);
 		set => MySqlConnectionStringOption.ConnectionProtocol.SetValue(this, value);
 	}
 
 	/// <summary>
-	/// The name of the Windows named pipe to use to connect to the server. You must also set <see cref="ConnectionProtocol"/> to <see cref="MySqlConnectionProtocol.NamedPipe"/> to used named pipes.
+	/// The name of the Windows named pipe to use to connect to the server. You must also set <see cref="ConnectionProtocol"/> to <see cref="SingleStoreConnectionProtocol.NamedPipe"/> to used named pipes.
 	/// </summary>
 	[AllowNull]
 	[Category("Connection")]
@@ -877,7 +877,7 @@ internal abstract class MySqlConnectionStringOption
 	public static readonly MySqlConnectionStringReferenceOption<string> Password;
 	public static readonly MySqlConnectionStringReferenceOption<string> Database;
 	public static readonly MySqlConnectionStringValueOption<MySqlLoadBalance> LoadBalance;
-	public static readonly MySqlConnectionStringValueOption<MySqlConnectionProtocol> ConnectionProtocol;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreConnectionProtocol> ConnectionProtocol;
 	public static readonly MySqlConnectionStringReferenceOption<string> PipeName;
 
 	// SSL/TLS Options
@@ -987,7 +987,7 @@ internal abstract class MySqlConnectionStringOption
 
 		AddOption(ConnectionProtocol = new(
 			keys: new[] { "Connection Protocol", "ConnectionProtocol", "Protocol" },
-			defaultValue: MySqlConnectionProtocol.Socket));
+			defaultValue: SingleStoreConnectionProtocol.Socket));
 
 		AddOption(PipeName = new(
 			keys: new[] { "Pipe Name", "PipeName", "Pipe" },
@@ -1261,7 +1261,7 @@ internal sealed class MySqlConnectionStringValueOption<T> : MySqlConnectionStrin
 				return (T) (object) false;
 		}
 
-		if ((typeof(T) == typeof(MySqlLoadBalance) || typeof(T) == typeof(MySqlSslMode) || typeof(T) == typeof(MySqlServerRedirectionMode) || typeof(T) == typeof(MySqlDateTimeKind) || typeof(T) == typeof(MySqlGuidFormat) || typeof(T) == typeof(MySqlConnectionProtocol) || typeof(T) == typeof(MySqlCertificateStoreLocation)) && objectValue is string enumString)
+		if ((typeof(T) == typeof(MySqlLoadBalance) || typeof(T) == typeof(MySqlSslMode) || typeof(T) == typeof(MySqlServerRedirectionMode) || typeof(T) == typeof(MySqlDateTimeKind) || typeof(T) == typeof(MySqlGuidFormat) || typeof(T) == typeof(SingleStoreConnectionProtocol) || typeof(T) == typeof(MySqlCertificateStoreLocation)) && objectValue is string enumString)
 		{
 			try
 			{

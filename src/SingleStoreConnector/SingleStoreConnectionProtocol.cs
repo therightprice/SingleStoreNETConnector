@@ -4,7 +4,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// Specifies the type of connection to make to the server.
 /// </summary>
-public enum MySqlConnectionProtocol
+public enum SingleStoreConnectionProtocol
 {
 	/// <summary>
 	/// TCP/IP connection.

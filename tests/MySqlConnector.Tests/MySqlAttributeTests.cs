@@ -6,12 +6,12 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlAttributeTests
+public class SingleStoreAttributeTests
 {
 	[Fact]
 	public void Construct()
 	{
-		var attribute = new MySqlAttribute();
+		var attribute = new SingleStoreAttribute();
 #if BASELINE
 		Assert.Null(attribute.AttributeName);
 #else
@@ -23,7 +23,7 @@ public class MySqlAttributeTests
 	[Fact]
 	public void ConstructWithArguments()
 	{
-		var attribute = new MySqlAttribute("name", "value");
+		var attribute = new SingleStoreAttribute("name", "value");
 		Assert.Equal("name", attribute.AttributeName);
 		Assert.Equal("value", attribute.Value);
 	}

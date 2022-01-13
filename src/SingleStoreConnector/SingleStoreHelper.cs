@@ -2,7 +2,7 @@ using System.Text;
 
 namespace SingleStoreConnector;
 
-public sealed class MySqlHelper
+public sealed class SingleStoreHelper
 {
 	[Obsolete("Use SingleStoreConnection.ClearAllPools or SingleStoreConnection.ClearAllPoolsAsync")]
 	public static void ClearConnectionPools() => SingleStoreConnection.ClearAllPools();

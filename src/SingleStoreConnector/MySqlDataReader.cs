@@ -263,11 +263,11 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 	public MySqlDateTime GetMySqlDateTime(int ordinal) => GetResultSet().GetCurrentRow().GetMySqlDateTime(ordinal);
 	public MySqlDateTime GetMySqlDateTime(string name) => GetMySqlDateTime(GetOrdinal(name));
 
-	public MySqlGeometry GetMySqlGeometry(int ordinal) => GetResultSet().GetCurrentRow().GetMySqlGeometry(ordinal);
-	public MySqlGeometry GetMySqlGeometry(string name) => GetMySqlGeometry(GetOrdinal(name));
+	public SingleStoreGeometry GetSingleStoreGeometry(int ordinal) => GetResultSet().GetCurrentRow().GetSingleStoreGeometry(ordinal);
+	public SingleStoreGeometry GetSingleStoreGeometry(string name) => GetSingleStoreGeometry(GetOrdinal(name));
 
-	public MySqlDecimal GetMySqlDecimal(int ordinal) => GetResultSet().GetCurrentRow().GetMySqlDecimal(ordinal);
-	public MySqlDecimal GetMySqlDecimal(string name) => GetMySqlDecimal(GetOrdinal(name));
+	public SingleStoreDecimal GetSingleStoreDecimal(int ordinal) => GetResultSet().GetCurrentRow().GetSingleStoreDecimal(ordinal);
+	public SingleStoreDecimal GetSingleStoreDecimal(string name) => GetSingleStoreDecimal(GetOrdinal(name));
 
 #if NET6_0_OR_GREATER
 	public TimeOnly GetTimeOnly(int ordinal) => TimeOnly.FromTimeSpan(GetTimeSpan(ordinal));
@@ -398,16 +398,16 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 			return (T) (object) GetDateTimeOffset(ordinal);
 		if (typeof(T) == typeof(Guid))
 			return (T) (object) GetGuid(ordinal);
-		if (typeof(T) == typeof(MySqlGeometry))
-			return (T) (object) GetMySqlGeometry(ordinal);
+		if (typeof(T) == typeof(SingleStoreGeometry))
+			return (T) (object) GetSingleStoreGeometry(ordinal);
 		if (typeof(T) == typeof(Stream))
 			return (T) (object) GetStream(ordinal);
 		if (typeof(T) == typeof(TextReader) || typeof(T) == typeof(StringReader))
 			return (T) (object) GetTextReader(ordinal);
 		if (typeof(T) == typeof(TimeSpan))
 			return (T) (object) GetTimeSpan(ordinal);
-		if (typeof(T) == typeof(MySqlDecimal))
-			return (T) (object) GetMySqlDecimal(ordinal);
+		if (typeof(T) == typeof(SingleStoreDecimal))
+			return (T) (object) GetSingleStoreDecimal(ordinal);
 #if NET6_0_OR_GREATER
 		if (typeof(T) == typeof(DateOnly))
 			return (T) (object) GetDateOnly(ordinal);

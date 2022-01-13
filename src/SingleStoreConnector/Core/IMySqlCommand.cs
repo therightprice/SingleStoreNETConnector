@@ -1,7 +1,7 @@
 namespace SingleStoreConnector.Core;
 
 /// <summary>
-/// <see cref="IMySqlCommand"/> provides an internal abstraction over <see cref="SingleStoreCommand"/> and <see cref="MySqlBatchCommand"/>.
+/// <see cref="IMySqlCommand"/> provides an internal abstraction over <see cref="SingleStoreCommand"/> and <see cref="SingleStoreBatchCommand"/>.
 /// </summary>
 internal interface IMySqlCommand
 {
@@ -10,7 +10,7 @@ internal interface IMySqlCommand
 	bool AllowUserVariables { get; }
 	CommandBehavior CommandBehavior { get; }
 	MySqlParameterCollection? RawParameters { get; }
-	MySqlAttributeCollection? RawAttributes { get; }
+	SingleStoreAttributeCollection? RawAttributes { get; }
 	PreparedStatements? TryGetPreparedStatements();
 	SingleStoreConnection? Connection { get; }
 	long LastInsertedId { get; }

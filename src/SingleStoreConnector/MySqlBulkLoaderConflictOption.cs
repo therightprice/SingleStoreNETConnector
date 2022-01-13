@@ -1,6 +1,6 @@
 namespace SingleStoreConnector;
 
-public enum MySqlBulkLoaderConflictOption
+public enum SingleStoreBulkLoaderConflictOption
 {
 	None,
 	Replace,

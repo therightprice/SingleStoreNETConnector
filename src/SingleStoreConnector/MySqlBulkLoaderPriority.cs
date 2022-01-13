@@ -1,6 +1,6 @@
 namespace SingleStoreConnector;
 
-public enum MySqlBulkLoaderPriority
+public enum SingleStoreBulkLoaderPriority
 {
 	None,
 	Low,

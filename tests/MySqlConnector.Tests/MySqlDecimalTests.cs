@@ -3,13 +3,13 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlDecimalTests
+public class SingleStoreDecimalTests
 {
 	[Fact]
-	public void TestMySqlDecimalToString()
+	public void TestSingleStoreDecimalToString()
 	{
 		var stringVal = "1.23";
-		MySqlDecimal decimalVal = new MySqlDecimal(stringVal);
+		SingleStoreDecimal decimalVal = new SingleStoreDecimal(stringVal);
 		Assert.Equal(stringVal, decimalVal.ToString());
 	}
 
@@ -18,7 +18,7 @@ public class MySqlDecimalTests
 	{
 		var doubleVal = 1.23;
 		string stringVal = "1.23";
-		MySqlDecimal mySqlDecimal = new MySqlDecimal(stringVal);
+		SingleStoreDecimal mySqlDecimal = new SingleStoreDecimal(stringVal);
 		Assert.Equal(doubleVal, mySqlDecimal.ToDouble());
 	}
 
@@ -27,7 +27,7 @@ public class MySqlDecimalTests
 	{
 		decimal doubleVal = 1.2M ;
 		string stringVal = "1.2";
-		MySqlDecimal mySqlDecimal = new MySqlDecimal(stringVal);
+		SingleStoreDecimal mySqlDecimal = new SingleStoreDecimal(stringVal);
 		Assert.Equal(doubleVal, mySqlDecimal.Value);
 	}
 
@@ -35,14 +35,14 @@ public class MySqlDecimalTests
 	public void TestInvalidFormatWithDecimalPostive()
 	{
 		var invalidValue = "0323.323";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
 	public void TestInvalidFormatWithDecimalNegative()
 	{
 		var invalidValue = "-0323.323";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
@@ -50,7 +50,7 @@ public class MySqlDecimalTests
 	{
 		// If it's valid negative value with . then length should be less than 68
 		var invalidValue = "-123456789012345678901234567890123456.012345678901234567890123456789";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
@@ -58,7 +58,7 @@ public class MySqlDecimalTests
 	{
 		// If it's valid positive value with . then length should be less than 67
 		var invalidValue = "123456789012345678901234567890123456.012345678901234567890123456789";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
@@ -66,7 +66,7 @@ public class MySqlDecimalTests
 	{
 		// If it's valid negative value without . then length should be less than 67
 		var invalidValue = "-123456789012345678901234567890123456012345678901234567890123456789";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
@@ -74,21 +74,21 @@ public class MySqlDecimalTests
 	{
 		// If it's valid positive value without . then length should be less than 66
 		var invalidValue = "123456789012345678901234567890123456012345678901234567890123456789";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
 	public void TestValidFormatWithOutDecimalNegativeZero()
 	{
 		var invalidValue = "-0";
-		Assert.Throws<FormatException>(() => new MySqlDecimal(invalidValue));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(invalidValue));
 	}
 
 	[Fact]
 	public void TestValidFormatWithDecimalNegativeZero()
 	{
 		var value = "-0.2342323";
-		var decimalVal = new MySqlDecimal(value);
+		var decimalVal = new SingleStoreDecimal(value);
 		Assert.Equal(value, decimalVal.ToString());
 		Assert.Equal(decimal.Parse(value), decimalVal.Value);
 	}
@@ -98,7 +98,7 @@ public class MySqlDecimalTests
 	{
 		// valid value with negative and decimal
 		var value = "-12345678901234567890123456789012345.012345678901234567890123456789";
-		var decimalVal = new MySqlDecimal(value);
+		var decimalVal = new SingleStoreDecimal(value);
 		Assert.Equal(value, decimalVal.ToString());
 	}
 
@@ -115,7 +115,7 @@ public class MySqlDecimalTests
 	[InlineData("12345678901234567890123456789012345.012345678901234567890123456789")]
 	[InlineData("-12345678901234567890123456789012345.012345678901234567890123456789")]
 	public void ValidDecimalValues(string input) =>
-		Assert.Equal(input, new MySqlDecimal(input).ToString());
+		Assert.Equal(input, new SingleStoreDecimal(input).ToString());
 
 	[Theory]
 	[InlineData("")]
@@ -130,5 +130,5 @@ public class MySqlDecimalTests
 	[InlineData("12345678901234567890123456789012345.0123456789012345678901234567891")]
 	[InlineData("-12345678901234567890123456789012345.0123456789012345678901234567891")]
 	public void InvalidDecimalValues(string input) =>
-		Assert.Throws<FormatException>(() => new MySqlDecimal(input));
+		Assert.Throws<FormatException>(() => new SingleStoreDecimal(input));
 }

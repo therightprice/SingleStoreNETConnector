@@ -5,28 +5,28 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <see cref="MySqlDecimal"/> represents a MySQL <c>DECIMAL</c> value that is too large to fit in a .NET <see cref="decimal"/>.
+/// <see cref="SingleStoreDecimal"/> represents a MySQL <c>DECIMAL</c> value that is too large to fit in a .NET <see cref="decimal"/>.
 /// </summary>
-public readonly struct MySqlDecimal
+public readonly struct SingleStoreDecimal
 {
 	/// <summary>
-	/// Gets the value of this <see cref="MySqlDecimal"/> as a <see cref="decimal"/>.
+	/// Gets the value of this <see cref="SingleStoreDecimal"/> as a <see cref="decimal"/>.
 	/// </summary>
 	/// <remarks>This method will throw an <see cref="OverflowException"/> if the value is too large to be represented.</remarks>
 	public decimal Value => decimal.Parse(m_value, CultureInfo.InvariantCulture);
 
 	/// <summary>
-	/// Gets the value of this <see cref="MySqlDecimal"/> as a <see cref="double"/>.
+	/// Gets the value of this <see cref="SingleStoreDecimal"/> as a <see cref="double"/>.
 	/// </summary>
 	/// <remarks>The return value may have lost precision.</remarks>
 	public double ToDouble() => double.Parse(m_value, CultureInfo.InvariantCulture);
 
 	/// <summary>
-	/// Gets the original value of this <see cref="MySqlDecimal"/> as a <see cref="string"/>.
+	/// Gets the original value of this <see cref="SingleStoreDecimal"/> as a <see cref="string"/>.
 	/// </summary>
 	public override string ToString() => m_value;
 
-	internal MySqlDecimal(string value)
+	internal SingleStoreDecimal(string value)
 	{
 		if (s_pattern.Match(value) is { Success: true } match)
 		{
@@ -42,7 +42,7 @@ public readonly struct MySqlDecimal
 			}
 		}
 
-		throw new FormatException("Could not parse the value as a MySqlDecimal: {0}".FormatInvariant(value));
+		throw new FormatException("Could not parse the value as a SingleStoreDecimal: {0}".FormatInvariant(value));
 	}
 
 	private static readonly Regex s_pattern = new(@"^-?([1-9][0-9]*|0)(\.([0-9]+))?$");

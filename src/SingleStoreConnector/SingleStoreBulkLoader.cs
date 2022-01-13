@@ -7,12 +7,12 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <para><see cref="MySqlBulkLoader"/> lets you efficiently load a MySQL Server Table with data from a CSV or TSV file or <see cref="Stream"/>.</para>
+/// <para><see cref="SingleStoreBulkLoader"/> lets you efficiently load a MySQL Server Table with data from a CSV or TSV file or <see cref="Stream"/>.</para>
 /// <para>Example code:</para>
 /// <code>
 /// using var connection = new SingleStoreConnection("...;AllowLoadLocalInfile=True");
 /// await connection.OpenAsync();
-/// var bulkLoader = new MySqlBulkLoader(connection)
+/// var bulkLoader = new SingleStoreBulkLoader(connection)
 /// {
 /// 	FileName = @"C:\Path\To\file.csv",
 /// 	TableName = "destination",
@@ -29,7 +29,7 @@ namespace SingleStoreConnector;
 /// <remarks>Due to <a href="https://mysqlconnector.net/troubleshooting/load-data-local-infile/">security features</a>
 /// in MySQL Server, the connection string <strong>must</strong> have <c>AllowLoadLocalInfile=true</c> in order to use a local source.
 /// </remarks>
-public sealed class MySqlBulkLoader
+public sealed class SingleStoreBulkLoader
 {
 	/// <summary>
 	/// (Optional) The character set of the source data. By default, the database's character set is used.
@@ -42,9 +42,9 @@ public sealed class MySqlBulkLoader
 	public List<string> Columns { get; }
 
 	/// <summary>
-	/// A <see cref="MySqlBulkLoaderConflictOption"/> value that specifies how conflicts are resolved (default <see cref="MySqlBulkLoaderConflictOption.None"/>).
+	/// A <see cref="SingleStoreBulkLoaderConflictOption"/> value that specifies how conflicts are resolved (default <see cref="SingleStoreBulkLoaderConflictOption.None"/>).
 	/// </summary>
-	public MySqlBulkLoaderConflictOption ConflictOption { get; set; }
+	public SingleStoreBulkLoaderConflictOption ConflictOption { get; set; }
 
 	/// <summary>
 	/// The <see cref="SingleStoreConnection"/> to use.
@@ -103,9 +103,9 @@ public sealed class MySqlBulkLoader
 	public int NumberOfLinesToSkip { get; set; }
 
 	/// <summary>
-	/// A <see cref="MySqlBulkLoaderPriority"/> giving the priority to load with (default <see cref="MySqlBulkLoaderPriority.None"/>).
+	/// A <see cref="SingleStoreBulkLoaderPriority"/> giving the priority to load with (default <see cref="SingleStoreBulkLoaderPriority.None"/>).
 	/// </summary>
-	public MySqlBulkLoaderPriority Priority { get; set; }
+	public SingleStoreBulkLoaderPriority Priority { get; set; }
 
 	/// <summary>
 	/// A <see cref="Stream"/> containing the data to load. Either this or <see cref="FileName"/> must be set.
@@ -128,10 +128,10 @@ public sealed class MySqlBulkLoader
 	public int Timeout { get; set; }
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MySqlBulkLoader"/> class with the specified <see cref="SingleStoreConnection"/>.
+	/// Initializes a new instance of the <see cref="SingleStoreBulkLoader"/> class with the specified <see cref="SingleStoreConnection"/>.
 	/// </summary>
 	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
-	public MySqlBulkLoader(SingleStoreConnection connection)
+	public SingleStoreBulkLoader(SingleStoreConnection connection)
 	{
 		Connection = connection;
 		Local = true;
@@ -203,7 +203,7 @@ public sealed class MySqlBulkLoader
 		try
 		{
 			if (Local && !Connection.AllowLoadLocalInfile)
-				throw new NotSupportedException("To use MySqlBulkLoader.Local=true, set AllowLoadLocalInfile=true in the connection string. See https://fl.vu/mysql-load-data");
+				throw new NotSupportedException("To use SingleStoreBulkLoader.Local=true, set AllowLoadLocalInfile=true in the connection string. See https://fl.vu/mysql-load-data");
 
 			using var cmd = new SingleStoreCommand(CreateSql(), Connection, Connection.CurrentTransaction)
 			{
@@ -234,20 +234,20 @@ public sealed class MySqlBulkLoader
 
 		sb.Append(Priority switch
 		{
-			MySqlBulkLoaderPriority.Low => "LOW_PRIORITY ",
-			MySqlBulkLoaderPriority.Concurrent => "CONCURRENT ",
+			SingleStoreBulkLoaderPriority.Low => "LOW_PRIORITY ",
+			SingleStoreBulkLoaderPriority.Concurrent => "CONCURRENT ",
 			_ => "",
 		});
 
 		if (Local)
 			sb.Append("LOCAL ");
 
-		sb.AppendFormat(CultureInfo.InvariantCulture, "INFILE '{0}' ", MySqlHelper.EscapeString(FileName!));
+		sb.AppendFormat(CultureInfo.InvariantCulture, "INFILE '{0}' ", SingleStoreHelper.EscapeString(FileName!));
 
 		sb.Append(ConflictOption switch
 		{
-			MySqlBulkLoaderConflictOption.Replace => "REPLACE ",
-			MySqlBulkLoaderConflictOption.Ignore => "IGNORE ",
+			SingleStoreBulkLoaderConflictOption.Replace => "REPLACE ",
+			SingleStoreBulkLoaderConflictOption.Ignore => "IGNORE ",
 			_ => "",
 		});
 
@@ -256,14 +256,14 @@ public sealed class MySqlBulkLoader
 		if (CharacterSet is not null)
 			sb.AppendFormat(CultureInfo.InvariantCulture, "CHARACTER SET {0} ", CharacterSet);
 
-		var fieldsTerminatedBy = FieldTerminator is null ? "" : "TERMINATED BY '{0}' ".FormatInvariant(MySqlHelper.EscapeString(FieldTerminator));
-		var fieldsEnclosedBy = FieldQuotationCharacter == default ? "" : "{0}ENCLOSED BY '{1}' ".FormatInvariant(FieldQuotationOptional ? "OPTIONALLY " : "", MySqlHelper.EscapeString(FieldQuotationCharacter.ToString()));
-		var fieldsEscapedBy = EscapeCharacter == default ? "" : "ESCAPED BY '{0}' ".FormatInvariant(MySqlHelper.EscapeString(EscapeCharacter.ToString()));
+		var fieldsTerminatedBy = FieldTerminator is null ? "" : "TERMINATED BY '{0}' ".FormatInvariant(SingleStoreHelper.EscapeString(FieldTerminator));
+		var fieldsEnclosedBy = FieldQuotationCharacter == default ? "" : "{0}ENCLOSED BY '{1}' ".FormatInvariant(FieldQuotationOptional ? "OPTIONALLY " : "", SingleStoreHelper.EscapeString(FieldQuotationCharacter.ToString()));
+		var fieldsEscapedBy = EscapeCharacter == default ? "" : "ESCAPED BY '{0}' ".FormatInvariant(SingleStoreHelper.EscapeString(EscapeCharacter.ToString()));
 		if (fieldsTerminatedBy.Length + fieldsEnclosedBy.Length + fieldsEscapedBy.Length > 0)
 			sb.AppendFormat(CultureInfo.InvariantCulture, "FIELDS {0}{1}{2}", fieldsTerminatedBy, fieldsEnclosedBy, fieldsEscapedBy);
 
-		var linesTerminatedBy = LineTerminator is null ? "" : "TERMINATED BY '{0}' ".FormatInvariant(MySqlHelper.EscapeString(LineTerminator));
-		var linesStartingBy = LinePrefix is null ? "" : "STARTING BY '{0}' ".FormatInvariant(MySqlHelper.EscapeString(LinePrefix));
+		var linesTerminatedBy = LineTerminator is null ? "" : "TERMINATED BY '{0}' ".FormatInvariant(SingleStoreHelper.EscapeString(LineTerminator));
+		var linesStartingBy = LinePrefix is null ? "" : "STARTING BY '{0}' ".FormatInvariant(SingleStoreHelper.EscapeString(LinePrefix));
 		if (linesTerminatedBy.Length + linesStartingBy.Length > 0)
 			sb.AppendFormat(CultureInfo.InvariantCulture, "LINES {0}{1}", linesTerminatedBy, linesStartingBy);
 

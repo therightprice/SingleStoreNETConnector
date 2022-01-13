@@ -12,31 +12,31 @@ internal sealed class ConnectionSettings
 		ConnectionStringBuilder = csb;
 		ConnectionString = csb.ConnectionString;
 
-		if (csb.ConnectionProtocol == MySqlConnectionProtocol.UnixSocket || (!Utility.IsWindows() && (csb.Server.StartsWith("/", StringComparison.Ordinal) || csb.Server.StartsWith("./", StringComparison.Ordinal))))
+		if (csb.ConnectionProtocol == SingleStoreConnectionProtocol.UnixSocket || (!Utility.IsWindows() && (csb.Server.StartsWith("/", StringComparison.Ordinal) || csb.Server.StartsWith("./", StringComparison.Ordinal))))
 		{
 			if (csb.LoadBalance != MySqlLoadBalance.RoundRobin)
 				throw new NotSupportedException("LoadBalance not supported when ConnectionProtocol=UnixSocket");
 			if (!File.Exists(csb.Server))
 				throw new SingleStoreException("Cannot find Unix Socket at " + csb.Server);
-			ConnectionProtocol = MySqlConnectionProtocol.UnixSocket;
+			ConnectionProtocol = SingleStoreConnectionProtocol.UnixSocket;
 			UnixSocket = Path.GetFullPath(csb.Server);
 			PipeName = "";
 		}
-		else if (csb.ConnectionProtocol == MySqlConnectionProtocol.NamedPipe)
+		else if (csb.ConnectionProtocol == SingleStoreConnectionProtocol.NamedPipe)
 		{
 			if (csb.LoadBalance != MySqlLoadBalance.RoundRobin)
 				throw new NotSupportedException("LoadBalance not supported when ConnectionProtocol=NamedPipe");
-			ConnectionProtocol = MySqlConnectionProtocol.NamedPipe;
+			ConnectionProtocol = SingleStoreConnectionProtocol.NamedPipe;
 			HostNames = (csb.Server == "." || string.Equals(csb.Server, "localhost", StringComparison.OrdinalIgnoreCase)) ? s_localhostPipeServer : new[] { csb.Server };
 			PipeName = csb.PipeName;
 		}
-		else if (csb.ConnectionProtocol == MySqlConnectionProtocol.SharedMemory)
+		else if (csb.ConnectionProtocol == SingleStoreConnectionProtocol.SharedMemory)
 		{
 			throw new NotSupportedException("Shared Memory connections are not supported");
 		}
 		else
 		{
-			ConnectionProtocol = MySqlConnectionProtocol.Sockets;
+			ConnectionProtocol = SingleStoreConnectionProtocol.Sockets;
 			HostNames = csb.Server.Split(',');
 			LoadBalance = csb.LoadBalance;
 			Port = (int) csb.Port;
@@ -182,7 +182,7 @@ internal sealed class ConnectionSettings
 
 	// Base Options
 	public string ConnectionString { get; }
-	public MySqlConnectionProtocol ConnectionProtocol { get; }
+	public SingleStoreConnectionProtocol ConnectionProtocol { get; }
 	public IReadOnlyList<string>? HostNames { get; }
 	public MySqlLoadBalance LoadBalance { get; }
 	public int Port { get; }
@@ -274,7 +274,7 @@ internal sealed class ConnectionSettings
 		ConnectionStringBuilder = other.ConnectionStringBuilder;
 		ConnectionString = other.ConnectionString;
 
-		ConnectionProtocol = MySqlConnectionProtocol.Sockets;
+		ConnectionProtocol = SingleStoreConnectionProtocol.Sockets;
 		HostNames = new[] { host };
 		LoadBalance = other.LoadBalance;
 		Port = port;

@@ -98,7 +98,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var csb = new SingleStoreConnectionStringBuilder
 		{
 			PipeName = "nonexistingpipe",
-			ConnectionProtocol = MySqlConnectionProtocol.NamedPipe,
+			ConnectionProtocol = SingleStoreConnectionProtocol.NamedPipe,
 			Server = ".",
 			ConnectionTimeout = 1
 		};
@@ -587,7 +587,7 @@ create table `{AppConfig.SecondaryDatabase}`.changedb2(value int not null);");
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Server = AppConfig.SocketPath;
-		csb.ConnectionProtocol = MySqlConnectionProtocol.Unix;
+		csb.ConnectionProtocol = SingleStoreConnectionProtocol.Unix;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		connection.Open();
 		Assert.Equal(ConnectionState.Open, connection.State);

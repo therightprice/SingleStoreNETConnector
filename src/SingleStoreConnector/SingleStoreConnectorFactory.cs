@@ -3,12 +3,12 @@ namespace SingleStoreConnector;
 /// <summary>
 /// An implementation of <see cref="DbProviderFactory"/> that creates SingleStoreConnector objects.
 /// </summary>
-public sealed class MySqlConnectorFactory : DbProviderFactory
+public sealed class SingleStoreConnectorFactory : DbProviderFactory
 {
 	/// <summary>
 	/// Provides an instance of <see cref="DbProviderFactory"/> that can create SingleStoreConnector objects.
 	/// </summary>
-	public static readonly MySqlConnectorFactory Instance = new();
+	public static readonly SingleStoreConnectorFactory Instance = new();
 
 	/// <summary>
 	/// Creates a new <see cref="SingleStoreCommand"/> object.
@@ -60,21 +60,21 @@ public sealed class MySqlConnectorFactory : DbProviderFactory
 
 #pragma warning disable CA1822 // Mark members as static
 	/// <summary>
-	/// Creates a new <see cref="MySqlBatch"/> object.
+	/// Creates a new <see cref="SingleStoreBatch"/> object.
 	/// </summary>
 #if NET6_0_OR_GREATER
-	public override DbBatch CreateBatch() => new MySqlBatch();
+	public override DbBatch CreateBatch() => new SingleStoreBatch();
 #else
-	public MySqlBatch CreateBatch() => new MySqlBatch();
+	public SingleStoreBatch CreateBatch() => new SingleStoreBatch();
 #endif
 
 	/// <summary>
-	/// Creates a new <see cref="MySqlBatchCommand"/> object.
+	/// Creates a new <see cref="SingleStoreBatchCommand"/> object.
 	/// </summary>
 #if NET6_0_OR_GREATER
-	public override DbBatchCommand CreateBatchCommand() => new MySqlBatchCommand();
+	public override DbBatchCommand CreateBatchCommand() => new SingleStoreBatchCommand();
 #else
-	public MySqlBatchCommand CreateBatchCommand() => new MySqlBatchCommand();
+	public SingleStoreBatchCommand CreateBatchCommand() => new SingleStoreBatchCommand();
 #endif
 
 	/// <summary>
@@ -87,7 +87,7 @@ public sealed class MySqlConnectorFactory : DbProviderFactory
 #endif
 #pragma warning restore CA1822 // Mark members as static
 
-	private MySqlConnectorFactory()
+	private SingleStoreConnectorFactory()
 	{
 	}
 }

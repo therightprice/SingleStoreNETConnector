@@ -6,12 +6,12 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlAttributeCollectionTests
+public class SingleStoreAttributeCollectionTests
 {
-	public MySqlAttributeCollectionTests()
+	public SingleStoreAttributeCollectionTests()
 	{
 		m_collection = new SingleStoreCommand().Attributes;
-		m_attribute = new MySqlAttribute("name", "value");
+		m_attribute = new SingleStoreAttribute("name", "value");
 	}
 
 	[Fact]
@@ -81,16 +81,16 @@ public class MySqlAttributeCollectionTests
 #endif
 	}
 
-	private MySqlAttribute AssertSingle()
+	private SingleStoreAttribute AssertSingle()
 	{
 #if BASELINE
 		Assert.Equal(1, m_collection.Count);
 		return m_collection[0];
 #else
-		return (MySqlAttribute) Assert.Single(m_collection);
+		return (SingleStoreAttribute) Assert.Single(m_collection);
 #endif
 	}
 
-	private readonly MySqlAttributeCollection m_collection;
-	private readonly MySqlAttribute m_attribute;
+	private readonly SingleStoreAttributeCollection m_collection;
+	private readonly SingleStoreAttribute m_attribute;
 }

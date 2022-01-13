@@ -1,12 +1,12 @@
 namespace SingleStoreConnector;
 
 /// <summary>
-/// Represents the result of a <see cref="MySqlBulkCopy"/> operation.
+/// Represents the result of a <see cref="SingleStoreBulkCopy"/> operation.
 /// </summary>
 public sealed class MySqlBulkCopyResult
 {
 	/// <summary>
-	/// The warnings, if any. Users of <see cref="MySqlBulkCopy"/> should check that this collection is empty to avoid
+	/// The warnings, if any. Users of <see cref="SingleStoreBulkCopy"/> should check that this collection is empty to avoid
 	/// potential data loss from failed data type conversions.
 	/// </summary>
 	public IReadOnlyList<SingleStoreError> Warnings { get; }

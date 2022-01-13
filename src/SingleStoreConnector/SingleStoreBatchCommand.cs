@@ -2,18 +2,18 @@ using SingleStoreConnector.Core;
 
 namespace SingleStoreConnector;
 
-public sealed class MySqlBatchCommand :
+public sealed class SingleStoreBatchCommand :
 #if NET6_0_OR_GREATER
 	DbBatchCommand,
 #endif
 	IMySqlCommand
 {
-	public MySqlBatchCommand()
+	public SingleStoreBatchCommand()
 		: this(null)
 	{
 	}
 
-	public MySqlBatchCommand(string? commandText)
+	public SingleStoreBatchCommand(string? commandText)
 	{
 		CommandText = commandText ?? "";
 		CommandType = CommandType.Text;
@@ -53,7 +53,7 @@ public sealed class MySqlBatchCommand :
 
 	MySqlParameterCollection? IMySqlCommand.RawParameters => m_parameterCollection;
 
-	MySqlAttributeCollection? IMySqlCommand.RawAttributes => null;
+	SingleStoreAttributeCollection? IMySqlCommand.RawAttributes => null;
 
 	SingleStoreConnection? IMySqlCommand.Connection => Batch?.Connection;
 
@@ -69,7 +69,7 @@ public sealed class MySqlBatchCommand :
 
 	ICancellableCommand IMySqlCommand.CancellableCommand => Batch!;
 
-	internal MySqlBatch? Batch { get; set; }
+	internal SingleStoreBatch? Batch { get; set; }
 
 	MySqlParameterCollection? m_parameterCollection;
 	long m_lastInsertedId;

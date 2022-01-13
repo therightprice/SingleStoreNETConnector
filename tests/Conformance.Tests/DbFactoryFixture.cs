@@ -14,5 +14,5 @@ public class DbFactoryFixture : IDbFactoryFixture
 		}
 
 		public string ConnectionString { get; }
-		public DbProviderFactory Factory => MySqlConnectorFactory.Instance;
+		public DbProviderFactory Factory => SingleStoreConnectorFactory.Instance;
 	}

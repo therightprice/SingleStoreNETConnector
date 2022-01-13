@@ -419,11 +419,11 @@ internal sealed class ServerSession
 				shouldRetrySsl = (sslProtocols == SslProtocols.None || (sslProtocols & SslProtocols.Tls12) == SslProtocols.Tls12) && Utility.IsWindows();
 
 				var connected = false;
-				if (cs.ConnectionProtocol == MySqlConnectionProtocol.Sockets)
+				if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.Sockets)
 					connected = await OpenTcpSocketAsync(cs, loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer)), ioBehavior, cancellationToken).ConfigureAwait(false);
-				else if (cs.ConnectionProtocol == MySqlConnectionProtocol.UnixSocket)
+				else if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.UnixSocket)
 					connected = await OpenUnixSocketAsync(cs, ioBehavior, cancellationToken).ConfigureAwait(false);
-				else if (cs.ConnectionProtocol == MySqlConnectionProtocol.NamedPipe)
+				else if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.NamedPipe)
 					connected = await OpenNamedPipeAsync(cs, startTickCount, ioBehavior, cancellationToken).ConfigureAwait(false);
 				if (!connected)
 				{
@@ -1622,7 +1622,7 @@ internal sealed class ServerSession
 			return true;
 
 		// detect Azure Database for MySQL DNS suffixes, if a "user@host" user ID is being used
-		if (cs.ConnectionProtocol == MySqlConnectionProtocol.Sockets && cs.UserID.IndexOf('@') != -1)
+		if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.Sockets && cs.UserID.IndexOf('@') != -1)
 		{
 			return HostName.EndsWith(".mysql.database.azure.com", StringComparison.OrdinalIgnoreCase) ||
 				HostName.EndsWith(".database.windows.net", StringComparison.OrdinalIgnoreCase) ||

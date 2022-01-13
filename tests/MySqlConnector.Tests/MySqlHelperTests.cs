@@ -5,7 +5,7 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlHelperTests
+public class SingleStoreHelperTests
 {
 	[Theory]
 	[InlineData("", "")]
@@ -21,7 +21,7 @@ public class MySqlHelperTests
 	[InlineData(@"'a'b'", @"\'a\'b\'")]
 	public void EscapeString(string input, string expected)
 	{
-		var actual = MySqlHelper.EscapeString(input);
+		var actual = SingleStoreHelper.EscapeString(input);
 		Assert.Equal(expected, actual);
 		if (expected == input)
 			Assert.Same(input, actual);

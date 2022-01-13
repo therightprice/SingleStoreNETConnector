@@ -383,11 +383,11 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public void CancelBatchCommand()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT SLEEP(5)"),
+				new SingleStoreBatchCommand("SELECT SLEEP(5)"),
 			},
 		};
 		var task = Task.Run(async () =>
@@ -407,11 +407,11 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	public void CancelBatchReaderAsynchronously()
 	{
 		using var barrier = new Barrier(2);
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
 			},
 		};
 		var task = Task.Run(() =>
@@ -446,11 +446,11 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public void CancelBatchBeforeRead()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
 			},
 		};
 		using var reader = batch.ExecuteReader();
@@ -476,13 +476,13 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	public void CancelMultiCommandBatchReader()
 	{
 		using var barrier = new Barrier(2);
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_hugeQuery),
-				new MySqlBatchCommand(c_hugeQuery),
-				new MySqlBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
 			},
 		};
 		var task = Task.Run(() =>
@@ -519,11 +519,11 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelBatchWithTokenBeforeExecuteScalar()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("select 1;"),
+				new SingleStoreBatchCommand("select 1;"),
 			},
 		};
 		try
@@ -540,11 +540,11 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelBatchWithTokenBeforeExecuteNonQuery()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("select 1;"),
+				new SingleStoreBatchCommand("select 1;"),
 			},
 		};
 		try
@@ -561,11 +561,11 @@ create table cancel_completed_command(id integer not null primary key, value tex
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelBatchWithTokenBeforeExecuteReader()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("select 1;"),
+				new SingleStoreBatchCommand("select 1;"),
 			},
 		};
 		try
@@ -590,7 +590,7 @@ create table cancel_completed_command (
 
 		using (var batch = m_database.Connection.CreateBatch())
 		{
-			batch.BatchCommands.Add(new MySqlBatchCommand(@"insert into cancel_completed_command (id, value) values (1, null);"));
+			batch.BatchCommands.Add(new SingleStoreBatchCommand(@"insert into cancel_completed_command (id, value) values (1, null);"));
 
 			using (await batch.ExecuteReaderAsync().ConfigureAwait(false))
 				batch.Cancel();
@@ -598,7 +598,7 @@ create table cancel_completed_command (
 
 		using (var batch = m_database.Connection.CreateBatch())
 		{
-			batch.BatchCommands.Add(new MySqlBatchCommand(@"update cancel_completed_command SET value = ""value"" where id = 1;"));
+			batch.BatchCommands.Add(new SingleStoreBatchCommand(@"update cancel_completed_command SET value = ""value"" where id = 1;"));
 
 			await batch.ExecuteNonQueryAsync().ConfigureAwait(false);
 		}
@@ -614,11 +614,11 @@ create table cancel_completed_command (
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelHugeQueryBatchWithTokenAfterExecuteReader()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
 			},
 		};
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
@@ -644,12 +644,12 @@ create table cancel_completed_command (
 	[SkippableFact(ServerFeatures.Timeout, Skip = "COM_MULTI")]
 	public async Task CancelHugeQueryBatchWithTokenInNextResult()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_hugeQuery),
-				new MySqlBatchCommand("select 1, 2, 3;"),
+				new SingleStoreBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand("select 1, 2, 3;"),
 			},
 		};
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
@@ -679,11 +679,11 @@ create table cancel_completed_command (
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelSlowQueryBatchWithTokenAfterExecuteReader()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_slowQuery),
+				new SingleStoreBatchCommand(c_slowQuery),
 			},
 		};
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));
@@ -711,12 +711,12 @@ create table cancel_completed_command (
 	[SkippableFact(ServerFeatures.Timeout)]
 	public async Task CancelSlowQueryBatchWithTokenAfterNextResult()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
-				new MySqlBatchCommand(c_slowQuery),
+				new SingleStoreBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand(c_slowQuery),
 			},
 		};
 		using var reader = await batch.ExecuteReaderAsync();
@@ -753,13 +753,13 @@ create table cancel_completed_command (
 	[SkippableFact(ServerFeatures.Timeout, Skip = "COM_MULTI")]
 	public async Task CancelMultiStatementBatchInRead()
 	{
-		using var batch = new MySqlBatch(m_database.Connection)
+		using var batch = new SingleStoreBatch(m_database.Connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand(c_hugeQuery),
-				new MySqlBatchCommand(c_hugeQuery),
-				new MySqlBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
+				new SingleStoreBatchCommand(c_hugeQuery),
 			},
 		};
 		using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(0.5));

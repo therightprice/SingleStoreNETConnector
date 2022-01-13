@@ -431,23 +431,23 @@ internal abstract class Row
 		return (MySqlDateTime) value;
 	}
 
-	public MySqlGeometry GetMySqlGeometry(int ordinal)
+	public SingleStoreGeometry GetSingleStoreGeometry(int ordinal)
 	{
 		var value = GetValue(ordinal);
 		if (value is byte[] bytes && ResultSet.ColumnDefinitions![ordinal].ColumnType == ColumnType.Geometry)
-			return new MySqlGeometry(bytes);
-		throw new InvalidCastException("Can't convert {0} to MySqlGeometry.".FormatInvariant(ResultSet.ColumnDefinitions![ordinal].ColumnType));
+			return new SingleStoreGeometry(bytes);
+		throw new InvalidCastException("Can't convert {0} to SingleStoreGeometry.".FormatInvariant(ResultSet.ColumnDefinitions![ordinal].ColumnType));
 	}
 
-	public MySqlDecimal GetMySqlDecimal(int ordinal)
+	public SingleStoreDecimal GetSingleStoreDecimal(int ordinal)
 	{
 		if (IsDBNull(ordinal))
-			return (MySqlDecimal) GetValue(ordinal);
+			return (SingleStoreDecimal) GetValue(ordinal);
 		var data = m_data.Slice(m_dataOffsets[ordinal], m_dataLengths[ordinal]).Span;
 		var columnType = ResultSet.ColumnDefinitions![ordinal].ColumnType;
 		if (columnType is ColumnType.NewDecimal or ColumnType.Decimal)
-			return new MySqlDecimal(Encoding.UTF8.GetString(data));
-		throw new InvalidCastException("Can't convert {0} to MySqlDecimal.".FormatInvariant(ResultSet.ColumnDefinitions![ordinal].ColumnType));
+			return new SingleStoreDecimal(Encoding.UTF8.GetString(data));
+		throw new InvalidCastException("Can't convert {0} to SingleStoreDecimal.".FormatInvariant(ResultSet.ColumnDefinitions![ordinal].ColumnType));
 	}
 
 	public int GetValues(object[] values)

@@ -415,7 +415,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
-	public void InsertMySqlDecimal(bool prepare)
+	public void InsertSingleStoreDecimal(bool prepare)
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
@@ -425,7 +425,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 		string value = "22";
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = @"insert into insert_mysql_decimal(value) values(@value);";
-		cmd.Parameters.AddWithValue("@value", new MySqlDecimal(value));
+		cmd.Parameters.AddWithValue("@value", new SingleStoreDecimal(value));
 		if (prepare)
 			cmd.Prepare();
 		cmd.ExecuteNonQuery();
@@ -438,7 +438,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
-	public void InsertMySqlDecimalAsDecimal(bool prepare)
+	public void InsertSingleStoreDecimalAsDecimal(bool prepare)
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
@@ -448,7 +448,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 		string value = "-123456789012345678901234.01234";
 		using var cmd = connection.CreateCommand();
 		cmd.CommandText = @"insert into insert_mysql_decimal(value) values(@value);";
-		cmd.Parameters.AddWithValue("@value", new MySqlDecimal(value));
+		cmd.Parameters.AddWithValue("@value", new SingleStoreDecimal(value));
 		if (prepare)
 			cmd.Prepare();
 		Assert.Equal(1, cmd.ExecuteNonQuery());
@@ -463,7 +463,7 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
-	public void ReadMySqlDecimalUsingReader(bool prepare)
+	public void ReadSingleStoreDecimalUsingReader(bool prepare)
 	{
 		using SingleStoreConnection connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
@@ -481,11 +481,11 @@ create table insert_big_integer(rowid integer not null primary key auto_incremen
 			cmd.Prepare();
 		using var reader = cmd.ExecuteReader();
 		Assert.True(reader.Read());
-		var val = reader.GetMySqlDecimal("value");
+		var val = reader.GetSingleStoreDecimal("value");
 		Assert.Equal(value, val.ToString());
 
 #if !BASELINE
-		val = reader.GetFieldValue<MySqlDecimal>(0);
+		val = reader.GetFieldValue<SingleStoreDecimal>(0);
 		Assert.Equal(value, val.ToString());
 #endif
 

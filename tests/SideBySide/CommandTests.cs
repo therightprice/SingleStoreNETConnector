@@ -249,7 +249,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		connection.Open();
 		using var transaction = connection.BeginTransaction();
 		var param = new SingleStoreParameter("@param", MySqlDbType.Decimal) { Value = 12.3m };
-		var attr = new MySqlAttribute("attr_name", 1.23);
+		var attr = new SingleStoreAttribute("attr_name", 1.23);
 		using var cmd = new SingleStoreCommand("SELECT @param;", connection, transaction)
 		{
 			CommandType = CommandType.StoredProcedure,

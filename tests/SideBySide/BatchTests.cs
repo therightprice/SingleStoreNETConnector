@@ -11,11 +11,11 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void NeedsConnection()
 	{
-		using var batch = new MySqlBatch
+		using var batch = new SingleStoreBatch
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand("SELECT 1;"),
 			},
 		};
 		Assert.Throws<InvalidOperationException>(() => batch.ExecuteNonQuery());
@@ -25,11 +25,11 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	public void NeedsOpenConnection()
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand("SELECT 1;"),
 			},
 		};
 		Assert.Throws<InvalidOperationException>(() => batch.ExecuteNonQuery());
@@ -40,7 +40,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection);
+		using var batch = new SingleStoreBatch(connection);
 		Assert.Throws<InvalidOperationException>(() => batch.ExecuteNonQuery());
 	}
 
@@ -49,7 +49,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands = { null },
 		};
@@ -61,9 +61,9 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
-			BatchCommands = { new MySqlBatchCommand() },
+			BatchCommands = { new SingleStoreBatchCommand() },
 		};
 		Assert.Throws<InvalidOperationException>(() => batch.ExecuteNonQuery());
 	}
@@ -71,7 +71,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	[Fact]
 	public void NotDisposed()
 	{
-		using var batch = new MySqlBatch();
+		using var batch = new SingleStoreBatch();
 		batch.Dispose();
 		Assert.Throws<ObjectDisposedException>(() => batch.ExecuteNonQuery());
 	}
@@ -81,11 +81,11 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand("SELECT 1;"),
 			},
 		};
 		using (var reader = batch.ExecuteReader(CommandBehavior.CloseConnection))
@@ -116,7 +116,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 		connection.Open();
 		using var transaction = connection.BeginTransaction();
 		using var batch = connection.CreateBatch();
-		batch.BatchCommands.Add(new MySqlBatchCommand("SELECT 1;"));
+		batch.BatchCommands.Add(new SingleStoreBatchCommand("SELECT 1;"));
 		Assert.Throws<InvalidOperationException>(() => batch.ExecuteScalar());
 
 		batch.Transaction = transaction;
@@ -130,7 +130,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 		connection.Open();
 		using var transaction = connection.BeginTransaction();
 		using var batch = connection.CreateBatch();
-		batch.BatchCommands.Add(new MySqlBatchCommand("SELECT 1;"));
+		batch.BatchCommands.Add(new SingleStoreBatchCommand("SELECT 1;"));
 		TestUtilities.AssertIsOne(batch.ExecuteScalar());
 	}
 
@@ -145,7 +145,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 		transaction.Dispose();
 
 		using var batch = connection.CreateBatch();
-		batch.BatchCommands.Add(new MySqlBatchCommand("SELECT 1;"));
+		batch.BatchCommands.Add(new SingleStoreBatchCommand("SELECT 1;"));
 		batch.Transaction = transaction;
 		TestUtilities.AssertIsOne(batch.ExecuteScalar());
 	}
@@ -160,7 +160,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 		using var transaction1 = connection1.BeginTransaction();
 		using var batch2 = connection2.CreateBatch();
 		batch2.Transaction = transaction1;
-		batch2.BatchCommands.Add(new MySqlBatchCommand("SELECT 1;"));
+		batch2.BatchCommands.Add(new SingleStoreBatchCommand("SELECT 1;"));
 		TestUtilities.AssertIsOne(batch2.ExecuteScalar());
 	}
 
@@ -176,13 +176,13 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1" + suffix),
-				new MySqlBatchCommand("SELECT 2" + suffix),
-				new MySqlBatchCommand("SELECT 3" + suffix),
+				new SingleStoreBatchCommand("SELECT 1" + suffix),
+				new SingleStoreBatchCommand("SELECT 2" + suffix),
+				new SingleStoreBatchCommand("SELECT 3" + suffix),
 			},
 		};
 		using var reader = batch.ExecuteReader();
@@ -211,13 +211,13 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
-				new MySqlBatchCommand("SELECT 2 /* incomplete"),
-				new MySqlBatchCommand("SELECT 3;"),
+				new SingleStoreBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand("SELECT 2 /* incomplete"),
+				new SingleStoreBatchCommand("SELECT 3;"),
 			},
 		};
 		using var reader = batch.ExecuteReader();
@@ -243,12 +243,12 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 			command.ExecuteNonQuery();
 		}
 
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT id FROM batch_single_row ORDER BY id"),
-				new MySqlBatchCommand("SELECT id FROM batch_single_row ORDER BY id"),
+				new SingleStoreBatchCommand("SELECT id FROM batch_single_row ORDER BY id"),
+				new SingleStoreBatchCommand("SELECT id FROM batch_single_row ORDER BY id"),
 			},
 		};
 
@@ -266,11 +266,11 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 	[Fact]
 	public void PrepareNeedsConnection()
 	{
-		using var batch = new MySqlBatch
+		using var batch = new SingleStoreBatch
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand("SELECT 1;"),
 			},
 		};
 		Assert.Throws<InvalidOperationException>(() => batch.Prepare());
@@ -280,11 +280,11 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 	public void PrepareNeedsOpenConnection()
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands =
 			{
-				new MySqlBatchCommand("SELECT 1;"),
+				new SingleStoreBatchCommand("SELECT 1;"),
 			},
 		};
 		Assert.Throws<InvalidOperationException>(() => batch.Prepare());
@@ -295,7 +295,7 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection);
+		using var batch = new SingleStoreBatch(connection);
 		Assert.Throws<InvalidOperationException>(() => batch.Prepare());
 	}
 
@@ -304,7 +304,7 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
 			BatchCommands = { null },
 		};
@@ -316,9 +316,9 @@ insert into batch_single_row(id) values(1),(2),(3);", connection))
 	{
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
-		using var batch = new MySqlBatch(connection)
+		using var batch = new SingleStoreBatch(connection)
 		{
-			BatchCommands = { new MySqlBatchCommand() },
+			BatchCommands = { new SingleStoreBatchCommand() },
 		};
 		Assert.Throws<InvalidOperationException>(() => batch.Prepare());
 	}

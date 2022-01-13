@@ -518,7 +518,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.Server = AppConfig.SocketPath;
-		csb.ConnectionProtocol = MySqlConnectionProtocol.Unix;
+		csb.ConnectionProtocol = SingleStoreConnectionProtocol.Unix;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await connection.OpenAsync();
 		Assert.Equal(ConnectionState.Open, connection.State);

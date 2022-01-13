@@ -33,7 +33,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal(MySqlCertificateStoreLocation.None, csb.CertificateStoreLocation);
 		Assert.Equal("", csb.CharacterSet);
 		Assert.Equal(0u, csb.ConnectionLifeTime);
-		Assert.Equal(MySqlConnectionProtocol.Sockets, csb.ConnectionProtocol);
+		Assert.Equal(SingleStoreConnectionProtocol.Sockets, csb.ConnectionProtocol);
 #if BASELINE
 		Assert.False(csb.ConnectionReset);
 #else
@@ -180,7 +180,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal("thumbprint123", csb.CertificateThumbprint);
 		Assert.Equal("latin1", csb.CharacterSet);
 		Assert.Equal(15u, csb.ConnectionLifeTime);
-		Assert.Equal(MySqlConnectionProtocol.NamedPipe, csb.ConnectionProtocol);
+		Assert.Equal(SingleStoreConnectionProtocol.NamedPipe, csb.ConnectionProtocol);
 		Assert.False(csb.ConnectionReset);
 		Assert.Equal(30u, csb.ConnectionTimeout);
 		Assert.True(csb.ConvertZeroDateTime);
@@ -458,7 +458,7 @@ public class MySqlConnectionStringBuilderTests
 	[InlineData("Certificate Store Location", MySqlCertificateStoreLocation.CurrentUser)]
 	[InlineData("Character Set", "utf8mb4")]
 	[InlineData("Connection Lifetime", 30u)]
-	[InlineData("Connection Protocol", MySqlConnectionProtocol.NamedPipe)]
+	[InlineData("Connection Protocol", SingleStoreConnectionProtocol.NamedPipe)]
 	[InlineData("Connection Reset", true)]
 #if BASELINE
 	[InlineData("Connect Timeout", 10u)]

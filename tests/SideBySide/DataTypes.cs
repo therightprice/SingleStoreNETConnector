@@ -686,8 +686,8 @@ UNHEX('33221100554477668899AABBCCDDEEFF'),
 		else
 		{
 #if BASELINE
-			Assert.Throws<MySql.Data.Types.MySqlConversionException>(() => reader.GetDateTime(0));
-			Assert.Throws<MySql.Data.Types.MySqlConversionException>(() => reader.GetDateTime(1));
+			Assert.Throws<MySql.Data.Types.SingleStoreConversionException>(() => reader.GetDateTime(0));
+			Assert.Throws<MySql.Data.Types.SingleStoreConversionException>(() => reader.GetDateTime(1));
 #else
 			Assert.Throws<InvalidCastException>(() => reader.GetDateTime(0));
 			Assert.Throws<InvalidCastException>(() => reader.GetDateTime(1));
@@ -1088,16 +1088,16 @@ ORDER BY t.`Key`", Connection);
 			);
 
 		DoQuery<GetGeometryWhenNullException>("geometry", columnName, dataTypeName, geometryData.Select(CreateGeometry).ToArray(),
-			reader => reader.GetMySqlGeometry(0),
+			reader => reader.GetSingleStoreGeometry(0),
 			matchesDefaultType: false,
 #if BASELINE
 			omitGetFieldValueTest: true, // https://bugs.mysql.com/bug.php?id=96500
 			omitWhereTest: true, // https://bugs.mysql.com/bug.php?id=96498
 #endif
 #if BASELINE
-			assertEqual: (x, y) => Assert.Equal(((MySqlGeometry) x).Value, ((MySqlGeometry) y).Value)
+			assertEqual: (x, y) => Assert.Equal(((SingleStoreGeometry) x).Value, ((SingleStoreGeometry) y).Value)
 #else
-			assertEqual: (x, y) => Assert.Equal(((MySqlGeometry) x)?.Value.ToArray(), ((MySqlGeometry) y)?.Value.ToArray())
+			assertEqual: (x, y) => Assert.Equal(((SingleStoreGeometry) x)?.Value.ToArray(), ((SingleStoreGeometry) y)?.Value.ToArray())
 #endif
 			);
 	}
@@ -1107,9 +1107,9 @@ ORDER BY t.`Key`", Connection);
 		if (data is null)
 			return null;
 #if BASELINE
-		return new MySqlGeometry(MySqlDbType.Geometry, data);
+		return new SingleStoreGeometry(MySqlDbType.Geometry, data);
 #else
-		return MySqlGeometry.FromMySql(data);
+		return SingleStoreGeometry.FromMySql(data);
 #endif
 	}
 
@@ -1545,7 +1545,7 @@ end;";
 			using var reader = command.ExecuteReader();
 			var csb = AppConfig.CreateConnectionStringBuilder();
 			csb.AllowLoadLocalInfile = true;
-			var bulkCopy = new MySqlBulkCopy(new SingleStoreConnection(csb.ConnectionString))
+			var bulkCopy = new SingleStoreBulkCopy(new SingleStoreConnection(csb.ConnectionString))
 			{
 				DestinationTableName = bulkCopyTable,
 			};

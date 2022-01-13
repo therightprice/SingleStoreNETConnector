@@ -272,14 +272,14 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		{
 			writer.WriteString(ulongValue);
 		}
-		else if (Value is byte[] or ReadOnlyMemory<byte> or Memory<byte> or ArraySegment<byte> or MySqlGeometry or MemoryStream)
+		else if (Value is byte[] or ReadOnlyMemory<byte> or Memory<byte> or ArraySegment<byte> or SingleStoreGeometry or MemoryStream)
 		{
 			var inputSpan = Value switch
 			{
 				byte[] byteArray => byteArray.AsSpan(),
 				ArraySegment<byte> arraySegment => arraySegment.AsSpan(),
 				Memory<byte> memory => memory.Span,
-				MySqlGeometry geometry => geometry.ValueSpan,
+				SingleStoreGeometry geometry => geometry.ValueSpan,
 				MemoryStream memoryStream => memoryStream.TryGetBuffer(out var streamBuffer) ? streamBuffer.AsSpan() : memoryStream.ToArray().AsSpan(),
 				_ => ((ReadOnlyMemory<byte>) Value).Span,
 			};
@@ -320,7 +320,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		{
 			writer.Write(bigInteger.ToString(CultureInfo.InvariantCulture));
 		}
-		else if (Value is MySqlDecimal mySqlDecimal)
+		else if (Value is SingleStoreDecimal mySqlDecimal)
 		{
 			writer.Write(mySqlDecimal.ToString());
 		}
@@ -580,7 +580,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 			writer.WriteLengthEncodedInteger(unchecked((ulong) arraySegmentValue.Count));
 			writer.Write(arraySegmentValue);
 		}
-		else if (Value is MySqlGeometry geometry)
+		else if (Value is SingleStoreGeometry geometry)
 		{
 			writer.WriteLengthEncodedInteger(unchecked((ulong) geometry.ValueSpan.Length));
 			writer.Write(geometry.ValueSpan);
@@ -615,7 +615,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 			else
 				writer.Write((byte) 0);
 		}
-		else if (Value is MySqlDecimal mySqlDecimal)
+		else if (Value is SingleStoreDecimal mySqlDecimal)
 		{
 			writer.WriteLengthEncodedString(mySqlDecimal.ToString());
 		}

@@ -44,10 +44,10 @@ public static class AppConfig
 
 	public static bool SupportsJson => SupportedFeatures.HasFlag(ServerFeatures.Json);
 
-	public static string MySqlBulkLoaderCsvFile => Config.GetValue<string>("Data:MySqlBulkLoaderCsvFile");
-	public static string MySqlBulkLoaderLocalCsvFile => Config.GetValue<string>("Data:MySqlBulkLoaderLocalCsvFile");
-	public static string MySqlBulkLoaderTsvFile => Config.GetValue<string>("Data:MySqlBulkLoaderTsvFile");
-	public static string MySqlBulkLoaderLocalTsvFile => Config.GetValue<string>("Data:MySqlBulkLoaderLocalTsvFile");
+	public static string SingleStoreBulkLoaderCsvFile => Config.GetValue<string>("Data:SingleStoreBulkLoaderCsvFile");
+	public static string SingleStoreBulkLoaderLocalCsvFile => Config.GetValue<string>("Data:SingleStoreBulkLoaderLocalCsvFile");
+	public static string SingleStoreBulkLoaderTsvFile => Config.GetValue<string>("Data:SingleStoreBulkLoaderTsvFile");
+	public static string SingleStoreBulkLoaderLocalTsvFile => Config.GetValue<string>("Data:SingleStoreBulkLoaderLocalTsvFile");
 
 	public static SingleStoreConnectionStringBuilder CreateConnectionStringBuilder() => new SingleStoreConnectionStringBuilder(ConnectionString);
 

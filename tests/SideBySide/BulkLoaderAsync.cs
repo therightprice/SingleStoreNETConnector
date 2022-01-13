@@ -34,8 +34,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	public async Task BulkLoadTsvFile()
 	{
 		using var connection = new SingleStoreConnection(GetConnectionString());
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		bl.FileName = AppConfig.MySqlBulkLoaderTsvFile;
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		bl.FileName = AppConfig.SingleStoreBulkLoaderTsvFile;
 		bl.TableName = m_testTable;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
 		bl.NumberOfLinesToSkip = 1;
@@ -49,8 +49,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	public async Task BulkLoadLocalTsvFile()
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		bl.FileName = AppConfig.MySqlBulkLoaderLocalTsvFile;
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		bl.FileName = AppConfig.SingleStoreBulkLoaderLocalTsvFile;
 		bl.TableName = m_testTable;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
 		bl.NumberOfLinesToSkip = 1;
@@ -64,8 +64,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	public async Task BulkLoadCsvFile()
 	{
 		using var connection = new SingleStoreConnection(GetConnectionString());
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		bl.FileName = AppConfig.MySqlBulkLoaderCsvFile;
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		bl.FileName = AppConfig.SingleStoreBulkLoaderCsvFile;
 		bl.TableName = m_testTable;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
 		bl.NumberOfLinesToSkip = 1;
@@ -83,8 +83,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		bl.FileName = AppConfig.MySqlBulkLoaderLocalCsvFile;
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		bl.FileName = AppConfig.SingleStoreBulkLoaderLocalCsvFile;
 		bl.TableName = m_testTable;
 		bl.CharacterSet = "UTF8";
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
@@ -108,8 +108,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 		if (string.IsNullOrEmpty(secureFilePath) || secureFilePath == "NULL")
 			return;
 
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		bl.FileName = Path.Combine(secureFilePath, AppConfig.MySqlBulkLoaderCsvFile + "-junk");
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		bl.FileName = Path.Combine(secureFilePath, AppConfig.SingleStoreBulkLoaderCsvFile + "-junk");
 		bl.TableName = m_testTable;
 		bl.CharacterSet = "UTF8";
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
@@ -148,9 +148,9 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
 		bl.Timeout = 3; //Set a short timeout for this test because the file not found exception takes a long time otherwise, the timeout does not change the result
-		bl.FileName = AppConfig.MySqlBulkLoaderLocalCsvFile + "-junk";
+		bl.FileName = AppConfig.SingleStoreBulkLoaderLocalCsvFile + "-junk";
 		bl.TableName = m_testTable;
 		bl.CharacterSet = "UTF8";
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
@@ -197,9 +197,9 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 		await connection.OpenAsync();
 		using (var transaction = connection.BeginTransaction())
 		{
-			var bulkLoader = new MySqlBulkLoader(connection)
+			var bulkLoader = new SingleStoreBulkLoader(connection)
 			{
-				FileName = AppConfig.MySqlBulkLoaderLocalCsvFile,
+				FileName = AppConfig.SingleStoreBulkLoaderLocalCsvFile,
 				TableName = m_testTable,
 				CharacterSet = "UTF8",
 				NumberOfLinesToSkip = 1,
@@ -227,9 +227,9 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 		await connection.OpenAsync();
 		using (var transaction = connection.BeginTransaction())
 		{
-			var bulkLoader = new MySqlBulkLoader(connection)
+			var bulkLoader = new SingleStoreBulkLoader(connection)
 			{
-				FileName = AppConfig.MySqlBulkLoaderLocalCsvFile,
+				FileName = AppConfig.SingleStoreBulkLoaderLocalCsvFile,
 				TableName = m_testTable,
 				CharacterSet = "UTF8",
 				NumberOfLinesToSkip = 1,
@@ -255,7 +255,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
 		bl.TableName = m_testTable;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
 		bl.NumberOfLinesToSkip = 1;
@@ -282,8 +282,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		bl.FileName = AppConfig.MySqlBulkLoaderLocalCsvFile;
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		bl.FileName = AppConfig.SingleStoreBulkLoaderLocalCsvFile;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
 		bl.NumberOfLinesToSkip = 1;
 		bl.FieldTerminator = ",";
@@ -309,8 +309,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	public async Task BulkLoadFileStreamInvalidOperation()
 	{
 		using var connection = new SingleStoreConnection(GetConnectionString());
-		var bl = new MySqlBulkLoader(connection);
-		using var fileStream = new FileStream(AppConfig.MySqlBulkLoaderLocalCsvFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+		var bl = new SingleStoreBulkLoader(connection);
+		using var fileStream = new FileStream(AppConfig.SingleStoreBulkLoaderLocalCsvFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
 		bl.SourceStream = fileStream;
 		bl.TableName = m_testTable;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
@@ -331,8 +331,8 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
-		using var fileStream = new FileStream(AppConfig.MySqlBulkLoaderLocalCsvFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
+		using var fileStream = new FileStream(AppConfig.SingleStoreBulkLoaderLocalCsvFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
 		bl.SourceStream = fileStream;
 		bl.TableName = m_testTable;
 		bl.Columns.AddRange(new string[] { "one", "two", "three", "four", "five" });
@@ -351,7 +351,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
 		using var memoryStream = new MemoryStream(m_memoryStreamBytes, false);
 		bl.SourceStream = memoryStream;
 		bl.TableName = m_testTable;
@@ -372,7 +372,7 @@ public class BulkLoaderAsync : IClassFixture<DatabaseFixture>
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		await connection.OpenAsync();
-		MySqlBulkLoader bl = new MySqlBulkLoader(connection);
+		SingleStoreBulkLoader bl = new SingleStoreBulkLoader(connection);
 		using var memoryStream = new MemoryStream(m_memoryStreamBytes, false);
 		bl.SourceStream = memoryStream;
 		bl.TableName = m_testTable;
@@ -405,7 +405,7 @@ insert into bulk_load_data_reader_source values(0, 'zero'),(1,'one'),(2,'two'),(
 		using (var cmd = new SingleStoreCommand("select * from bulk_load_data_reader_source;", connection))
 		using (var reader = await cmd.ExecuteReaderAsync())
 		{
-			var bulkCopy = new MySqlBulkCopy(connection2) { DestinationTableName = "bulk_load_data_reader_destination", };
+			var bulkCopy = new SingleStoreBulkCopy(connection2) { DestinationTableName = "bulk_load_data_reader_destination", };
 			var result = await bulkCopy.WriteToServerAsync(reader);
 			Assert.Equal(7, result.RowsInserted);
 			Assert.Empty(result.Warnings);
@@ -429,7 +429,7 @@ insert into bulk_load_data_reader_source values(0, 'zero'),(1,'one'),(2,'two'),(
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		connection.Open();
-		var bulkCopy = new MySqlBulkCopy(connection);
+		var bulkCopy = new SingleStoreBulkCopy(connection);
 		Assert.ThrowsAsync<ArgumentNullException>(async () => await bulkCopy.WriteToServerAsync(default(DataTable)));
 	}
 
@@ -458,7 +458,7 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 			await cmd.ExecuteNonQueryAsync();
 		}
 
-		var bulkCopy = new MySqlBulkCopy(connection)
+		var bulkCopy = new SingleStoreBulkCopy(connection)
 		{
 			DestinationTableName = "bulk_load_data_table",
 		};
@@ -482,7 +482,7 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 			await cmd.ExecuteNonQueryAsync();
 		}
 
-		var bulkCopy = new MySqlBulkCopy(connection)
+		var bulkCopy = new SingleStoreBulkCopy(connection)
 		{
 			NotifyAfter = notifyAfter,
 			DestinationTableName = "bulk_copy_notify_after",
@@ -524,7 +524,7 @@ create table bulk_load_data_table(a int, b longblob);", connection))
 			await cmd.ExecuteNonQueryAsync();
 		}
 
-		var bulkCopy = new MySqlBulkCopy(connection)
+		var bulkCopy = new SingleStoreBulkCopy(connection)
 		{
 			NotifyAfter = notifyAfter,
 			DestinationTableName = "bulk_copy_abort",
@@ -582,7 +582,7 @@ create table bulk_load_data_table(str varchar(5), number tinyint);", connection)
 			cmd.ExecuteNonQuery();
 		}
 
-		var bulkCopy = new MySqlBulkCopy(connection)
+		var bulkCopy = new SingleStoreBulkCopy(connection)
 		{
 			DestinationTableName = "bulk_load_data_table",
 		};
@@ -598,7 +598,7 @@ create table bulk_load_data_table(str varchar(5), number tinyint);", connection)
 	{
 		using var connection = new SingleStoreConnection(GetLocalConnectionString());
 		connection.Open();
-		var bulkCopy = new MySqlBulkCopy(connection);
+		var bulkCopy = new SingleStoreBulkCopy(connection);
 		Assert.ThrowsAsync<ArgumentNullException>(async () => await bulkCopy.WriteToServerAsync(default(DbDataReader)));
 	}
 #endif

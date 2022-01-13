@@ -46,10 +46,10 @@ The main types provided by this library are:
 * `SingleStoreConnection` (implementation of `DbConnection`)
 * `SingleStoreCommand` (implementation of `DbCommand`)
 * `SingleStoreDataReader` (implementation of `DbDataReader`)
-* `MySqlBulkCopy`
-* `MySqlBulkLoader`
+* `SingleStoreBulkCopy`
+* `SingleStoreBulkLoader`
 * `SingleStoreConnectionStringBuilder`
-* `MySqlConnectorFactory`
+* `SingleStoreConnectorFactory`
 * `SingleStoreDataAdapter`
 * `SingleStoreException`
 * `SingleStoreTransaction` (implementation of `DbTransaction`)

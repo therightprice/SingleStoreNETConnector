@@ -103,10 +103,10 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 
 	/// <summary>
 	/// Returns a <see cref="DateTime"/> value (if <see cref="IsValidDateTime"/> is <c>true</c>), or throws a
-	/// <see cref="MySqlConversionException"/>.
+	/// <see cref="SingleStoreConversionException"/>.
 	/// </summary>
 	public readonly DateTime GetDateTime() =>
-		!IsValidDateTime ? throw new MySqlConversionException("Cannot convert MySqlDateTime to DateTime when IsValidDateTime is false.") :
+		!IsValidDateTime ? throw new SingleStoreConversionException("Cannot convert MySqlDateTime to DateTime when IsValidDateTime is false.") :
 			new DateTime(Year, Month, Day, Hour, Minute, Second, DateTimeKind.Unspecified).AddTicks(Microsecond * 10);
 
 	/// <summary>

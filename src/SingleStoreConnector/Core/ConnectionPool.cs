@@ -505,14 +505,14 @@ internal sealed class ConnectionPool
 		m_sessionSemaphore = new(cs.MaximumPoolSize);
 		m_sessions = new();
 		m_leasedSessions = new();
-		if (cs.ConnectionProtocol == MySqlConnectionProtocol.Sockets && cs.LoadBalance == MySqlLoadBalance.LeastConnections)
+		if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.Sockets && cs.LoadBalance == MySqlLoadBalance.LeastConnections)
 		{
 			m_hostSessions = new();
 			foreach (var hostName in cs.HostNames!)
 				m_hostSessions[hostName] = 0;
 		}
 
-		m_loadBalancer = cs.ConnectionProtocol != MySqlConnectionProtocol.Sockets ? null :
+		m_loadBalancer = cs.ConnectionProtocol != SingleStoreConnectionProtocol.Sockets ? null :
 			cs.HostNames!.Count == 1 || cs.LoadBalance == MySqlLoadBalance.FailOver ? FailOverLoadBalancer.Instance :
 			cs.LoadBalance == MySqlLoadBalance.Random ? RandomLoadBalancer.Instance :
 			cs.LoadBalance == MySqlLoadBalance.LeastConnections ? new LeastConnectionsLoadBalancer(m_hostSessions!) :

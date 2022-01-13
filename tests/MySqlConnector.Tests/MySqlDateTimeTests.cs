@@ -59,7 +59,7 @@ public class MySqlDateTimeTests
 	{
 		var msdt = new MySqlDateTime();
 		Assert.False(msdt.IsValidDateTime);
-		Assert.Throws<MySqlConversionException>(() => msdt.GetDateTime());
+		Assert.Throws<SingleStoreConversionException>(() => msdt.GetDateTime());
 	}
 
 	[Fact]
@@ -102,7 +102,7 @@ public class MySqlDateTimeTests
 #if !BASELINE
 		Assert.Throws<InvalidCastException>(() => convertible.ToDateTime(CultureInfo.InvariantCulture));
 #else
-		Assert.Throws<MySqlConversionException>(() => convertible.ToDateTime(CultureInfo.InvariantCulture));
+		Assert.Throws<SingleStoreConversionException>(() => convertible.ToDateTime(CultureInfo.InvariantCulture));
 #endif
 	}
 
@@ -113,7 +113,7 @@ public class MySqlDateTimeTests
 #if !BASELINE
 		Assert.Throws<InvalidCastException>(() => Convert.ToDateTime(obj));
 #else
-		Assert.Throws<MySqlConversionException>(() => Convert.ToDateTime(obj));
+		Assert.Throws<SingleStoreConversionException>(() => Convert.ToDateTime(obj));
 #endif
 	}
 
@@ -124,7 +124,7 @@ public class MySqlDateTimeTests
 #if !BASELINE
 		Assert.Throws<InvalidCastException>(() => Convert.ChangeType(obj, TypeCode.DateTime));
 #else
-		Assert.Throws<MySqlConversionException>(() => Convert.ChangeType(obj, TypeCode.DateTime));
+		Assert.Throws<SingleStoreConversionException>(() => Convert.ChangeType(obj, TypeCode.DateTime));
 #endif
 	}
 

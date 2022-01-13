@@ -28,7 +28,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.CsvFile)]
 	public void CommandLoadCsvFile()
 	{
-		var insertInlineCommand = string.Format(m_loadDataInfileCommand, "", AppConfig.MySqlBulkLoaderCsvFile.Replace("\\", "\\\\"));
+		var insertInlineCommand = string.Format(m_loadDataInfileCommand, "", AppConfig.SingleStoreBulkLoaderCsvFile.Replace("\\", "\\\\"));
 		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open) m_database.Connection.Open();
 		var rowCount = command.ExecuteNonQuery();
@@ -39,7 +39,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.LocalCsvFile | ConfigSettings.TrustedHost)]
 	public void CommandLoadLocalCsvFile()
 	{
-		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL", AppConfig.MySqlBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
+		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL", AppConfig.SingleStoreBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
 		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open) m_database.Connection.Open();
 		var rowCount = command.ExecuteNonQuery();
@@ -51,7 +51,7 @@ public class LoadDataInfileSync : IClassFixture<DatabaseFixture>
 	public void ThrowsNotSupportedExceptionForNotTrustedHostAndNotStream()
 	{
 		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL",
-			AppConfig.MySqlBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
+			AppConfig.SingleStoreBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
 		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open)
 			m_database.Connection.Open();

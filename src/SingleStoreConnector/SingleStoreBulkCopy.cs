@@ -10,13 +10,13 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <para><see cref="MySqlBulkCopy"/> lets you efficiently load a MySQL Server table with data from another source.
+/// <para><see cref="SingleStoreBulkCopy"/> lets you efficiently load a MySQL Server table with data from another source.
 /// It is similar to the <a href="https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlbulkcopy">SqlBulkCopy</a> class
 /// for SQL Server.</para>
 /// <para>Due to <a href="https://mysqlconnector.net/troubleshooting/load-data-local-infile/">security features</a>
 /// in MySQL Server, the connection string <em>must</em> have <c>AllowLoadLocalInfile=true</c> in order
 /// to use this class.</para>
-/// <para>For data that is in CSV or TSV format, use <see cref="MySqlBulkLoader"/> to bulk load the file.</para>
+/// <para>For data that is in CSV or TSV format, use <see cref="SingleStoreBulkLoader"/> to bulk load the file.</para>
 /// <para>Example code:</para>
 /// <code>
 /// // NOTE: to copy data between tables in the same database, use INSERT ... SELECT
@@ -28,7 +28,7 @@ namespace SingleStoreConnector;
 /// await connection.OpenAsync();
 ///
 /// // bulk copy the data
-/// var bulkCopy = new MySqlBulkCopy(connection);
+/// var bulkCopy = new SingleStoreBulkCopy(connection);
 /// bulkCopy.DestinationTableName = "some_table_name";
 /// var result = await bulkCopy.WriteToServerAsync(dataTable);
 ///
@@ -40,14 +40,14 @@ namespace SingleStoreConnector;
 /// <a href="https://mysqlconnector.net/overview/installing/">switch to SingleStoreConnector</a> in order to use it.</para>
 /// <para>This API is experimental and may change in the future.</para>
 /// </remarks>
-public sealed class MySqlBulkCopy
+public sealed class SingleStoreBulkCopy
 {
 	/// <summary>
-	/// Initializes a <see cref="MySqlBulkCopy"/> object with the specified connection, and optionally the active transaction.
+	/// Initializes a <see cref="SingleStoreBulkCopy"/> object with the specified connection, and optionally the active transaction.
 	/// </summary>
 	/// <param name="connection">The <see cref="SingleStoreConnection"/> to use.</param>
 	/// <param name="transaction">(Optional) The <see cref="SingleStoreTransaction"/> to use.</param>
-	public MySqlBulkCopy(SingleStoreConnection connection, SingleStoreTransaction? transaction = null)
+	public SingleStoreBulkCopy(SingleStoreConnection connection, SingleStoreTransaction? transaction = null)
 	{
 		m_connection = connection ?? throw new ArgumentNullException(nameof(connection));
 		m_transaction = transaction;
@@ -96,7 +96,7 @@ public sealed class MySqlBulkCopy
 
 	/// <summary>
 	/// Copies all rows in the supplied <see cref="DataTable"/> to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object.
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataTable">The <see cref="DataTable"/> to copy.</param>
 	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
@@ -111,7 +111,7 @@ public sealed class MySqlBulkCopy
 #if NETCOREAPP || NETSTANDARD2_0_OR_GREATER
 	/// <summary>
 	/// Asynchronously copies all rows in the supplied <see cref="DataTable"/> to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object.
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataTable">The <see cref="DataTable"/> to copy.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
@@ -124,7 +124,7 @@ public sealed class MySqlBulkCopy
 #else
 	/// <summary>
 	/// Asynchronously copies all rows in the supplied <see cref="DataTable"/> to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object.
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataTable">The <see cref="DataTable"/> to copy.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
@@ -138,7 +138,7 @@ public sealed class MySqlBulkCopy
 
 	/// <summary>
 	/// Copies all rows in the supplied sequence of <see cref="DataRow"/> objects to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object. The number of columns
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object. The number of columns
 	/// to be read from the <see cref="DataRow"/> objects must be specified in advance.
 	/// </summary>
 	/// <param name="dataRows">The collection of <see cref="DataRow"/> objects.</param>
@@ -155,7 +155,7 @@ public sealed class MySqlBulkCopy
 #if NETCOREAPP || NETSTANDARD2_0_OR_GREATER
 	/// <summary>
 	/// Asynchronously copies all rows in the supplied sequence of <see cref="DataRow"/> objects to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object. The number of columns
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object. The number of columns
 	/// to be read from the <see cref="DataRow"/> objects must be specified in advance.
 	/// </summary>
 	/// <param name="dataRows">The collection of <see cref="DataRow"/> objects.</param>
@@ -170,7 +170,7 @@ public sealed class MySqlBulkCopy
 #else
 	/// <summary>
 	/// Asynchronously copies all rows in the supplied sequence of <see cref="DataRow"/> objects to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object. The number of columns
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object. The number of columns
 	/// to be read from the <see cref="DataRow"/> objects must be specified in advance.
 	/// </summary>
 	/// <param name="dataRows">The collection of <see cref="DataRow"/> objects.</param>
@@ -186,7 +186,7 @@ public sealed class MySqlBulkCopy
 
 	/// <summary>
 	/// Copies all rows in the supplied <see cref="IDataReader"/> to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object.
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataReader">The <see cref="IDataReader"/> to copy from.</param>
 	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
@@ -201,7 +201,7 @@ public sealed class MySqlBulkCopy
 #if NETCOREAPP || NETSTANDARD2_0_OR_GREATER
 	/// <summary>
 	/// Asynchronously copies all rows in the supplied <see cref="IDataReader"/> to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object.
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataReader">The <see cref="IDataReader"/> to copy from.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
@@ -214,7 +214,7 @@ public sealed class MySqlBulkCopy
 #else
 	/// <summary>
 	/// Asynchronously copies all rows in the supplied <see cref="IDataReader"/> to the destination table specified by the
-	/// <see cref="DestinationTableName"/> property of the <see cref="MySqlBulkCopy"/> object.
+	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataReader">The <see cref="IDataReader"/> to copy from.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
@@ -232,7 +232,7 @@ public sealed class MySqlBulkCopy
 		m_wasAborted = false;
 
 		Log.Debug("Starting bulk copy to {0}", tableName);
-		var bulkLoader = new MySqlBulkLoader(m_connection)
+		var bulkLoader = new SingleStoreBulkLoader(m_connection)
 		{
 			CharacterSet = "utf8mb4",
 			EscapeCharacter = '\\',
@@ -271,7 +271,7 @@ public sealed class MySqlBulkCopy
 				else if (schema[i].DataTypeName == "YEAR")
 				{
 					// the current code can't distinguish between 0 = 0000 and 0 = 2000
-					throw new NotSupportedException("'YEAR' columns are not supported by MySqlBulkLoader.");
+					throw new NotSupportedException("'YEAR' columns are not supported by SingleStoreBulkLoader.");
 				}
 				else
 				{
@@ -500,14 +500,14 @@ public sealed class MySqlBulkCopy
 			{
 				return Utf8Formatter.TryFormat(decimalValue, output, out bytesWritten);
 			}
-			else if (value is byte[] or ReadOnlyMemory<byte> or Memory<byte> or ArraySegment<byte> or MySqlGeometry)
+			else if (value is byte[] or ReadOnlyMemory<byte> or Memory<byte> or ArraySegment<byte> or SingleStoreGeometry)
 			{
 				var inputSpan = value switch
 				{
 					byte[] byteArray => byteArray.AsSpan(),
 					ArraySegment<byte> arraySegment => arraySegment.AsSpan(),
 					Memory<byte> memory => memory.Span,
-					MySqlGeometry geometry => geometry.ValueSpan,
+					SingleStoreGeometry geometry => geometry.ValueSpan,
 					_ => ((ReadOnlyMemory<byte>) value).Span,
 				};
 
@@ -668,7 +668,7 @@ public sealed class MySqlBulkCopy
 	}
 
 	private static readonly char[] s_specialCharacters = new char[] { '\t', '\\', '\n' };
-	private static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(MySqlBulkCopy));
+	private static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(SingleStoreBulkCopy));
 	private static readonly Encoding s_utf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
 	readonly SingleStoreConnection m_connection;

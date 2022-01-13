@@ -574,7 +574,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 
 	protected override DbCommand CreateDbCommand() => new SingleStoreCommand(this, null);
 
-	protected override DbProviderFactory DbProviderFactory => MySqlConnectorFactory.Instance;
+	protected override DbProviderFactory DbProviderFactory => SingleStoreConnectorFactory.Instance;
 
 #pragma warning disable CA2012 // Safe because method completes synchronously
 	/// <summary>
@@ -654,14 +654,14 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	public event MySqlInfoMessageEventHandler? InfoMessage;
 
 	/// <summary>
-	/// Creates a <see cref="MySqlBatch"/> object for executing batched commands.
+	/// Creates a <see cref="SingleStoreBatch"/> object for executing batched commands.
 	/// </summary>
 #if NET6_0_OR_GREATER
-	public new MySqlBatch CreateBatch() => new(this);
+	public new SingleStoreBatch CreateBatch() => new(this);
 	protected override DbBatch CreateDbBatch() => CreateBatch();
 	public override bool CanCreateBatch => true;
 #else
-	public MySqlBatch CreateBatch() => new(this);
+	public SingleStoreBatch CreateBatch() => new(this);
 	public bool CanCreateBatch => true;
 #endif
 

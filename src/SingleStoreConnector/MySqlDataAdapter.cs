@@ -79,7 +79,7 @@ public sealed class SingleStoreDataAdapter : DbDataAdapter
 		}
 
 		var count = m_batch.BatchCommands.Count;
-		var batchCommand = new MySqlBatchCommand
+		var batchCommand = new SingleStoreBatchCommand
 		{
 			CommandText = command.CommandText,
 			CommandType = command.CommandType,
@@ -98,7 +98,7 @@ public sealed class SingleStoreDataAdapter : DbDataAdapter
 
 	protected override int ExecuteBatch() => m_batch!.ExecuteNonQuery();
 
-	MySqlBatch? m_batch;
+	SingleStoreBatch? m_batch;
 }
 
 public delegate void MySqlRowUpdatingEventHandler(object sender, MySqlRowUpdatingEventArgs e);

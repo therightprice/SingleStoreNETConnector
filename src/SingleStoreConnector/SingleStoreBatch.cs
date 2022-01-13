@@ -6,7 +6,7 @@ using SingleStoreConnector.Utilities;
 namespace SingleStoreConnector;
 
 /// <summary>
-/// <para><see cref="MySqlBatch"/> implements the new
+/// <para><see cref="SingleStoreBatch"/> implements the new
 /// <a href="https://github.com/dotnet/runtime/issues/28633">ADO.NET batching API</a>.
 /// <strong>It is currently experimental</strong> and may change in the future.</para>
 /// <para>When using MariaDB (10.2 or later), the commands will be sent in a single batch, reducing network
@@ -17,26 +17,26 @@ namespace SingleStoreConnector;
 /// using var connection = new SingleStoreConnection("...connection string...");
 /// await connection.OpenAsync();
 ///
-/// using var batch = new MySqlBatch(connection)
+/// using var batch = new SingleStoreBatch(connection)
 /// {
 /// 	BatchCommands =
 /// 	{
-/// 		new MySqlBatchCommand("INSERT INTO departments(name) VALUES(@name);")
+/// 		new SingleStoreBatchCommand("INSERT INTO departments(name) VALUES(@name);")
 /// 		{
 /// 			Parameters =
 /// 			{
 /// 				new SingleStoreParameter("@name", "Sales"),
 /// 			},
 /// 		},
-/// 		new MySqlBatchCommand("SET @dept_id = last_insert_id()"),
-/// 		new MySqlBatchCommand("INSERT INTO employees(name, department_id) VALUES(@name, @dept_id);")
+/// 		new SingleStoreBatchCommand("SET @dept_id = last_insert_id()"),
+/// 		new SingleStoreBatchCommand("INSERT INTO employees(name, department_id) VALUES(@name, @dept_id);")
 /// 		{
 /// 			Parameters =
 /// 			{
 /// 				new SingleStoreParameter("@name", "Jim Halpert"),
 /// 			},
 /// 		},
-/// 	 	new MySqlBatchCommand("INSERT INTO employees(name, department_id) VALUES(@name, @dept_id);")
+/// 	 	new SingleStoreBatchCommand("INSERT INTO employees(name, department_id) VALUES(@name, @dept_id);")
 /// 		{
 /// 			Parameters =
 /// 			{
@@ -48,27 +48,27 @@ namespace SingleStoreConnector;
 ///  await batch.ExecuteNonQueryAsync();
 /// </code>
 /// </summary>
-/// <remarks>The proposed ADO.NET API that <see cref="MySqlBatch"/> is based on is not finalized. This API is experimental and may change in the future.</remarks>
-public sealed class MySqlBatch :
+/// <remarks>The proposed ADO.NET API that <see cref="SingleStoreBatch"/> is based on is not finalized. This API is experimental and may change in the future.</remarks>
+public sealed class SingleStoreBatch :
 #if NET6_0_OR_GREATER
 	DbBatch,
 #endif
 	ICancellableCommand, IDisposable
 {
 	/// <summary>
-	/// Initializes a new <see cref="MySqlBatch"/> object. The <see cref="Connection"/> property must be set before this object can be used.
+	/// Initializes a new <see cref="SingleStoreBatch"/> object. The <see cref="Connection"/> property must be set before this object can be used.
 	/// </summary>
-	public MySqlBatch()
+	public SingleStoreBatch()
 		: this(null, null)
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new <see cref="MySqlBatch"/> object, setting the <see cref="Connection"/> and <see cref="Transaction"/> if specified.
+	/// Initializes a new <see cref="SingleStoreBatch"/> object, setting the <see cref="Connection"/> and <see cref="Transaction"/> if specified.
 	/// </summary>
 	/// <param name="connection">(Optional) The <see cref="SingleStoreConnection"/> to use.</param>
 	/// <param name="transaction">(Optional) The <see cref="SingleStoreTransaction"/> to use.</param>
-	public MySqlBatch(SingleStoreConnection? connection = null, SingleStoreTransaction? transaction = null)
+	public SingleStoreBatch(SingleStoreConnection? connection = null, SingleStoreTransaction? transaction = null)
 	{
 		Connection = connection;
 		Transaction = transaction;
@@ -90,10 +90,10 @@ public sealed class MySqlBatch :
 	/// The collection of commands that will be executed in the batch.
 	/// </summary>
 #if NET6_0_OR_GREATER
-	public new MySqlBatchCommandCollection BatchCommands { get; }
+	public new SingleStoreBatchCommandCollection BatchCommands { get; }
 	protected override DbBatchCommandCollection DbBatchCommands => BatchCommands;
 #else
-	public MySqlBatchCommandCollection BatchCommands { get; }
+	public SingleStoreBatchCommandCollection BatchCommands { get; }
 #endif
 
 	/// <summary>
@@ -151,7 +151,7 @@ public sealed class MySqlBatch :
 		 	return Utility.TaskFromException<SingleStoreDataReader>(exception);
 
 		CurrentCommandBehavior = behavior;
-		foreach (MySqlBatchCommand batchCommand in BatchCommands)
+		foreach (SingleStoreBatchCommand batchCommand in BatchCommands)
 			batchCommand.Batch = this;
 
 		var payloadCreator = Connection!.Session.SupportsComMulti ? BatchedCommandPayloadCreator.Instance :
@@ -225,7 +225,7 @@ public sealed class MySqlBatch :
 		Connection?.Cancel(this, m_commandId, true);
 
 #if NET6_0_OR_GREATER
-	protected override DbBatchCommand CreateDbBatchCommand() => new MySqlBatchCommand();
+	protected override DbBatchCommand CreateDbBatchCommand() => new SingleStoreBatchCommand();
 #endif
 
 #if NET6_0_OR_GREATER
@@ -370,8 +370,8 @@ public sealed class MySqlBatch :
 		foreach (IMySqlCommand batchCommand in BatchCommands)
 		{
 			if (batchCommand.CommandType != CommandType.Text)
-				throw new NotSupportedException("Only CommandType.Text is currently supported by MySqlBatch.Prepare");
-			((MySqlBatchCommand) batchCommand).Batch = this;
+				throw new NotSupportedException("Only CommandType.Text is currently supported by SingleStoreBatch.Prepare");
+			((SingleStoreBatchCommand) batchCommand).Batch = this;
 
 			// don't prepare the same SQL twice
 			if (Connection!.Session.TryGetPreparedStatement(batchCommand.CommandText!) is null)

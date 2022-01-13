@@ -14,7 +14,7 @@ public enum MySqlErrorCode
 	DelimiterNotSupported = -3,
 
 	/// <summary>
-	/// Not all rows from the source supplied to <see cref="MySqlBulkCopy"/> were copied to <see cref="MySqlBulkCopy.DestinationTableName"/>.
+	/// Not all rows from the source supplied to <see cref="SingleStoreBulkCopy"/> were copied to <see cref="SingleStoreBulkCopy.DestinationTableName"/>.
 	/// </summary>
 	BulkCopyFailed = -2,
 

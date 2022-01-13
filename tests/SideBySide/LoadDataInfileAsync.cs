@@ -28,7 +28,7 @@ public class LoadDataInfileAsync : IClassFixture<DatabaseFixture>
 	[SkippableFact(ConfigSettings.CsvFile)]
 	public async Task CommandLoadCsvFile()
 	{
-		var insertInlineCommand = string.Format(m_loadDataInfileCommand, "", AppConfig.MySqlBulkLoaderCsvFile.Replace("\\", "\\\\"));
+		var insertInlineCommand = string.Format(m_loadDataInfileCommand, "", AppConfig.SingleStoreBulkLoaderCsvFile.Replace("\\", "\\\\"));
 		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 		if (m_database.Connection.State != ConnectionState.Open) await m_database.Connection.OpenAsync();
 		var rowCount = await command.ExecuteNonQueryAsync();
@@ -40,7 +40,7 @@ public class LoadDataInfileAsync : IClassFixture<DatabaseFixture>
 	public async Task CommandLoadLocalCsvFile()
 	{
 		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL",
-			AppConfig.MySqlBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
+			AppConfig.SingleStoreBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
 		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 
 		if (m_database.Connection.State != ConnectionState.Open)
@@ -56,7 +56,7 @@ public class LoadDataInfileAsync : IClassFixture<DatabaseFixture>
 	public async Task ThrowsNotSupportedExceptionForNotTrustedHostAndNotStream()
 	{
 		var insertInlineCommand = string.Format(m_loadDataInfileCommand, " LOCAL",
-			AppConfig.MySqlBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
+			AppConfig.SingleStoreBulkLoaderLocalCsvFile.Replace("\\", "\\\\"));
 		using var command = new SingleStoreCommand(insertInlineCommand, m_database.Connection);
 
 		if (m_database.Connection.State != ConnectionState.Open)

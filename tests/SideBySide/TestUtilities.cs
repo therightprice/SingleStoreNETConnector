@@ -95,19 +95,19 @@ public static class TestUtilities
 		if (configSettings.HasFlag(ConfigSettings.HasKerberos) && !AppConfig.HasKerberos)
 			return "Requires HasKerberos in config.json";
 
-		if (configSettings.HasFlag(ConfigSettings.CsvFile) && string.IsNullOrWhiteSpace(AppConfig.MySqlBulkLoaderCsvFile))
-			return "Requires MySqlBulkLoaderCsvFile in config.json";
+		if (configSettings.HasFlag(ConfigSettings.CsvFile) && string.IsNullOrWhiteSpace(AppConfig.SingleStoreBulkLoaderCsvFile))
+			return "Requires SingleStoreBulkLoaderCsvFile in config.json";
 
-		if (configSettings.HasFlag(ConfigSettings.LocalCsvFile) && string.IsNullOrWhiteSpace(AppConfig.MySqlBulkLoaderLocalCsvFile))
-			return "Requires MySqlBulkLoaderLocalCsvFile in config.json";
+		if (configSettings.HasFlag(ConfigSettings.LocalCsvFile) && string.IsNullOrWhiteSpace(AppConfig.SingleStoreBulkLoaderLocalCsvFile))
+			return "Requires SingleStoreBulkLoaderLocalCsvFile in config.json";
 
-		if (configSettings.HasFlag(ConfigSettings.TsvFile) && string.IsNullOrWhiteSpace(AppConfig.MySqlBulkLoaderTsvFile))
-			return "Requires MySqlBulkLoaderTsvFile in config.json";
+		if (configSettings.HasFlag(ConfigSettings.TsvFile) && string.IsNullOrWhiteSpace(AppConfig.SingleStoreBulkLoaderTsvFile))
+			return "Requires SingleStoreBulkLoaderTsvFile in config.json";
 
-		if (configSettings.HasFlag(ConfigSettings.LocalTsvFile) && string.IsNullOrWhiteSpace(AppConfig.MySqlBulkLoaderLocalTsvFile))
-			return "Requires MySqlBulkLoaderLocalTsvFile in config.json";
+		if (configSettings.HasFlag(ConfigSettings.LocalTsvFile) && string.IsNullOrWhiteSpace(AppConfig.SingleStoreBulkLoaderLocalTsvFile))
+			return "Requires SingleStoreBulkLoaderLocalTsvFile in config.json";
 
-		if (configSettings.HasFlag(ConfigSettings.TcpConnection) && ((csb.Server.StartsWith("/", StringComparison.Ordinal) || csb.Server.StartsWith("./", StringComparison.Ordinal)) || csb.ConnectionProtocol != MySqlConnectionProtocol.Sockets))
+		if (configSettings.HasFlag(ConfigSettings.TcpConnection) && ((csb.Server.StartsWith("/", StringComparison.Ordinal) || csb.Server.StartsWith("./", StringComparison.Ordinal)) || csb.ConnectionProtocol != SingleStoreConnectionProtocol.Sockets))
 			return "Requires a TCP connection";
 
 		if (configSettings.HasFlag(ConfigSettings.SecondaryDatabase) && string.IsNullOrEmpty(AppConfig.SecondaryDatabase))
