@@ -9,7 +9,8 @@ public class DbFactoryFixture : IDbFactoryFixture
 	{
 		public DbFactoryFixture()
 		{
-			ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "Server=localhost;User Id=root;Password=pass;SSL Mode=None";
+                        String rootPassword = Environment.GetEnvironmentVariable("ROOT_PASSWORD") ?? "pass";
+			ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? String.Format("Server=localhost;User Id=root;Password={0};SSL Mode=None", rootPassword);
 		}
 
 		public string ConnectionString { get; }
