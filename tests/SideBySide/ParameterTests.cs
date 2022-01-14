@@ -443,4 +443,37 @@ public class ParameterTests
 		((IDbDataParameter) parameter).Scale = 12;
 		Assert.Equal((byte) 12, ((SingleStoreParameter) parameter).Scale);
 	}
+
+	[Fact]
+	public void ZeroBytes()
+	{
+		var csb = new SingleStoreConnectionStringBuilder(AppConfig.ConnectionString);
+		using var connection = new SingleStoreConnection(csb.ConnectionString);
+		connection.Open();
+
+		connection.Execute(@"
+DROP TABLE IF EXISTS zeroByteEscaping;
+DROP TABLE IF EXISTS zeroByteEscapingCTAS;
+CREATE TABLE zeroByteEscaping (
+  `Id` INT NOT NULL,
+  `Content` VARBINARY(5),
+  PRIMARY KEY (`Id`)
+);
+INSERT INTO zeroByteEscaping VALUES(1, BINARY('\012\0\0'));
+");
+             
+                using (var command = new SingleStoreCommand(@"CREATE TABLE zeroByteEscapingCTAS as SELECT * FROM zeroByteEscaping WHERE Content=@content", connection))
+                {
+                        command.Parameters.AddWithValue("@content", new byte[] {0x00, 0x31, 0x32, 0x00, 0x00});
+                        Assert.False(command.IsPrepared);
+                        command.ExecuteNonQuery();
+                }
+
+
+		using (var command = new SingleStoreCommand(@"SELECT COUNT(*) FROM `zeroByteEscapingCTAS` WHERE BINARY(`Content`) = 0x0031320000", connection))
+		{
+			var result = command.ExecuteScalar();
+			Assert.Equal(1, (long) result!);
+		}
+	}
 }
