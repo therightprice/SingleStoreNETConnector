@@ -42,9 +42,9 @@ namespace System.Data.Common
 
 namespace SingleStoreConnector
 {
-	public sealed class MySqlDbColumn : System.Data.Common.DbColumn
+	public sealed class SingleStoreDbColumn : System.Data.Common.DbColumn
 	{
-		internal MySqlDbColumn(int ordinal, ColumnDefinitionPayload column, bool allowZeroDateTime, MySqlDbType mySqlDbType)
+		internal SingleStoreDbColumn(int ordinal, ColumnDefinitionPayload column, bool allowZeroDateTime, SingleStoreDbType mySqlDbType)
 		{
 			var columnTypeMetadata = TypeMapper.Instance.GetColumnTypeMetadata(mySqlDbType);
 
@@ -61,9 +61,9 @@ namespace SingleStoreConnector
 			ColumnName = column.Name;
 			ColumnOrdinal = ordinal;
 			ColumnSize = columnSize > int.MaxValue ? int.MaxValue : unchecked((int) columnSize);
-			DataType = (allowZeroDateTime && type == typeof(DateTime)) ? typeof(MySqlDateTime) : type;
+			DataType = (allowZeroDateTime && type == typeof(DateTime)) ? typeof(SingleStoreDateTime) : type;
 			DataTypeName = columnTypeMetadata.SimpleDataTypeName;
-			if (mySqlDbType == MySqlDbType.String)
+			if (mySqlDbType == SingleStoreDbType.String)
 				DataTypeName += string.Format(CultureInfo.InvariantCulture, "({0})", columnSize);
 			IsAliased = column.PhysicalName != column.Name;
 			IsAutoIncrement = (column.ColumnFlags & ColumnFlags.AutoIncrement) != 0;
@@ -86,6 +86,6 @@ namespace SingleStoreConnector
 			ProviderType = mySqlDbType;
 		}
 
-		public MySqlDbType ProviderType { get; }
+		public SingleStoreDbType ProviderType { get; }
 	}
 }

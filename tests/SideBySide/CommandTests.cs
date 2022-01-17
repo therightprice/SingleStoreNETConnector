@@ -248,7 +248,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		using var connection = new SingleStoreConnection(AppConfig.ConnectionString);
 		connection.Open();
 		using var transaction = connection.BeginTransaction();
-		var param = new SingleStoreParameter("@param", MySqlDbType.Decimal) { Value = 12.3m };
+		var param = new SingleStoreParameter("@param", SingleStoreDbType.Decimal) { Value = 12.3m };
 		var attr = new SingleStoreAttribute("attr_name", 1.23);
 		using var cmd = new SingleStoreCommand("SELECT @param;", connection, transaction)
 		{
@@ -270,7 +270,7 @@ create table execute_non_query(id integer not null primary key auto_increment, v
 		var param2 = (SingleStoreParameter) Assert.Single(cmd2.Parameters);
 
 		Assert.Equal(param.ParameterName, param2.ParameterName);
-		Assert.Equal(param.MySqlDbType, param2.MySqlDbType);
+		Assert.Equal(param.SingleStoreDbType, param2.SingleStoreDbType);
 		Assert.Equal(param.Value, param2.Value);
 
 		cmd.CommandText = "New text";

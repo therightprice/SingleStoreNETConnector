@@ -57,10 +57,10 @@ public class StatementPreparerTests
 	}
 
 	[Theory]
-	[InlineData(MySqlDbType.String, DummyEnum.FirstValue, "'FirstValue'")]
-	[InlineData(MySqlDbType.VarChar, DummyEnum.FirstValue, "'FirstValue'")]
+	[InlineData(SingleStoreDbType.String, DummyEnum.FirstValue, "'FirstValue'")]
+	[InlineData(SingleStoreDbType.VarChar, DummyEnum.FirstValue, "'FirstValue'")]
 	[InlineData(null, DummyEnum.FirstValue, "0")]
-	public void EnumParametersAreParsedCorrectly(MySqlDbType? type, object value, string replacedValue)
+	public void EnumParametersAreParsedCorrectly(SingleStoreDbType? type, object value, string replacedValue)
 	{
 		const string sql = "SELECT @param;";
 		var parameters = new MySqlParameterCollection();
@@ -68,7 +68,7 @@ public class StatementPreparerTests
 
 		if (type is not null)
 		{
-			parameter.MySqlDbType = type.Value;
+			parameter.SingleStoreDbType = type.Value;
 		}
 
 		parameters.Add(parameter);

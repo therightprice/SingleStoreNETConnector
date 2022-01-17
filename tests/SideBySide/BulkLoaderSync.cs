@@ -919,7 +919,7 @@ create table bulk_copy_duplicate_pk(id integer primary key, value text not null)
 		};
 
 		var ex = Assert.Throws<SingleStoreException>(() => bcp.WriteToServer(dataTable));
-		Assert.Equal(MySqlErrorCode.BulkCopyFailed, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.BulkCopyFailed, ex.ErrorCode);
 	}
 
 	[Fact]
@@ -954,8 +954,8 @@ create table bulk_load_data_table(str varchar(5), number tinyint);", connection)
 		var result = bulkCopy.WriteToServer(dataTable);
 		Assert.Equal(2, result.RowsInserted);
 		Assert.Equal(2, result.Warnings.Count);
-		Assert.Equal(MySqlErrorCode.WarningDataOutOfRange, result.Warnings[0].ErrorCode);
-		Assert.Equal(MySqlErrorCode.WarningDataTruncated, result.Warnings[1].ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.WarningDataOutOfRange, result.Warnings[0].ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.WarningDataTruncated, result.Warnings[1].ErrorCode);
 	}
 
 	[Fact]

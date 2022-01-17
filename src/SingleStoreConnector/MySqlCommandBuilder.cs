@@ -33,7 +33,7 @@ public sealed class SingleStoreCommandBuilder : DbCommandBuilder
 		command.Parameters.Clear();
 		foreach (var cachedParameter in cachedProcedure.Parameters)
 		{
-			var parameter = command.Parameters.Add("@" + cachedParameter.Name, cachedParameter.MySqlDbType);
+			var parameter = command.Parameters.Add("@" + cachedParameter.Name, cachedParameter.SingleStoreDbType);
 			parameter.Direction = cachedParameter.Direction;
 		}
 	}
@@ -63,7 +63,7 @@ public sealed class SingleStoreCommandBuilder : DbCommandBuilder
 
 	protected override void ApplyParameterInfo(DbParameter parameter, DataRow row, StatementType statementType, bool whereClause)
 	{
-		((SingleStoreParameter) parameter).MySqlDbType = (MySqlDbType) row[SchemaTableColumn.ProviderType];
+		((SingleStoreParameter) parameter).SingleStoreDbType = (SingleStoreDbType) row[SchemaTableColumn.ProviderType];
 	}
 
 	protected override string GetParameterName(int parameterOrdinal) => "@p{0}".FormatInvariant(parameterOrdinal);

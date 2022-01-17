@@ -502,21 +502,21 @@ public sealed class DataTypes : IClassFixture<DataTypesFixture>, IDisposable
 
 #if !BASELINE
 	[Theory]
-	[InlineData(MySqlGuidFormat.Default, false)]
-	[InlineData(MySqlGuidFormat.Default, true)]
-	[InlineData(MySqlGuidFormat.None, false)]
-	[InlineData(MySqlGuidFormat.Char36, false)]
-	[InlineData(MySqlGuidFormat.Char32, false)]
-	[InlineData(MySqlGuidFormat.Binary16, false)]
-	[InlineData(MySqlGuidFormat.TimeSwapBinary16, false)]
-	[InlineData(MySqlGuidFormat.LittleEndianBinary16, false)]
-	public void QueryGuidFormat(MySqlGuidFormat guidFormat, bool oldGuids)
+	[InlineData(SingleStoreGuidFormat.Default, false)]
+	[InlineData(SingleStoreGuidFormat.Default, true)]
+	[InlineData(SingleStoreGuidFormat.None, false)]
+	[InlineData(SingleStoreGuidFormat.Char36, false)]
+	[InlineData(SingleStoreGuidFormat.Char32, false)]
+	[InlineData(SingleStoreGuidFormat.Binary16, false)]
+	[InlineData(SingleStoreGuidFormat.TimeSwapBinary16, false)]
+	[InlineData(SingleStoreGuidFormat.LittleEndianBinary16, false)]
+	public void QueryGuidFormat(SingleStoreGuidFormat guidFormat, bool oldGuids)
 	{
-		bool isChar36 = guidFormat == MySqlGuidFormat.Char36 || (guidFormat == MySqlGuidFormat.Default && !oldGuids);
-		bool isChar32 = guidFormat == MySqlGuidFormat.Char32;
-		bool isBinary16 = guidFormat == MySqlGuidFormat.Binary16;
-		bool isTimeSwapBinary16 = guidFormat == MySqlGuidFormat.TimeSwapBinary16;
-		bool isLittleEndianBinary16 = guidFormat == MySqlGuidFormat.LittleEndianBinary16 || (guidFormat == MySqlGuidFormat.Default && oldGuids);
+		bool isChar36 = guidFormat == SingleStoreGuidFormat.Char36 || (guidFormat == SingleStoreGuidFormat.Default && !oldGuids);
+		bool isChar32 = guidFormat == SingleStoreGuidFormat.Char32;
+		bool isBinary16 = guidFormat == SingleStoreGuidFormat.Binary16;
+		bool isTimeSwapBinary16 = guidFormat == SingleStoreGuidFormat.TimeSwapBinary16;
+		bool isLittleEndianBinary16 = guidFormat == SingleStoreGuidFormat.LittleEndianBinary16 || (guidFormat == SingleStoreGuidFormat.Default && oldGuids);
 
 		Guid guid = new Guid("00112233-4455-6677-8899-AABBCCDDEEFF");
 		string guidAsChar36 = "00112233-4455-6677-8899-AABBCCDDEEFF";
@@ -699,16 +699,16 @@ UNHEX('33221100554477668899AABBCCDDEEFF'),
 
 #if !BASELINE
 	[Theory]
-	[InlineData(MySqlDateTimeKind.Unspecified, DateTimeKind.Unspecified, true)]
-	[InlineData(MySqlDateTimeKind.Unspecified, DateTimeKind.Local, true)]
-	[InlineData(MySqlDateTimeKind.Unspecified, DateTimeKind.Utc, true)]
-	[InlineData(MySqlDateTimeKind.Utc, DateTimeKind.Unspecified, true)]
-	[InlineData(MySqlDateTimeKind.Utc, DateTimeKind.Local, false)]
-	[InlineData(MySqlDateTimeKind.Utc, DateTimeKind.Utc, true)]
-	[InlineData(MySqlDateTimeKind.Local, DateTimeKind.Unspecified, true)]
-	[InlineData(MySqlDateTimeKind.Local, DateTimeKind.Local, true)]
-	[InlineData(MySqlDateTimeKind.Local, DateTimeKind.Utc, false)]
-	public void QueryDateTimeKind(MySqlDateTimeKind kindOption, DateTimeKind kindIn, bool success)
+	[InlineData(SingleStoreDateTimeKind.Unspecified, DateTimeKind.Unspecified, true)]
+	[InlineData(SingleStoreDateTimeKind.Unspecified, DateTimeKind.Local, true)]
+	[InlineData(SingleStoreDateTimeKind.Unspecified, DateTimeKind.Utc, true)]
+	[InlineData(SingleStoreDateTimeKind.Utc, DateTimeKind.Unspecified, true)]
+	[InlineData(SingleStoreDateTimeKind.Utc, DateTimeKind.Local, false)]
+	[InlineData(SingleStoreDateTimeKind.Utc, DateTimeKind.Utc, true)]
+	[InlineData(SingleStoreDateTimeKind.Local, DateTimeKind.Unspecified, true)]
+	[InlineData(SingleStoreDateTimeKind.Local, DateTimeKind.Local, true)]
+	[InlineData(SingleStoreDateTimeKind.Local, DateTimeKind.Utc, false)]
+	public void QueryDateTimeKind(SingleStoreDateTimeKind kindOption, DateTimeKind kindIn, bool success)
 	{
 		var csb = CreateConnectionStringBuilder();
 		csb.DateTimeKind = kindOption;
@@ -758,7 +758,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 			Assert.Equal(dateTimeIn, reader.GetValue(6));
 			Assert.Equal(dateTimeIn, reader.GetValue(7));
 			for (int i = 0; i < 7; i++)
-				Assert.Equal(kindOption, (MySqlDateTimeKind) reader.GetDateTime(i).Kind);
+				Assert.Equal(kindOption, (SingleStoreDateTimeKind) reader.GetDateTime(i).Kind);
 		}
 		else
 		{
@@ -917,11 +917,11 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 
 	[Theory]
 	[InlineData(false, "Date", typeof(DateTime), "1000 01 01")]
-	[InlineData(true, "Date", typeof(MySqlDateTime), "1000 01 01")]
+	[InlineData(true, "Date", typeof(SingleStoreDateTime), "1000 01 01")]
 	[InlineData(false, "DateTime", typeof(DateTime), "1000 01 01")]
-	[InlineData(true, "DateTime", typeof(MySqlDateTime), "1000 01 01")]
+	[InlineData(true, "DateTime", typeof(SingleStoreDateTime), "1000 01 01")]
 	[InlineData(false, "TimeStamp", typeof(DateTime), "1970 01 01 0 0 1")]
-	[InlineData(true, "TimeStamp", typeof(MySqlDateTime), "1970 01 01 0 0 1")]
+	[InlineData(true, "TimeStamp", typeof(SingleStoreDateTime), "1970 01 01 0 0 1")]
 	[InlineData(false, "Time", typeof(TimeSpan), null)]
 	[InlineData(true, "Time", typeof(TimeSpan), null)]
 	public void AllowZeroDateTime(bool allowZeroDateTime, string columnName, Type expectedType, string expectedDateTime)
@@ -943,7 +943,7 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 		{
 			var expected = (DateTime) ConvertToDateTime(new object[] { expectedDateTime }, DateTimeKind.Unspecified)[0];
 			Assert.Equal(expected, reader.GetDateTime(0));
-			Assert.Equal(new MySqlDateTime(expected), reader.GetMySqlDateTime(0));
+			Assert.Equal(new SingleStoreDateTime(expected), reader.GetSingleStoreDateTime(0));
 		}
 	}
 
@@ -951,14 +951,14 @@ insert into date_time_kind(d, dt0, dt1, dt2, dt3, dt4, dt5, dt6) values(?, ?, ?,
 	[InlineData("Date")]
 	[InlineData("DateTime")]
 	[InlineData("Timestamp")]
-	public void GetMySqlDateTime(string columnName)
+	public void GetSingleStoreDateTime(string columnName)
 	{
 		using var cmd = new SingleStoreCommand($"SELECT `{columnName}` FROM datatypes_times WHERE `{columnName}` IS NOT NULL", Connection);
 		using var reader = cmd.ExecuteReader();
 		while (reader.Read())
 		{
 			var dt = reader.GetDateTime(0);
-			var msdt = reader.GetMySqlDateTime(0);
+			var msdt = reader.GetSingleStoreDateTime(0);
 			Assert.True(msdt.IsValidDateTime);
 			Assert.Equal(dt, msdt.GetDateTime());
 		}
@@ -1107,90 +1107,90 @@ ORDER BY t.`Key`", Connection);
 		if (data is null)
 			return null;
 #if BASELINE
-		return new SingleStoreGeometry(MySqlDbType.Geometry, data);
+		return new SingleStoreGeometry(SingleStoreDbType.Geometry, data);
 #else
 		return SingleStoreGeometry.FromMySql(data);
 #endif
 	}
 
 	[Theory]
-	[InlineData("Bit1", "datatypes_bits", MySqlDbType.Bit, 1, typeof(ulong), "N", 0, 0)]
-	[InlineData("Bit32", "datatypes_bits", MySqlDbType.Bit, 32, typeof(ulong), "N", 0, 0)]
-	[InlineData("Bit64", "datatypes_bits", MySqlDbType.Bit, 64, typeof(ulong), "N", 0, 0)]
-	[InlineData("Binary", "datatypes_blobs", MySqlDbType.Binary, 100, typeof(byte[]), "N", 0, 0)]
-	[InlineData("VarBinary", "datatypes_blobs", MySqlDbType.VarBinary, 100, typeof(byte[]), "N", 0, 0)]
-	[InlineData("TinyBlob", "datatypes_blobs", MySqlDbType.Blob, 255, typeof(byte[]), "N", 0, 0)]
-	[InlineData("Blob", "datatypes_blobs", MySqlDbType.Blob, 65535, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("MediumBlob", "datatypes_blobs", MySqlDbType.Blob, 16777215, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("LongBlob", "datatypes_blobs", MySqlDbType.Blob, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("guidbin", "datatypes_blobs", MySqlDbType.Binary, 16, typeof(byte[]), "N", 0, 0)]
-	[InlineData("rowid", "datatypes_bools", MySqlDbType.Int32, 11, typeof(int), "AK", 0, 0)]
+	[InlineData("Bit1", "datatypes_bits", SingleStoreDbType.Bit, 1, typeof(ulong), "N", 0, 0)]
+	[InlineData("Bit32", "datatypes_bits", SingleStoreDbType.Bit, 32, typeof(ulong), "N", 0, 0)]
+	[InlineData("Bit64", "datatypes_bits", SingleStoreDbType.Bit, 64, typeof(ulong), "N", 0, 0)]
+	[InlineData("Binary", "datatypes_blobs", SingleStoreDbType.Binary, 100, typeof(byte[]), "N", 0, 0)]
+	[InlineData("VarBinary", "datatypes_blobs", SingleStoreDbType.VarBinary, 100, typeof(byte[]), "N", 0, 0)]
+	[InlineData("TinyBlob", "datatypes_blobs", SingleStoreDbType.Blob, 255, typeof(byte[]), "N", 0, 0)]
+	[InlineData("Blob", "datatypes_blobs", SingleStoreDbType.Blob, 65535, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("MediumBlob", "datatypes_blobs", SingleStoreDbType.Blob, 16777215, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("LongBlob", "datatypes_blobs", SingleStoreDbType.Blob, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("guidbin", "datatypes_blobs", SingleStoreDbType.Binary, 16, typeof(byte[]), "N", 0, 0)]
+	[InlineData("rowid", "datatypes_bools", SingleStoreDbType.Int32, 11, typeof(int), "AK", 0, 0)]
 #if BASELINE
-	[InlineData("Boolean", "datatypes_bools", MySqlDbType.Byte, 1, typeof(bool), "N", 0, 0)]
-	[InlineData("TinyInt1", "datatypes_bools", MySqlDbType.Byte, 1, typeof(bool), "N", 0, 0)]
+	[InlineData("Boolean", "datatypes_bools", SingleStoreDbType.Byte, 1, typeof(bool), "N", 0, 0)]
+	[InlineData("TinyInt1", "datatypes_bools", SingleStoreDbType.Byte, 1, typeof(bool), "N", 0, 0)]
 #else
-	[InlineData("Boolean", "datatypes_bools", MySqlDbType.Bool, 1, typeof(bool), "N", 0, 0)]
-	[InlineData("TinyInt1", "datatypes_bools", MySqlDbType.Bool, 1, typeof(bool), "N", 0, 0)]
+	[InlineData("Boolean", "datatypes_bools", SingleStoreDbType.Bool, 1, typeof(bool), "N", 0, 0)]
+	[InlineData("TinyInt1", "datatypes_bools", SingleStoreDbType.Bool, 1, typeof(bool), "N", 0, 0)]
 #endif
-	[InlineData("TinyInt1U", "datatypes_bools", MySqlDbType.UByte, 1, typeof(byte), "N", 0, 0)]
-	[InlineData("size", "datatypes_enums", MySqlDbType.Enum, 7, typeof(string), "N", 0, 0)]
-	[InlineData("color", "datatypes_enums", MySqlDbType.Enum, 6, typeof(string), "", 0, 0)]
-	[InlineData("char38", "datatypes_guids", MySqlDbType.String, 38, typeof(string), "N", 0, 0)]
-	[InlineData("char38bin", "datatypes_guids", MySqlDbType.String, 38, typeof(string), "N", 0, 0)]
-	[InlineData("text", "datatypes_guids", MySqlDbType.Text, 65535, typeof(string), "LN", 0, 0)]
-	[InlineData("blob", "datatypes_guids", MySqlDbType.Blob, 65535, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("SByte", "datatypes_integers", MySqlDbType.Byte, 4, typeof(sbyte), "N", 0, 0)]
-	[InlineData("Byte", "datatypes_integers", MySqlDbType.UByte, 3, typeof(byte), "N", 0, 0)]
-	[InlineData("Int16", "datatypes_integers", MySqlDbType.Int16, 6, typeof(short), "N", 0, 0)]
-	[InlineData("UInt16", "datatypes_integers", MySqlDbType.UInt16, 5, typeof(ushort), "N", 0, 0)]
-	[InlineData("Int24", "datatypes_integers", MySqlDbType.Int24, 9, typeof(int), "N", 0, 0)]
-	[InlineData("UInt24", "datatypes_integers", MySqlDbType.UInt24, 8, typeof(uint), "N", 0, 0)]
-	[InlineData("Int32", "datatypes_integers", MySqlDbType.Int32, 11, typeof(int), "N", 0, 0)]
-	[InlineData("UInt32", "datatypes_integers", MySqlDbType.UInt32, 10, typeof(uint), "N", 0, 0)]
-	[InlineData("Int64", "datatypes_integers", MySqlDbType.Int64, 20, typeof(long), "N", 0, 0)]
-	[InlineData("UInt64", "datatypes_integers", MySqlDbType.UInt64, 20, typeof(ulong), "N", 0, 0)]
-	[InlineData("value", "datatypes_json_core", MySqlDbType.JSON, int.MaxValue, typeof(string), "LN", 0, 0)]
-	[InlineData("Single", "datatypes_reals", MySqlDbType.Float, 12, typeof(float), "N", 0, 31)]
-	[InlineData("Double", "datatypes_reals", MySqlDbType.Double, 22, typeof(double), "N", 0, 31)]
-	[InlineData("SmallDecimal", "datatypes_reals", MySqlDbType.NewDecimal, 7, typeof(decimal), "N", 5, 2)]
-	[InlineData("MediumDecimal", "datatypes_reals", MySqlDbType.NewDecimal, 30, typeof(decimal), "N", 28, 8)]
-	[InlineData("BigDecimal", "datatypes_reals", MySqlDbType.NewDecimal, 52, typeof(decimal), "N", 50, 30)]
-	[InlineData("value", "datatypes_set", MySqlDbType.Set, 12, typeof(string), "N", 0, 0)]
-	[InlineData("utf8", "datatypes_strings", MySqlDbType.VarChar, 300, typeof(string), "N", 0, 0)]
-	[InlineData("utf8bin", "datatypes_strings", MySqlDbType.VarChar, 300, typeof(string), "N", 0, 0)]
-	[InlineData("latin1", "datatypes_strings", MySqlDbType.VarChar, 300, typeof(string), "N", 0, 0)]
-	[InlineData("latin1bin", "datatypes_strings", MySqlDbType.VarChar, 300, typeof(string), "N", 0, 0)]
-	[InlineData("cp1251", "datatypes_strings", MySqlDbType.VarChar, 300, typeof(string), "N", 0, 0)]
-	[InlineData("guid", "datatypes_strings", MySqlDbType.Guid, 36, typeof(Guid), "N", 0, 0)]
-	[InlineData("guidbin", "datatypes_strings", MySqlDbType.Guid, 36, typeof(Guid), "N", 0, 0)]
-	[InlineData("Date", "datatypes_times", MySqlDbType.Date, 10, typeof(DateTime), "N", 0, 0)]
-	[InlineData("DateTime", "datatypes_times", MySqlDbType.DateTime, 26, typeof(DateTime), "N", 0, 6)]
-	[InlineData("Timestamp", "datatypes_times", MySqlDbType.Timestamp, 26, typeof(DateTime), "N", 0, 6)]
-	[InlineData("Time", "datatypes_times", MySqlDbType.Time, 17, typeof(TimeSpan), "N", 0, 6)]
+	[InlineData("TinyInt1U", "datatypes_bools", SingleStoreDbType.UByte, 1, typeof(byte), "N", 0, 0)]
+	[InlineData("size", "datatypes_enums", SingleStoreDbType.Enum, 7, typeof(string), "N", 0, 0)]
+	[InlineData("color", "datatypes_enums", SingleStoreDbType.Enum, 6, typeof(string), "", 0, 0)]
+	[InlineData("char38", "datatypes_guids", SingleStoreDbType.String, 38, typeof(string), "N", 0, 0)]
+	[InlineData("char38bin", "datatypes_guids", SingleStoreDbType.String, 38, typeof(string), "N", 0, 0)]
+	[InlineData("text", "datatypes_guids", SingleStoreDbType.Text, 65535, typeof(string), "LN", 0, 0)]
+	[InlineData("blob", "datatypes_guids", SingleStoreDbType.Blob, 65535, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("SByte", "datatypes_integers", SingleStoreDbType.Byte, 4, typeof(sbyte), "N", 0, 0)]
+	[InlineData("Byte", "datatypes_integers", SingleStoreDbType.UByte, 3, typeof(byte), "N", 0, 0)]
+	[InlineData("Int16", "datatypes_integers", SingleStoreDbType.Int16, 6, typeof(short), "N", 0, 0)]
+	[InlineData("UInt16", "datatypes_integers", SingleStoreDbType.UInt16, 5, typeof(ushort), "N", 0, 0)]
+	[InlineData("Int24", "datatypes_integers", SingleStoreDbType.Int24, 9, typeof(int), "N", 0, 0)]
+	[InlineData("UInt24", "datatypes_integers", SingleStoreDbType.UInt24, 8, typeof(uint), "N", 0, 0)]
+	[InlineData("Int32", "datatypes_integers", SingleStoreDbType.Int32, 11, typeof(int), "N", 0, 0)]
+	[InlineData("UInt32", "datatypes_integers", SingleStoreDbType.UInt32, 10, typeof(uint), "N", 0, 0)]
+	[InlineData("Int64", "datatypes_integers", SingleStoreDbType.Int64, 20, typeof(long), "N", 0, 0)]
+	[InlineData("UInt64", "datatypes_integers", SingleStoreDbType.UInt64, 20, typeof(ulong), "N", 0, 0)]
+	[InlineData("value", "datatypes_json_core", SingleStoreDbType.JSON, int.MaxValue, typeof(string), "LN", 0, 0)]
+	[InlineData("Single", "datatypes_reals", SingleStoreDbType.Float, 12, typeof(float), "N", 0, 31)]
+	[InlineData("Double", "datatypes_reals", SingleStoreDbType.Double, 22, typeof(double), "N", 0, 31)]
+	[InlineData("SmallDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, 7, typeof(decimal), "N", 5, 2)]
+	[InlineData("MediumDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, 30, typeof(decimal), "N", 28, 8)]
+	[InlineData("BigDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, 52, typeof(decimal), "N", 50, 30)]
+	[InlineData("value", "datatypes_set", SingleStoreDbType.Set, 12, typeof(string), "N", 0, 0)]
+	[InlineData("utf8", "datatypes_strings", SingleStoreDbType.VarChar, 300, typeof(string), "N", 0, 0)]
+	[InlineData("utf8bin", "datatypes_strings", SingleStoreDbType.VarChar, 300, typeof(string), "N", 0, 0)]
+	[InlineData("latin1", "datatypes_strings", SingleStoreDbType.VarChar, 300, typeof(string), "N", 0, 0)]
+	[InlineData("latin1bin", "datatypes_strings", SingleStoreDbType.VarChar, 300, typeof(string), "N", 0, 0)]
+	[InlineData("cp1251", "datatypes_strings", SingleStoreDbType.VarChar, 300, typeof(string), "N", 0, 0)]
+	[InlineData("guid", "datatypes_strings", SingleStoreDbType.Guid, 36, typeof(Guid), "N", 0, 0)]
+	[InlineData("guidbin", "datatypes_strings", SingleStoreDbType.Guid, 36, typeof(Guid), "N", 0, 0)]
+	[InlineData("Date", "datatypes_times", SingleStoreDbType.Date, 10, typeof(DateTime), "N", 0, 0)]
+	[InlineData("DateTime", "datatypes_times", SingleStoreDbType.DateTime, 26, typeof(DateTime), "N", 0, 6)]
+	[InlineData("Timestamp", "datatypes_times", SingleStoreDbType.Timestamp, 26, typeof(DateTime), "N", 0, 6)]
+	[InlineData("Time", "datatypes_times", SingleStoreDbType.Time, 17, typeof(TimeSpan), "N", 0, 6)]
 #if BASELINE
-	[InlineData("Year", "datatypes_times", MySqlDbType.Year, 4, typeof(short), "N", 0, 0)]
+	[InlineData("Year", "datatypes_times", SingleStoreDbType.Year, 4, typeof(short), "N", 0, 0)]
 #else
-	[InlineData("Year", "datatypes_times", MySqlDbType.Year, 4, typeof(int), "N", 0, 0)]
+	[InlineData("Year", "datatypes_times", SingleStoreDbType.Year, 4, typeof(int), "N", 0, 0)]
 #endif
-	[InlineData("Geometry", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("Point", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("LineString", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("Polygon", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("MultiPoint", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("MultiLineString", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("MultiPolygon", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	[InlineData("GeometryCollection", "datatypes_geometry", MySqlDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
-	public void GetSchemaTable(string column, string table, MySqlDbType mySqlDbType, int columnSize, Type dataType, string flags, int precision, int scale) =>
+	[InlineData("Geometry", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("Point", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("LineString", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("Polygon", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("MultiPoint", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("MultiLineString", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("MultiPolygon", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	[InlineData("GeometryCollection", "datatypes_geometry", SingleStoreDbType.Geometry, int.MaxValue, typeof(byte[]), "LN", 0, 0)]
+	public void GetSchemaTable(string column, string table, SingleStoreDbType mySqlDbType, int columnSize, Type dataType, string flags, int precision, int scale) =>
 		DoGetSchemaTable(column, table, mySqlDbType, columnSize, dataType, flags, precision, scale);
 
 	[Theory]
-	[InlineData("`decimal-type` decimal(10,0) NOT NULL", "decimal-type", MySqlDbType.NewDecimal, 11, typeof(decimal), "", 10, 0)]
-	[InlineData("`decimal-type` decimal(10,1) NOT NULL", "decimal-type", MySqlDbType.NewDecimal, 12, typeof(decimal), "", 10, 1)]
-	[InlineData("`decimal-type` decimal(10,0) UNSIGNED NOT NULL", "decimal-type", MySqlDbType.NewDecimal, 10, typeof(decimal), "", 10, 0)]
-	[InlineData("`decimal-type` decimal(10,1) UNSIGNED NOT NULL", "decimal-type", MySqlDbType.NewDecimal, 11, typeof(decimal), "", 10, 1)]
-	[InlineData("`decimal-type` decimal(65,30) NOT NULL", "decimal-type", MySqlDbType.NewDecimal, 67, typeof(decimal), "", 65, 30)]
-	[InlineData("`decimal-type` decimal(1,1) NOT NULL", "decimal-type", MySqlDbType.NewDecimal, 3, typeof(decimal), "", 1, 1)]
-	public void GetSchemaTableForNewColumn(string createColumn, string column, MySqlDbType mySqlDbType, int columnSize, Type dataType, string flags, int precision, int scale)
+	[InlineData("`decimal-type` decimal(10,0) NOT NULL", "decimal-type", SingleStoreDbType.NewDecimal, 11, typeof(decimal), "", 10, 0)]
+	[InlineData("`decimal-type` decimal(10,1) NOT NULL", "decimal-type", SingleStoreDbType.NewDecimal, 12, typeof(decimal), "", 10, 1)]
+	[InlineData("`decimal-type` decimal(10,0) UNSIGNED NOT NULL", "decimal-type", SingleStoreDbType.NewDecimal, 10, typeof(decimal), "", 10, 0)]
+	[InlineData("`decimal-type` decimal(10,1) UNSIGNED NOT NULL", "decimal-type", SingleStoreDbType.NewDecimal, 11, typeof(decimal), "", 10, 1)]
+	[InlineData("`decimal-type` decimal(65,30) NOT NULL", "decimal-type", SingleStoreDbType.NewDecimal, 67, typeof(decimal), "", 65, 30)]
+	[InlineData("`decimal-type` decimal(1,1) NOT NULL", "decimal-type", SingleStoreDbType.NewDecimal, 3, typeof(decimal), "", 1, 1)]
+	public void GetSchemaTableForNewColumn(string createColumn, string column, SingleStoreDbType mySqlDbType, int columnSize, Type dataType, string flags, int precision, int scale)
 	{
 		Connection.Execute($@"drop table if exists schema_table;
 create table schema_table({createColumn});");
@@ -1198,7 +1198,7 @@ create table schema_table({createColumn});");
 		DoGetSchemaTable(column, "schema_table", mySqlDbType, columnSize, dataType, flags, precision, scale);
 	}
 
-	private void DoGetSchemaTable(string column, string table, MySqlDbType mySqlDbType, int columnSize, Type dataType, string flags, int precision, int scale)
+	private void DoGetSchemaTable(string column, string table, SingleStoreDbType mySqlDbType, int columnSize, Type dataType, string flags, int precision, int scale)
 	{
 		if (table == "datatypes_json_core" && !AppConfig.SupportsJson)
 			return;
@@ -1238,10 +1238,10 @@ create table schema_table({createColumn});");
 		Assert.Equal(precision, schema["NumericPrecision"]);
 		Assert.Equal(scale, schema["NumericScale"]);
 #if BASELINE
-		if (mySqlDbType == MySqlDbType.Enum || mySqlDbType == MySqlDbType.Set)
-			mySqlDbType = MySqlDbType.String;
+		if (mySqlDbType == SingleStoreDbType.Enum || mySqlDbType == SingleStoreDbType.Set)
+			mySqlDbType = SingleStoreDbType.String;
 #endif
-		Assert.Equal(mySqlDbType, (MySqlDbType) schema["ProviderType"]);
+		Assert.Equal(mySqlDbType, (SingleStoreDbType) schema["ProviderType"]);
 		Assert.Equal(Connection.Database, schema["BaseSchemaName"]);
 		Assert.Equal(table, schema["BaseTableName"]);
 		Assert.Equal(column, schema["BaseColumnName"]);
@@ -1291,64 +1291,64 @@ create table schema_table({createColumn});");
 
 #if !BASELINE
 	[Theory]
-	[InlineData("Bit1", "datatypes_bits", MySqlDbType.Bit, "BIT", 1, typeof(ulong), "N", -1, 0)]
-	[InlineData("Bit32", "datatypes_bits", MySqlDbType.Bit, "BIT", 32, typeof(ulong), "N", -1, 0)]
-	[InlineData("Bit64", "datatypes_bits", MySqlDbType.Bit, "BIT", 64, typeof(ulong), "N", -1, 0)]
-	[InlineData("Binary", "datatypes_blobs", MySqlDbType.Binary, "BLOB", 100, typeof(byte[]), "N", -1, 0)]
-	[InlineData("VarBinary", "datatypes_blobs", MySqlDbType.VarBinary, "BLOB", 100, typeof(byte[]), "N", -1, 0)]
-	[InlineData("TinyBlob", "datatypes_blobs", MySqlDbType.Blob, "BLOB", 255, typeof(byte[]), "N", -1, 0)]
-	[InlineData("Blob", "datatypes_blobs", MySqlDbType.Blob, "BLOB", 65535, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("MediumBlob", "datatypes_blobs", MySqlDbType.Blob, "BLOB", 16777215, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("LongBlob", "datatypes_blobs", MySqlDbType.Blob, "BLOB", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("guidbin", "datatypes_blobs", MySqlDbType.Binary, "BLOB", 16, typeof(byte[]), "N", -1, 0)]
-	[InlineData("rowid", "datatypes_bools", MySqlDbType.Int32, "INT", 11, typeof(int), "AK", -1, 0)]
-	[InlineData("Boolean", "datatypes_bools", MySqlDbType.Bool, "BOOL", 1, typeof(bool), "N", -1, 0)]
-	[InlineData("TinyInt1", "datatypes_bools", MySqlDbType.Bool, "BOOL", 1, typeof(bool), "N", -1, 0)]
-	[InlineData("TinyInt1U", "datatypes_bools", MySqlDbType.UByte, "TINYINT", 1, typeof(byte), "N", -1, 0)]
-	[InlineData("size", "datatypes_enums", MySqlDbType.Enum, "ENUM", 7, typeof(string), "N", -1, 0)]
-	[InlineData("color", "datatypes_enums", MySqlDbType.Enum, "ENUM", 6, typeof(string), "", -1, 0)]
-	[InlineData("char38", "datatypes_guids", MySqlDbType.String, "CHAR(38)", 38, typeof(string), "N", -1, 0)]
-	[InlineData("char38bin", "datatypes_guids", MySqlDbType.String, "CHAR(38)", 38, typeof(string), "N", -1, 0)]
-	[InlineData("text", "datatypes_guids", MySqlDbType.Text, "VARCHAR", 65535, typeof(string), "LN", -1, 0)]
-	[InlineData("blob", "datatypes_guids", MySqlDbType.Blob, "BLOB", 65535, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("SByte", "datatypes_integers", MySqlDbType.Byte, "TINYINT", 4, typeof(sbyte), "N", -1, 0)]
-	[InlineData("Byte", "datatypes_integers", MySqlDbType.UByte, "TINYINT", 3, typeof(byte), "N", -1, 0)]
-	[InlineData("Int16", "datatypes_integers", MySqlDbType.Int16, "SMALLINT", 6, typeof(short), "N", -1, 0)]
-	[InlineData("UInt16", "datatypes_integers", MySqlDbType.UInt16, "SMALLINT", 5, typeof(ushort), "N", -1, 0)]
-	[InlineData("Int24", "datatypes_integers", MySqlDbType.Int24, "MEDIUMINT", 9, typeof(int), "N", -1, 0)]
-	[InlineData("UInt24", "datatypes_integers", MySqlDbType.UInt24, "MEDIUMINT", 8, typeof(uint), "N", -1, 0)]
-	[InlineData("Int32", "datatypes_integers", MySqlDbType.Int32, "INT", 11, typeof(int), "N", -1, 0)]
-	[InlineData("UInt32", "datatypes_integers", MySqlDbType.UInt32, "INT", 10, typeof(uint), "N", -1, 0)]
-	[InlineData("Int64", "datatypes_integers", MySqlDbType.Int64, "BIGINT", 20, typeof(long), "N", -1, 0)]
-	[InlineData("UInt64", "datatypes_integers", MySqlDbType.UInt64, "BIGINT", 20, typeof(ulong), "N", -1, 0)]
-	[InlineData("value", "datatypes_json_core", MySqlDbType.JSON, "JSON", int.MaxValue, typeof(string), "LN", -1, 0)]
-	[InlineData("Single", "datatypes_reals", MySqlDbType.Float, "FLOAT", 12, typeof(float), "N", -1, 31)]
-	[InlineData("Double", "datatypes_reals", MySqlDbType.Double, "DOUBLE", 22, typeof(double), "N", -1, 31)]
-	[InlineData("SmallDecimal", "datatypes_reals", MySqlDbType.NewDecimal, "DECIMAL", 7, typeof(decimal), "N", 5, 2)]
-	[InlineData("MediumDecimal", "datatypes_reals", MySqlDbType.NewDecimal, "DECIMAL", 30, typeof(decimal), "N", 28, 8)]
-	[InlineData("BigDecimal", "datatypes_reals", MySqlDbType.NewDecimal, "DECIMAL", 52, typeof(decimal), "N", 50, 30)]
-	[InlineData("value", "datatypes_set", MySqlDbType.Set, "SET", 12, typeof(string), "N", -1, 0)]
-	[InlineData("utf8", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
-	[InlineData("utf8bin", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
-	[InlineData("latin1", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
-	[InlineData("latin1bin", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
-	[InlineData("cp1251", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
-	[InlineData("guid", "datatypes_strings", MySqlDbType.Guid, "CHAR(36)", 36, typeof(Guid), "N", -1, 0)]
-	[InlineData("guidbin", "datatypes_strings", MySqlDbType.Guid, "CHAR(36)", 36, typeof(Guid), "N", -1, 0)]
-	[InlineData("Date", "datatypes_times", MySqlDbType.Date, "DATE", 10, typeof(DateTime), "N", -1, 0)]
-	[InlineData("DateTime", "datatypes_times", MySqlDbType.DateTime, "DATETIME", 26, typeof(DateTime), "N", -1, 6)]
-	[InlineData("Timestamp", "datatypes_times", MySqlDbType.Timestamp, "TIMESTAMP", 26, typeof(DateTime), "N", -1, 6)]
-	[InlineData("Time", "datatypes_times", MySqlDbType.Time, "TIME", 17, typeof(TimeSpan), "N", -1, 6)]
-	[InlineData("Year", "datatypes_times", MySqlDbType.Year, "YEAR", 4, typeof(int), "N", -1, 0)]
-	[InlineData("Geometry", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("Point", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("LineString", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("Polygon", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("MultiPoint", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("MultiLineString", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("MultiPolygon", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	[InlineData("GeometryCollection", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
-	public void GetColumnSchema(string column, string table, MySqlDbType mySqlDbType, string dataTypeName, int columnSize, Type dataType, string flags, int precision, int scale)
+	[InlineData("Bit1", "datatypes_bits", SingleStoreDbType.Bit, "BIT", 1, typeof(ulong), "N", -1, 0)]
+	[InlineData("Bit32", "datatypes_bits", SingleStoreDbType.Bit, "BIT", 32, typeof(ulong), "N", -1, 0)]
+	[InlineData("Bit64", "datatypes_bits", SingleStoreDbType.Bit, "BIT", 64, typeof(ulong), "N", -1, 0)]
+	[InlineData("Binary", "datatypes_blobs", SingleStoreDbType.Binary, "BLOB", 100, typeof(byte[]), "N", -1, 0)]
+	[InlineData("VarBinary", "datatypes_blobs", SingleStoreDbType.VarBinary, "BLOB", 100, typeof(byte[]), "N", -1, 0)]
+	[InlineData("TinyBlob", "datatypes_blobs", SingleStoreDbType.Blob, "BLOB", 255, typeof(byte[]), "N", -1, 0)]
+	[InlineData("Blob", "datatypes_blobs", SingleStoreDbType.Blob, "BLOB", 65535, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("MediumBlob", "datatypes_blobs", SingleStoreDbType.Blob, "BLOB", 16777215, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("LongBlob", "datatypes_blobs", SingleStoreDbType.Blob, "BLOB", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("guidbin", "datatypes_blobs", SingleStoreDbType.Binary, "BLOB", 16, typeof(byte[]), "N", -1, 0)]
+	[InlineData("rowid", "datatypes_bools", SingleStoreDbType.Int32, "INT", 11, typeof(int), "AK", -1, 0)]
+	[InlineData("Boolean", "datatypes_bools", SingleStoreDbType.Bool, "BOOL", 1, typeof(bool), "N", -1, 0)]
+	[InlineData("TinyInt1", "datatypes_bools", SingleStoreDbType.Bool, "BOOL", 1, typeof(bool), "N", -1, 0)]
+	[InlineData("TinyInt1U", "datatypes_bools", SingleStoreDbType.UByte, "TINYINT", 1, typeof(byte), "N", -1, 0)]
+	[InlineData("size", "datatypes_enums", SingleStoreDbType.Enum, "ENUM", 7, typeof(string), "N", -1, 0)]
+	[InlineData("color", "datatypes_enums", SingleStoreDbType.Enum, "ENUM", 6, typeof(string), "", -1, 0)]
+	[InlineData("char38", "datatypes_guids", SingleStoreDbType.String, "CHAR(38)", 38, typeof(string), "N", -1, 0)]
+	[InlineData("char38bin", "datatypes_guids", SingleStoreDbType.String, "CHAR(38)", 38, typeof(string), "N", -1, 0)]
+	[InlineData("text", "datatypes_guids", SingleStoreDbType.Text, "VARCHAR", 65535, typeof(string), "LN", -1, 0)]
+	[InlineData("blob", "datatypes_guids", SingleStoreDbType.Blob, "BLOB", 65535, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("SByte", "datatypes_integers", SingleStoreDbType.Byte, "TINYINT", 4, typeof(sbyte), "N", -1, 0)]
+	[InlineData("Byte", "datatypes_integers", SingleStoreDbType.UByte, "TINYINT", 3, typeof(byte), "N", -1, 0)]
+	[InlineData("Int16", "datatypes_integers", SingleStoreDbType.Int16, "SMALLINT", 6, typeof(short), "N", -1, 0)]
+	[InlineData("UInt16", "datatypes_integers", SingleStoreDbType.UInt16, "SMALLINT", 5, typeof(ushort), "N", -1, 0)]
+	[InlineData("Int24", "datatypes_integers", SingleStoreDbType.Int24, "MEDIUMINT", 9, typeof(int), "N", -1, 0)]
+	[InlineData("UInt24", "datatypes_integers", SingleStoreDbType.UInt24, "MEDIUMINT", 8, typeof(uint), "N", -1, 0)]
+	[InlineData("Int32", "datatypes_integers", SingleStoreDbType.Int32, "INT", 11, typeof(int), "N", -1, 0)]
+	[InlineData("UInt32", "datatypes_integers", SingleStoreDbType.UInt32, "INT", 10, typeof(uint), "N", -1, 0)]
+	[InlineData("Int64", "datatypes_integers", SingleStoreDbType.Int64, "BIGINT", 20, typeof(long), "N", -1, 0)]
+	[InlineData("UInt64", "datatypes_integers", SingleStoreDbType.UInt64, "BIGINT", 20, typeof(ulong), "N", -1, 0)]
+	[InlineData("value", "datatypes_json_core", SingleStoreDbType.JSON, "JSON", int.MaxValue, typeof(string), "LN", -1, 0)]
+	[InlineData("Single", "datatypes_reals", SingleStoreDbType.Float, "FLOAT", 12, typeof(float), "N", -1, 31)]
+	[InlineData("Double", "datatypes_reals", SingleStoreDbType.Double, "DOUBLE", 22, typeof(double), "N", -1, 31)]
+	[InlineData("SmallDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, "DECIMAL", 7, typeof(decimal), "N", 5, 2)]
+	[InlineData("MediumDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, "DECIMAL", 30, typeof(decimal), "N", 28, 8)]
+	[InlineData("BigDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, "DECIMAL", 52, typeof(decimal), "N", 50, 30)]
+	[InlineData("value", "datatypes_set", SingleStoreDbType.Set, "SET", 12, typeof(string), "N", -1, 0)]
+	[InlineData("utf8", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
+	[InlineData("utf8bin", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
+	[InlineData("latin1", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
+	[InlineData("latin1bin", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
+	[InlineData("cp1251", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR", 300, typeof(string), "N", -1, 0)]
+	[InlineData("guid", "datatypes_strings", SingleStoreDbType.Guid, "CHAR(36)", 36, typeof(Guid), "N", -1, 0)]
+	[InlineData("guidbin", "datatypes_strings", SingleStoreDbType.Guid, "CHAR(36)", 36, typeof(Guid), "N", -1, 0)]
+	[InlineData("Date", "datatypes_times", SingleStoreDbType.Date, "DATE", 10, typeof(DateTime), "N", -1, 0)]
+	[InlineData("DateTime", "datatypes_times", SingleStoreDbType.DateTime, "DATETIME", 26, typeof(DateTime), "N", -1, 6)]
+	[InlineData("Timestamp", "datatypes_times", SingleStoreDbType.Timestamp, "TIMESTAMP", 26, typeof(DateTime), "N", -1, 6)]
+	[InlineData("Time", "datatypes_times", SingleStoreDbType.Time, "TIME", 17, typeof(TimeSpan), "N", -1, 6)]
+	[InlineData("Year", "datatypes_times", SingleStoreDbType.Year, "YEAR", 4, typeof(int), "N", -1, 0)]
+	[InlineData("Geometry", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("Point", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("LineString", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("Polygon", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("MultiPoint", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("MultiLineString", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("MultiPolygon", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	[InlineData("GeometryCollection", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", int.MaxValue, typeof(byte[]), "LN", -1, 0)]
+	public void GetColumnSchema(string column, string table, SingleStoreDbType mySqlDbType, string dataTypeName, int columnSize, Type dataType, string flags, int precision, int scale)
 	{
 		if (table == "datatypes_json_core" && !AppConfig.SupportsJson)
 			return;
@@ -1365,7 +1365,7 @@ create table schema_table({createColumn});");
 		using var reader = command.ExecuteReader();
 		var columns = reader.GetColumnSchema();
 		Assert.Single(columns);
-		var schema = (MySqlDbColumn) columns[0];
+		var schema = (SingleStoreDbColumn) columns[0];
 		Assert.Equal(allowDbNull, schema.AllowDBNull);
 		Assert.Equal(column, schema.BaseColumnName);
 		Assert.Equal(Connection.Database, schema.BaseSchemaName);
@@ -1390,64 +1390,64 @@ create table schema_table({createColumn});");
 #endif
 
 	[Theory]
-	[InlineData("Bit1", "datatypes_bits", MySqlDbType.Bit, "BIT", typeof(ulong), 3, 1ul)]
-	[InlineData("Bit32", "datatypes_bits", MySqlDbType.Bit, "BIT", typeof(ulong), 3, 1ul)]
-	[InlineData("Bit64", "datatypes_bits", MySqlDbType.Bit, "BIT", typeof(ulong), 3, 1ul)]
-	[InlineData("Binary", "datatypes_blobs", MySqlDbType.Binary, "BINARY(100)", typeof(byte[]), 2, null)]
-	[InlineData("VarBinary", "datatypes_blobs", MySqlDbType.VarBinary, "VARBINARY(100)", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
-	[InlineData("TinyBlob", "datatypes_blobs", MySqlDbType.TinyBlob, "TINYBLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
-	[InlineData("Blob", "datatypes_blobs", MySqlDbType.Blob, "BLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
-	[InlineData("MediumBlob", "datatypes_blobs", MySqlDbType.MediumBlob, "MEDIUMBLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
-	[InlineData("LongBlob", "datatypes_blobs", MySqlDbType.LongBlob, "LONGBLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
-	[InlineData("guidbin", "datatypes_blobs", MySqlDbType.Binary, "BINARY(16)", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
+	[InlineData("Bit1", "datatypes_bits", SingleStoreDbType.Bit, "BIT", typeof(ulong), 3, 1ul)]
+	[InlineData("Bit32", "datatypes_bits", SingleStoreDbType.Bit, "BIT", typeof(ulong), 3, 1ul)]
+	[InlineData("Bit64", "datatypes_bits", SingleStoreDbType.Bit, "BIT", typeof(ulong), 3, 1ul)]
+	[InlineData("Binary", "datatypes_blobs", SingleStoreDbType.Binary, "BINARY(100)", typeof(byte[]), 2, null)]
+	[InlineData("VarBinary", "datatypes_blobs", SingleStoreDbType.VarBinary, "VARBINARY(100)", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
+	[InlineData("TinyBlob", "datatypes_blobs", SingleStoreDbType.TinyBlob, "TINYBLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
+	[InlineData("Blob", "datatypes_blobs", SingleStoreDbType.Blob, "BLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
+	[InlineData("MediumBlob", "datatypes_blobs", SingleStoreDbType.MediumBlob, "MEDIUMBLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
+	[InlineData("LongBlob", "datatypes_blobs", SingleStoreDbType.LongBlob, "LONGBLOB", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
+	[InlineData("guidbin", "datatypes_blobs", SingleStoreDbType.Binary, "BINARY(16)", typeof(byte[]), 2, new byte[] { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF })]
 #if BASELINE
-	[InlineData("Boolean", "datatypes_bools", MySqlDbType.Byte, "BOOL", typeof(sbyte), 3, (sbyte) 1)]
-	[InlineData("TinyInt1", "datatypes_bools", MySqlDbType.Byte, "TINYINT(1)", typeof(sbyte), 3, (sbyte) 1)]
+	[InlineData("Boolean", "datatypes_bools", SingleStoreDbType.Byte, "BOOL", typeof(sbyte), 3, (sbyte) 1)]
+	[InlineData("TinyInt1", "datatypes_bools", SingleStoreDbType.Byte, "TINYINT(1)", typeof(sbyte), 3, (sbyte) 1)]
 #else
-	[InlineData("Boolean", "datatypes_bools", MySqlDbType.Bool, "BOOL", typeof(bool), 3, true)]
-	[InlineData("TinyInt1", "datatypes_bools", MySqlDbType.Bool, "TINYINT(1)", typeof(bool), 3, true)]
+	[InlineData("Boolean", "datatypes_bools", SingleStoreDbType.Bool, "BOOL", typeof(bool), 3, true)]
+	[InlineData("TinyInt1", "datatypes_bools", SingleStoreDbType.Bool, "TINYINT(1)", typeof(bool), 3, true)]
 #endif
-	[InlineData("TinyInt1U", "datatypes_bools", MySqlDbType.UByte, "TINYINT(1) UNSIGNED", typeof(byte), 3, (byte) 1)]
-	[InlineData("char38", "datatypes_guids", MySqlDbType.String, "CHAR(38)", typeof(string), 2, "0")]
-	[InlineData("char38bin", "datatypes_guids", MySqlDbType.String, "CHAR(38)", typeof(string), 2, "0")]
-	[InlineData("SByte", "datatypes_integers", MySqlDbType.Byte, "TINYINT", typeof(sbyte), 4, (sbyte) 127)]
-	[InlineData("Byte", "datatypes_integers", MySqlDbType.UByte, "TINYINT UNSIGNED", typeof(byte), 4, (byte) 255)]
-	[InlineData("Int16", "datatypes_integers", MySqlDbType.Int16, "SMALLINT", typeof(short), 4, (short) 32767)]
-	[InlineData("UInt16", "datatypes_integers", MySqlDbType.UInt16, "SMALLINT UNSIGNED", typeof(ushort), 4, (ushort) 65535)]
-	[InlineData("Int24", "datatypes_integers", MySqlDbType.Int24, "MEDIUMINT", typeof(int), 4, 8388607)]
-	[InlineData("UInt24", "datatypes_integers", MySqlDbType.UInt24, "MEDIUMINT UNSIGNED", typeof(uint), 4, 16777215u)]
-	[InlineData("Int32", "datatypes_integers", MySqlDbType.Int32, "INT", typeof(int), 4, 2147483647)]
-	[InlineData("UInt32", "datatypes_integers", MySqlDbType.UInt32, "INT UNSIGNED", typeof(uint), 4, 4294967295u)]
-	[InlineData("Int64", "datatypes_integers", MySqlDbType.Int64, "BIGINT", typeof(long), 4, 9223372036854775807L)]
-	[InlineData("UInt64", "datatypes_integers", MySqlDbType.UInt64, "BIGINT UNSIGNED", typeof(ulong), 4, 18446744073709551615ul)]
-	[InlineData("Single", "datatypes_reals", MySqlDbType.Float, "FLOAT", typeof(float), 3, -3.40282e38f)]
-	[InlineData("Double", "datatypes_reals", MySqlDbType.Double, "DOUBLE", typeof(double), 3, -1.7976931348623157e308)]
-	[InlineData("SmallDecimal", "datatypes_reals", MySqlDbType.NewDecimal, "DECIMAL(5,2)", typeof(decimal), 3, null)]
-	[InlineData("MediumDecimal", "datatypes_reals", MySqlDbType.NewDecimal, "DECIMAL(28,8)", typeof(decimal), 3, null)]
-	[InlineData("BigDecimal", "datatypes_reals", MySqlDbType.NewDecimal, "DECIMAL(50,30)", typeof(decimal), 3, null)]
-	[InlineData("utf8", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR(300)", typeof(string), 3, "ASCII")]
-	[InlineData("latin1", "datatypes_strings", MySqlDbType.VarChar, "VARCHAR(300)", typeof(string), 3, "ASCII")]
-	[InlineData("Date", "datatypes_times", MySqlDbType.Date, "DATE", typeof(DateTime), 2, null)]
-	[InlineData("DateTime", "datatypes_times", MySqlDbType.DateTime, "DATETIME", typeof(DateTime), 2, null)]
-	[InlineData("Timestamp", "datatypes_times", MySqlDbType.Timestamp, "TIMESTAMP", typeof(DateTime), 2, null)]
-	[InlineData("Time", "datatypes_times", MySqlDbType.Time, "TIME", typeof(TimeSpan), 2, null)]
+	[InlineData("TinyInt1U", "datatypes_bools", SingleStoreDbType.UByte, "TINYINT(1) UNSIGNED", typeof(byte), 3, (byte) 1)]
+	[InlineData("char38", "datatypes_guids", SingleStoreDbType.String, "CHAR(38)", typeof(string), 2, "0")]
+	[InlineData("char38bin", "datatypes_guids", SingleStoreDbType.String, "CHAR(38)", typeof(string), 2, "0")]
+	[InlineData("SByte", "datatypes_integers", SingleStoreDbType.Byte, "TINYINT", typeof(sbyte), 4, (sbyte) 127)]
+	[InlineData("Byte", "datatypes_integers", SingleStoreDbType.UByte, "TINYINT UNSIGNED", typeof(byte), 4, (byte) 255)]
+	[InlineData("Int16", "datatypes_integers", SingleStoreDbType.Int16, "SMALLINT", typeof(short), 4, (short) 32767)]
+	[InlineData("UInt16", "datatypes_integers", SingleStoreDbType.UInt16, "SMALLINT UNSIGNED", typeof(ushort), 4, (ushort) 65535)]
+	[InlineData("Int24", "datatypes_integers", SingleStoreDbType.Int24, "MEDIUMINT", typeof(int), 4, 8388607)]
+	[InlineData("UInt24", "datatypes_integers", SingleStoreDbType.UInt24, "MEDIUMINT UNSIGNED", typeof(uint), 4, 16777215u)]
+	[InlineData("Int32", "datatypes_integers", SingleStoreDbType.Int32, "INT", typeof(int), 4, 2147483647)]
+	[InlineData("UInt32", "datatypes_integers", SingleStoreDbType.UInt32, "INT UNSIGNED", typeof(uint), 4, 4294967295u)]
+	[InlineData("Int64", "datatypes_integers", SingleStoreDbType.Int64, "BIGINT", typeof(long), 4, 9223372036854775807L)]
+	[InlineData("UInt64", "datatypes_integers", SingleStoreDbType.UInt64, "BIGINT UNSIGNED", typeof(ulong), 4, 18446744073709551615ul)]
+	[InlineData("Single", "datatypes_reals", SingleStoreDbType.Float, "FLOAT", typeof(float), 3, -3.40282e38f)]
+	[InlineData("Double", "datatypes_reals", SingleStoreDbType.Double, "DOUBLE", typeof(double), 3, -1.7976931348623157e308)]
+	[InlineData("SmallDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, "DECIMAL(5,2)", typeof(decimal), 3, null)]
+	[InlineData("MediumDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, "DECIMAL(28,8)", typeof(decimal), 3, null)]
+	[InlineData("BigDecimal", "datatypes_reals", SingleStoreDbType.NewDecimal, "DECIMAL(50,30)", typeof(decimal), 3, null)]
+	[InlineData("utf8", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR(300)", typeof(string), 3, "ASCII")]
+	[InlineData("latin1", "datatypes_strings", SingleStoreDbType.VarChar, "VARCHAR(300)", typeof(string), 3, "ASCII")]
+	[InlineData("Date", "datatypes_times", SingleStoreDbType.Date, "DATE", typeof(DateTime), 2, null)]
+	[InlineData("DateTime", "datatypes_times", SingleStoreDbType.DateTime, "DATETIME", typeof(DateTime), 2, null)]
+	[InlineData("Timestamp", "datatypes_times", SingleStoreDbType.Timestamp, "TIMESTAMP", typeof(DateTime), 2, null)]
+	[InlineData("Time", "datatypes_times", SingleStoreDbType.Time, "TIME", typeof(TimeSpan), 2, null)]
 #if BASELINE
-	[InlineData("Year", "datatypes_times", MySqlDbType.Year, "YEAR", typeof(short), 2, (short) 1901)]
+	[InlineData("Year", "datatypes_times", SingleStoreDbType.Year, "YEAR", typeof(short), 2, (short) 1901)]
 #else
-	[InlineData("Year", "datatypes_times", MySqlDbType.Year, "YEAR", typeof(int), 2, 1901)]
+	[InlineData("Year", "datatypes_times", SingleStoreDbType.Year, "YEAR", typeof(int), 2, 1901)]
 #endif
 #if !BASELINE
-	[InlineData("value", "datatypes_json_core", MySqlDbType.JSON, "JSON", typeof(string), 4, "[]")]
-	[InlineData("Geometry", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRY", typeof(byte[]), 2, null)]
-	[InlineData("Point", "datatypes_geometry", MySqlDbType.Geometry, "POINT", typeof(byte[]), 2, null)]
-	[InlineData("LineString", "datatypes_geometry", MySqlDbType.Geometry, "LINESTRING", typeof(byte[]), 2, null)]
-	[InlineData("Polygon", "datatypes_geometry", MySqlDbType.Geometry, "POLYGON", typeof(byte[]), 2, null)]
-	[InlineData("MultiPoint", "datatypes_geometry", MySqlDbType.Geometry, "MULTIPOINT", typeof(byte[]), 2, null)]
-	[InlineData("MultiLineString", "datatypes_geometry", MySqlDbType.Geometry, "MULTILINESTRING", typeof(byte[]), 2, null)]
-	[InlineData("MultiPolygon", "datatypes_geometry", MySqlDbType.Geometry, "MULTIPOLYGON", typeof(byte[]), 2, null)]
-	[InlineData("GeometryCollection", "datatypes_geometry", MySqlDbType.Geometry, "GEOMETRYCOLLECTION", typeof(byte[]), 2, null)]
+	[InlineData("value", "datatypes_json_core", SingleStoreDbType.JSON, "JSON", typeof(string), 4, "[]")]
+	[InlineData("Geometry", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRY", typeof(byte[]), 2, null)]
+	[InlineData("Point", "datatypes_geometry", SingleStoreDbType.Geometry, "POINT", typeof(byte[]), 2, null)]
+	[InlineData("LineString", "datatypes_geometry", SingleStoreDbType.Geometry, "LINESTRING", typeof(byte[]), 2, null)]
+	[InlineData("Polygon", "datatypes_geometry", SingleStoreDbType.Geometry, "POLYGON", typeof(byte[]), 2, null)]
+	[InlineData("MultiPoint", "datatypes_geometry", SingleStoreDbType.Geometry, "MULTIPOINT", typeof(byte[]), 2, null)]
+	[InlineData("MultiLineString", "datatypes_geometry", SingleStoreDbType.Geometry, "MULTILINESTRING", typeof(byte[]), 2, null)]
+	[InlineData("MultiPolygon", "datatypes_geometry", SingleStoreDbType.Geometry, "MULTIPOLYGON", typeof(byte[]), 2, null)]
+	[InlineData("GeometryCollection", "datatypes_geometry", SingleStoreDbType.Geometry, "GEOMETRYCOLLECTION", typeof(byte[]), 2, null)]
 #endif
-	public void StoredProcedureOutParameter(string column, string table, MySqlDbType mySqlDbType, string dataTypeName, Type dataType, int rowid, object expectedValue)
+	public void StoredProcedureOutParameter(string column, string table, SingleStoreDbType mySqlDbType, string dataTypeName, Type dataType, int rowid, object expectedValue)
 	{
 		if (table == "datatypes_json_core" && !AppConfig.SupportsJson)
 			return;
@@ -1479,7 +1479,7 @@ end;";
 
 			command.ExecuteNonQuery();
 			Assert.IsType(dataType, parameter.Value);
-			Assert.Equal(mySqlDbType, parameter.MySqlDbType);
+			Assert.Equal(mySqlDbType, parameter.SingleStoreDbType);
 
 			if (expectedValue is not null)
 				Assert.Equal(expectedValue, parameter.Value);

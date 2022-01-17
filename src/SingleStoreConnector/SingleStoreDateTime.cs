@@ -5,10 +5,10 @@ namespace SingleStoreConnector;
 /// as <c>0000-00-00</c> that can be stored in MySQL (when <see cref="SingleStoreConnectionStringBuilder.AllowZeroDateTime"/>
 /// is true) but can't be stored in a <see cref="DateTime"/> value.
 /// </summary>
-public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConvertible, IEquatable<MySqlDateTime>
+public struct SingleStoreDateTime : IComparable, IComparable<SingleStoreDateTime>, IConvertible, IEquatable<SingleStoreDateTime>
 {
 	/// <summary>
-	/// Initializes a new instance of <see cref="MySqlDateTime"/>.
+	/// Initializes a new instance of <see cref="SingleStoreDateTime"/>.
 	/// </summary>
 	/// <param name="year">The year.</param>
 	/// <param name="month">The (one-based) month.</param>
@@ -17,7 +17,7 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 	/// <param name="minute">The minute.</param>
 	/// <param name="second">The second.</param>
 	/// <param name="microsecond">The microsecond.</param>
-	public MySqlDateTime(int year, int month, int day, int hour, int minute, int second, int microsecond)
+	public SingleStoreDateTime(int year, int month, int day, int hour, int minute, int second, int microsecond)
 	{
 		Year = year;
 		Month = month;
@@ -29,19 +29,19 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 	}
 
 	/// <summary>
-	/// Initializes a new instance of <see cref="MySqlDateTime"/> from a <see cref="DateTime"/>.
+	/// Initializes a new instance of <see cref="SingleStoreDateTime"/> from a <see cref="DateTime"/>.
 	/// </summary>
 	/// <param name="dt">The <see cref="DateTime"/> whose values will be copied.</param>
-	public MySqlDateTime(DateTime dt)
+	public SingleStoreDateTime(DateTime dt)
 		: this(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, (int) (dt.Ticks % 10_000_000) / 10)
 	{
 	}
 
 	/// <summary>
-	/// Initializes a new instance of <see cref="MySqlDateTime"/> from another <see cref="MySqlDateTime"/>.
+	/// Initializes a new instance of <see cref="SingleStoreDateTime"/> from another <see cref="SingleStoreDateTime"/>.
 	/// </summary>
-	/// <param name="other">The <see cref="MySqlDateTime"/> whose values will be copied.</param>
-	public MySqlDateTime(MySqlDateTime other)
+	/// <param name="other">The <see cref="SingleStoreDateTime"/> whose values will be copied.</param>
+	public SingleStoreDateTime(SingleStoreDateTime other)
 	{
 		Year = other.Year;
 		Month = other.Month;
@@ -106,7 +106,7 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 	/// <see cref="SingleStoreConversionException"/>.
 	/// </summary>
 	public readonly DateTime GetDateTime() =>
-		!IsValidDateTime ? throw new SingleStoreConversionException("Cannot convert MySqlDateTime to DateTime when IsValidDateTime is false.") :
+		!IsValidDateTime ? throw new SingleStoreConversionException("Cannot convert SingleStoreDateTime to DateTime when IsValidDateTime is false.") :
 			new DateTime(Year, Month, Day, Hour, Minute, Second, DateTimeKind.Unspecified).AddTicks(Microsecond * 10);
 
 	/// <summary>
@@ -117,15 +117,15 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 	/// <summary>
 	/// Converts this object to a <see cref="DateTime"/>.
 	/// </summary>
-	public static explicit operator DateTime(MySqlDateTime val) => !val.IsValidDateTime ? DateTime.MinValue : val.GetDateTime();
+	public static explicit operator DateTime(SingleStoreDateTime val) => !val.IsValidDateTime ? DateTime.MinValue : val.GetDateTime();
 
 	/// <summary>
-	/// Returns <c>true</c> if this <see cref="MySqlDateTime"/> is equal to <paramref name="obj"/>.
+	/// Returns <c>true</c> if this <see cref="SingleStoreDateTime"/> is equal to <paramref name="obj"/>.
 	/// </summary>
 	/// <param name="obj">The object to compare against for equality.</param>
 	/// <returns><c>true</c> if the objects are equal, otherwise <c>false</c>.</returns>
 	public override bool Equals(object? obj) =>
-		obj is MySqlDateTime other && ((IEquatable<MySqlDateTime>) this).Equals(other);
+		obj is SingleStoreDateTime other && ((IEquatable<SingleStoreDateTime>) this).Equals(other);
 
 	/// <summary>
 	/// Returns a hash code for this instance.
@@ -137,33 +137,33 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 		(((((Year * 33 ^ Month) * 33 ^ Day) * 33 ^ Hour) * 33 ^ Minute) * 33 ^ Second) * 33 ^ Microsecond;
 #endif
 
-	public static bool operator ==(MySqlDateTime left, MySqlDateTime right) => ((IComparable<MySqlDateTime>) left).CompareTo(right) == 0;
-	public static bool operator !=(MySqlDateTime left, MySqlDateTime right) => ((IComparable<MySqlDateTime>) left).CompareTo(right) != 0;
-	public static bool operator <(MySqlDateTime left, MySqlDateTime right) => ((IComparable<MySqlDateTime>) left).CompareTo(right) < 0;
-	public static bool operator <=(MySqlDateTime left, MySqlDateTime right) => ((IComparable<MySqlDateTime>) left).CompareTo(right) <= 0;
-	public static bool operator >(MySqlDateTime left, MySqlDateTime right) => ((IComparable<MySqlDateTime>) left).CompareTo(right) > 0;
-	public static bool operator >=(MySqlDateTime left, MySqlDateTime right) => ((IComparable<MySqlDateTime>) left).CompareTo(right) >= 0;
+	public static bool operator ==(SingleStoreDateTime left, SingleStoreDateTime right) => ((IComparable<SingleStoreDateTime>) left).CompareTo(right) == 0;
+	public static bool operator !=(SingleStoreDateTime left, SingleStoreDateTime right) => ((IComparable<SingleStoreDateTime>) left).CompareTo(right) != 0;
+	public static bool operator <(SingleStoreDateTime left, SingleStoreDateTime right) => ((IComparable<SingleStoreDateTime>) left).CompareTo(right) < 0;
+	public static bool operator <=(SingleStoreDateTime left, SingleStoreDateTime right) => ((IComparable<SingleStoreDateTime>) left).CompareTo(right) <= 0;
+	public static bool operator >(SingleStoreDateTime left, SingleStoreDateTime right) => ((IComparable<SingleStoreDateTime>) left).CompareTo(right) > 0;
+	public static bool operator >=(SingleStoreDateTime left, SingleStoreDateTime right) => ((IComparable<SingleStoreDateTime>) left).CompareTo(right) >= 0;
 
 	/// <summary>
-	/// Compares this object to another <see cref="MySqlDateTime"/>.
+	/// Compares this object to another <see cref="SingleStoreDateTime"/>.
 	/// </summary>
 	/// <param name="obj">The object to compare to.</param>
 	/// <returns>An <see cref="int"/> giving the results of the comparison: a negative value if this
 	/// object is less than <paramref name="obj"/>, zero if this object is equal, or a positive value if this
 	/// object is greater.</returns>
 	readonly int IComparable.CompareTo(object? obj) =>
-		obj is MySqlDateTime other ?
-			((IComparable<MySqlDateTime>) this).CompareTo(other) :
-			throw new ArgumentException("CompareTo can only be called with another MySqlDateTime", nameof(obj));
+		obj is SingleStoreDateTime other ?
+			((IComparable<SingleStoreDateTime>) this).CompareTo(other) :
+			throw new ArgumentException("CompareTo can only be called with another SingleStoreDateTime", nameof(obj));
 
 	/// <summary>
-	/// Compares this object to another <see cref="MySqlDateTime"/>.
+	/// Compares this object to another <see cref="SingleStoreDateTime"/>.
 	/// </summary>
-	/// <param name="other">The <see cref="MySqlDateTime"/> to compare to.</param>
+	/// <param name="other">The <see cref="SingleStoreDateTime"/> to compare to.</param>
 	/// <returns>An <see cref="int"/> giving the results of the comparison: a negative value if this
 	/// object is less than <paramref name="other"/>, zero if this object is equal, or a positive value if this
 	/// object is greater.</returns>
-	readonly int IComparable<MySqlDateTime>.CompareTo(MySqlDateTime other)
+	readonly int IComparable<SingleStoreDateTime>.CompareTo(SingleStoreDateTime other)
 	{
 		if (Year < other.Year)
 			return -1;
@@ -192,7 +192,7 @@ public struct MySqlDateTime : IComparable, IComparable<MySqlDateTime>, IConverti
 		return Microsecond.CompareTo(other.Microsecond);
 	}
 
-	readonly bool IEquatable<MySqlDateTime>.Equals(MySqlDateTime other) => ((IComparable<MySqlDateTime>) this).CompareTo(other) == 0;
+	readonly bool IEquatable<SingleStoreDateTime>.Equals(SingleStoreDateTime other) => ((IComparable<SingleStoreDateTime>) this).CompareTo(other) == 0;
 
 	DateTime IConvertible.ToDateTime(IFormatProvider? provider) => IsValidDateTime ? GetDateTime() : throw new InvalidCastException();
 	string IConvertible.ToString(IFormatProvider? provider) => IsValidDateTime ? GetDateTime().ToString(provider) : "0000-00-00";

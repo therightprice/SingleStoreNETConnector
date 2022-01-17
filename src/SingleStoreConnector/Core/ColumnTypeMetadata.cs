@@ -4,13 +4,13 @@ internal sealed class ColumnTypeMetadata
 {
 	public static string CreateLookupKey(string columnTypeName, bool isUnsigned, int length) => $"{columnTypeName}|{(isUnsigned ? "u" : "s")}|{length}";
 
-	public ColumnTypeMetadata(string dataTypeName, DbTypeMapping dbTypeMapping, MySqlDbType mySqlDbType, bool isUnsigned = false, bool binary = false, int length = 0, string? simpleDataTypeName = null, string? createFormat = null, long columnSize = 0)
+	public ColumnTypeMetadata(string dataTypeName, DbTypeMapping dbTypeMapping, SingleStoreDbType mySqlDbType, bool isUnsigned = false, bool binary = false, int length = 0, string? simpleDataTypeName = null, string? createFormat = null, long columnSize = 0)
 	{
 		DataTypeName = dataTypeName;
 		SimpleDataTypeName = simpleDataTypeName ?? dataTypeName;
 		CreateFormat = createFormat ?? (dataTypeName + (isUnsigned ? " UNSIGNED" : ""));
 		DbTypeMapping = dbTypeMapping;
-		MySqlDbType = mySqlDbType;
+		SingleStoreDbType = mySqlDbType;
 		ColumnSize = columnSize;
 		IsUnsigned = isUnsigned;
 		Binary = binary;
@@ -21,7 +21,7 @@ internal sealed class ColumnTypeMetadata
 	public string SimpleDataTypeName { get; }
 	public string CreateFormat { get; }
 	public DbTypeMapping DbTypeMapping { get; }
-	public MySqlDbType MySqlDbType { get; }
+	public SingleStoreDbType SingleStoreDbType { get; }
 	public bool Binary { get; }
 	public long ColumnSize { get; }
 	public bool IsUnsigned { get; }

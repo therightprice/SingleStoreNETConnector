@@ -14,7 +14,7 @@ internal sealed class ConnectionSettings
 
 		if (csb.ConnectionProtocol == SingleStoreConnectionProtocol.UnixSocket || (!Utility.IsWindows() && (csb.Server.StartsWith("/", StringComparison.Ordinal) || csb.Server.StartsWith("./", StringComparison.Ordinal))))
 		{
-			if (csb.LoadBalance != MySqlLoadBalance.RoundRobin)
+			if (csb.LoadBalance != SingleStoreLoadBalance.RoundRobin)
 				throw new NotSupportedException("LoadBalance not supported when ConnectionProtocol=UnixSocket");
 			if (!File.Exists(csb.Server))
 				throw new SingleStoreException("Cannot find Unix Socket at " + csb.Server);
@@ -24,7 +24,7 @@ internal sealed class ConnectionSettings
 		}
 		else if (csb.ConnectionProtocol == SingleStoreConnectionProtocol.NamedPipe)
 		{
-			if (csb.LoadBalance != MySqlLoadBalance.RoundRobin)
+			if (csb.LoadBalance != SingleStoreLoadBalance.RoundRobin)
 				throw new NotSupportedException("LoadBalance not supported when ConnectionProtocol=NamedPipe");
 			ConnectionProtocol = SingleStoreConnectionProtocol.NamedPipe;
 			HostNames = (csb.Server == "." || string.Equals(csb.Server, "localhost", StringComparison.OrdinalIgnoreCase)) ? s_localhostPipeServer : new[] { csb.Server };
@@ -154,18 +154,18 @@ internal sealed class ConnectionSettings
 
 	public ConnectionSettings CloneWith(string host, int port, string userId) => new ConnectionSettings(this, host, port, userId);
 
-	private static MySqlGuidFormat GetEffectiveGuidFormat(MySqlGuidFormat guidFormat, bool oldGuids)
+	private static SingleStoreGuidFormat GetEffectiveGuidFormat(SingleStoreGuidFormat guidFormat, bool oldGuids)
 	{
 		switch (guidFormat)
 		{
-		case MySqlGuidFormat.Default:
-			return oldGuids ? MySqlGuidFormat.LittleEndianBinary16 : MySqlGuidFormat.Char36;
-		case MySqlGuidFormat.None:
-		case MySqlGuidFormat.Char36:
-		case MySqlGuidFormat.Char32:
-		case MySqlGuidFormat.Binary16:
-		case MySqlGuidFormat.TimeSwapBinary16:
-		case MySqlGuidFormat.LittleEndianBinary16:
+		case SingleStoreGuidFormat.Default:
+			return oldGuids ? SingleStoreGuidFormat.LittleEndianBinary16 : SingleStoreGuidFormat.Char36;
+		case SingleStoreGuidFormat.None:
+		case SingleStoreGuidFormat.Char36:
+		case SingleStoreGuidFormat.Char32:
+		case SingleStoreGuidFormat.Binary16:
+		case SingleStoreGuidFormat.TimeSwapBinary16:
+		case SingleStoreGuidFormat.LittleEndianBinary16:
 			if (oldGuids)
 				throw new SingleStoreException("OldGuids cannot be used with GuidFormat");
 			return guidFormat;
@@ -184,7 +184,7 @@ internal sealed class ConnectionSettings
 	public string ConnectionString { get; }
 	public SingleStoreConnectionProtocol ConnectionProtocol { get; }
 	public IReadOnlyList<string>? HostNames { get; }
-	public MySqlLoadBalance LoadBalance { get; }
+	public SingleStoreLoadBalance LoadBalance { get; }
 	public int Port { get; }
 	public string PipeName { get; }
 	public string? UnixSocket { get; }
@@ -199,7 +199,7 @@ internal sealed class ConnectionSettings
 	public string CACertificateFile { get; }
 	public string SslCertificateFile { get; }
 	public string SslKeyFile { get; }
-	public MySqlCertificateStoreLocation CertificateStoreLocation { get; }
+	public SingleStoreCertificateStoreLocation CertificateStoreLocation { get; }
 	public string CertificateThumbprint { get; }
 	public SslProtocols TlsVersions { get; }
 #if NETCOREAPP3_0_OR_GREATER
@@ -227,7 +227,7 @@ internal sealed class ConnectionSettings
 	public DateTimeKind DateTimeKind { get; }
 	public int DefaultCommandTimeout { get; }
 	public bool ForceSynchronous { get; }
-	public MySqlGuidFormat GuidFormat { get; }
+	public SingleStoreGuidFormat GuidFormat { get; }
 	public bool IgnoreCommandTransaction { get; }
 	public bool IgnorePrepare { get; }
 	public bool InteractiveSession { get; }

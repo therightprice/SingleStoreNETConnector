@@ -18,10 +18,10 @@ public class ConnectionTests : IClassFixture<DatabaseFixture>
 			gotEvent = true;
 #if BASELINE
 			Assert.Single(a.errors);
-			Assert.Equal((int) MySqlErrorCode.BadTable, a.errors[0].Code);
+			Assert.Equal((int) SingleStoreErrorCode.BadTable, a.errors[0].Code);
 #else
 			Assert.Single(a.Errors);
-			Assert.Equal(MySqlErrorCode.BadTable, a.Errors[0].ErrorCode);
+			Assert.Equal(SingleStoreErrorCode.BadTable, a.Errors[0].ErrorCode);
 #endif
 		};
 
@@ -42,10 +42,10 @@ public class ConnectionTests : IClassFixture<DatabaseFixture>
 			gotEvent = true;
 #if BASELINE
 			Assert.Single(a.errors);
-			Assert.Equal((int) MySqlErrorCode.BadTable, a.errors[0].Code);
+			Assert.Equal((int) SingleStoreErrorCode.BadTable, a.errors[0].Code);
 #else
 			Assert.Single(a.Errors);
-			Assert.Equal(MySqlErrorCode.BadTable, a.Errors[0].ErrorCode);
+			Assert.Equal(SingleStoreErrorCode.BadTable, a.Errors[0].ErrorCode);
 #endif
 		};
 

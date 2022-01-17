@@ -55,7 +55,7 @@ internal static class CommandExecutor
 				await connection.Session.SendAsync(payload, ioBehavior, CancellationToken.None).ConfigureAwait(false);
 				return await SingleStoreDataReader.CreateAsync(commandListPosition, payloadCreator, cachedProcedures, command, behavior, activity, ioBehavior, cancellationToken).ConfigureAwait(false);
 			}
-			catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
+			catch (SingleStoreException ex) when (ex.ErrorCode == SingleStoreErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
 			{
 				Log.Info("Session{0} query was interrupted", connection.Session.Id);
 				throw new OperationCanceledException(ex.Message, ex, cancellationToken);

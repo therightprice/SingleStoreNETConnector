@@ -126,7 +126,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	{
 		using var trans = m_connection.BeginTransaction(IsolationLevel.Serializable, isReadOnly: true);
 		var exception = Assert.Throws<SingleStoreException>(() => m_connection.Execute("insert into transactions_test values(1), (2)", transaction: trans));
-		Assert.Equal(MySqlErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
 	}
 
 	[Fact]
@@ -134,7 +134,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	{
 		using var trans = m_connection.BeginTransaction(IsolationLevel.Snapshot, isReadOnly: true);
 		var exception = Assert.Throws<SingleStoreException>(() => m_connection.Execute("insert into transactions_test values(1), (2)", transaction: trans));
-		Assert.Equal(MySqlErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
 	}
 
 	[Fact]
@@ -154,7 +154,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	{
 		using var trans = await m_connection.BeginTransactionAsync(IsolationLevel.Serializable, isReadOnly: true);
 		var exception = await Assert.ThrowsAsync<SingleStoreException>(async () => await m_connection.ExecuteAsync("insert into transactions_test values(1), (2)", transaction: trans));
-		Assert.Equal(MySqlErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.CannotExecuteInReadOnlyTransaction, exception.ErrorCode);
 	}
 
 	[Fact]
@@ -292,7 +292,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	{
 		using var transaction = m_connection.BeginTransaction();
 		var ex = Assert.Throws<SingleStoreException>(() => transaction.Rollback("a"));
-		Assert.Equal(MySqlErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
 	}
 
 	[Fact]
@@ -300,7 +300,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 	{
 		using var transaction = m_connection.BeginTransaction();
 		var ex = Assert.Throws<SingleStoreException>(() => transaction.Release("a"));
-		Assert.Equal(MySqlErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
 	}
 
 	[Fact]
@@ -310,7 +310,7 @@ public class Transaction : IClassFixture<TransactionFixture>
 		transaction.Save("a");
 		transaction.Release("a");
 		var ex = Assert.Throws<SingleStoreException>(() => transaction.Rollback("a"));
-		Assert.Equal(MySqlErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.StoredProcedureDoesNotExist, ex.ErrorCode);
 	}
 
 	[Fact]

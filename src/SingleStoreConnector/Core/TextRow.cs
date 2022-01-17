@@ -53,9 +53,9 @@ internal sealed class TextRow : Row
 			return ReadBit(data, columnDefinition);
 
 		case ColumnType.String:
-			if (Connection.GuidFormat == MySqlGuidFormat.Char36 && columnDefinition.ColumnLength / ProtocolUtility.GetBytesPerCharacter(columnDefinition.CharacterSet) == 36)
+			if (Connection.GuidFormat == SingleStoreGuidFormat.Char36 && columnDefinition.ColumnLength / ProtocolUtility.GetBytesPerCharacter(columnDefinition.CharacterSet) == 36)
 				return Utf8Parser.TryParse(data, out Guid guid, out int guid36BytesConsumed, 'D') && guid36BytesConsumed == 36 ? guid : throw new FormatException();
-			if (Connection.GuidFormat == MySqlGuidFormat.Char32 && columnDefinition.ColumnLength / ProtocolUtility.GetBytesPerCharacter(columnDefinition.CharacterSet) == 32)
+			if (Connection.GuidFormat == SingleStoreGuidFormat.Char32 && columnDefinition.ColumnLength / ProtocolUtility.GetBytesPerCharacter(columnDefinition.CharacterSet) == 32)
 				return Utf8Parser.TryParse(data, out Guid guid, out int guid32BytesConsumed, 'N') && guid32BytesConsumed == 32 ? guid : throw new FormatException();
 			goto case ColumnType.VarString;
 
@@ -70,7 +70,7 @@ internal sealed class TextRow : Row
 			if (columnDefinition.CharacterSet == CharacterSet.Binary)
 			{
 				var guidFormat = Connection.GuidFormat;
-				if ((guidFormat is MySqlGuidFormat.Binary16 or MySqlGuidFormat.TimeSwapBinary16 or MySqlGuidFormat.LittleEndianBinary16) && columnDefinition.ColumnLength == 16)
+				if ((guidFormat is SingleStoreGuidFormat.Binary16 or SingleStoreGuidFormat.TimeSwapBinary16 or SingleStoreGuidFormat.LittleEndianBinary16) && columnDefinition.ColumnLength == 16)
 					return CreateGuidFromBytes(guidFormat, data);
 
 				return data.ToArray();

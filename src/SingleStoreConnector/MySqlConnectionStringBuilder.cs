@@ -105,10 +105,10 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	/// Specifies how load is distributed across backend servers.
 	/// </summary>
 	[Category("Connection")]
-	[DefaultValue(MySqlLoadBalance.RoundRobin)]
+	[DefaultValue(SingleStoreLoadBalance.RoundRobin)]
 	[Description("Specifies how load is distributed across backend servers.")]
 	[DisplayName("Load Balance")]
-	public MySqlLoadBalance LoadBalance
+	public SingleStoreLoadBalance LoadBalance
 	{
 		get => MySqlConnectionStringOption.LoadBalance.GetValue(this);
 		set => MySqlConnectionStringOption.LoadBalance.SetValue(this, value);
@@ -241,13 +241,13 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	}
 
 	/// <summary>
-	/// Uses a certificate from the specified Certificate Store on the machine. The default value of <see cref="MySqlCertificateStoreLocation.None"/> means the certificate store is not used; a value of <see cref="MySqlCertificateStoreLocation.CurrentUser"/> or <see cref="MySqlCertificateStoreLocation.LocalMachine"/> uses the specified store.
+	/// Uses a certificate from the specified Certificate Store on the machine. The default value of <see cref="SingleStoreCertificateStoreLocation.None"/> means the certificate store is not used; a value of <see cref="SingleStoreCertificateStoreLocation.CurrentUser"/> or <see cref="SingleStoreCertificateStoreLocation.LocalMachine"/> uses the specified store.
 	/// </summary>
 	[Category("TLS")]
-	[DefaultValue(MySqlCertificateStoreLocation.None)]
+	[DefaultValue(SingleStoreCertificateStoreLocation.None)]
 	[Description("Uses a certificate from the specified Certificate Store on the machine.")]
 	[DisplayName("Certificate Store Location")]
-	public MySqlCertificateStoreLocation CertificateStoreLocation
+	public SingleStoreCertificateStoreLocation CertificateStoreLocation
 	{
 		get => MySqlConnectionStringOption.CertificateStoreLocation.GetValue(this);
 		set => MySqlConnectionStringOption.CertificateStoreLocation.SetValue(this, value);
@@ -443,11 +443,11 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	}
 
 	/// <summary>
-	/// Returns <c>DATETIME</c> fields as <see cref="MySqlDateTime"/> objects instead of <see cref="DateTime"/> objects.
+	/// Returns <c>DATETIME</c> fields as <see cref="SingleStoreDateTime"/> objects instead of <see cref="DateTime"/> objects.
 	/// </summary>
 	[Category("Other")]
 	[DefaultValue(false)]
-	[Description("Returns DATETIME fields as MySqlDateTime objects instead of DateTime objects.")]
+	[Description("Returns DATETIME fields as SingleStoreDateTime objects instead of DateTime objects.")]
 	[DisplayName("Allow Zero DateTime")]
 	public bool AllowZeroDateTime
 	{
@@ -526,10 +526,10 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	/// The <see cref="DateTimeKind"/> to use when deserializing <c>DATETIME</c> values.
 	/// </summary>
 	[Category("Other")]
-	[DefaultValue(MySqlDateTimeKind.Unspecified)]
+	[DefaultValue(SingleStoreDateTimeKind.Unspecified)]
 	[Description("The DateTimeKind to use when deserializing DATETIME values.")]
 	[DisplayName("DateTime Kind")]
-	public MySqlDateTimeKind DateTimeKind
+	public SingleStoreDateTimeKind DateTimeKind
 	{
 		get => MySqlConnectionStringOption.DateTimeKind.GetValue(this);
 		set => MySqlConnectionStringOption.DateTimeKind.SetValue(this, value);
@@ -578,10 +578,10 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	/// Determines which column type (if any) should be read as a <see cref="Guid"/>.
 	/// </summary>
 	[Category("Other")]
-	[DefaultValue(MySqlGuidFormat.Default)]
+	[DefaultValue(SingleStoreGuidFormat.Default)]
 	[Description("Determines which column type (if any) should be read as a Guid.")]
 	[DisplayName("GUID Format")]
-	public MySqlGuidFormat GuidFormat
+	public SingleStoreGuidFormat GuidFormat
 	{
 		get => MySqlConnectionStringOption.GuidFormat.GetValue(this);
 		set => MySqlConnectionStringOption.GuidFormat.SetValue(this, value);
@@ -876,7 +876,7 @@ internal abstract class MySqlConnectionStringOption
 	public static readonly MySqlConnectionStringReferenceOption<string> UserID;
 	public static readonly MySqlConnectionStringReferenceOption<string> Password;
 	public static readonly MySqlConnectionStringReferenceOption<string> Database;
-	public static readonly MySqlConnectionStringValueOption<MySqlLoadBalance> LoadBalance;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreLoadBalance> LoadBalance;
 	public static readonly MySqlConnectionStringValueOption<SingleStoreConnectionProtocol> ConnectionProtocol;
 	public static readonly MySqlConnectionStringReferenceOption<string> PipeName;
 
@@ -884,7 +884,7 @@ internal abstract class MySqlConnectionStringOption
 	public static readonly MySqlConnectionStringValueOption<MySqlSslMode> SslMode;
 	public static readonly MySqlConnectionStringReferenceOption<string> CertificateFile;
 	public static readonly MySqlConnectionStringReferenceOption<string> CertificatePassword;
-	public static readonly MySqlConnectionStringValueOption<MySqlCertificateStoreLocation> CertificateStoreLocation;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreCertificateStoreLocation> CertificateStoreLocation;
 	public static readonly MySqlConnectionStringReferenceOption<string> CertificateThumbprint;
 	public static readonly MySqlConnectionStringReferenceOption<string> SslCa;
 	public static readonly MySqlConnectionStringReferenceOption<string> SslCert;
@@ -913,10 +913,10 @@ internal abstract class MySqlConnectionStringOption
 	public static readonly MySqlConnectionStringReferenceOption<string> CharacterSet;
 	public static readonly MySqlConnectionStringValueOption<uint> ConnectionTimeout;
 	public static readonly MySqlConnectionStringValueOption<bool> ConvertZeroDateTime;
-	public static readonly MySqlConnectionStringValueOption<MySqlDateTimeKind> DateTimeKind;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreDateTimeKind> DateTimeKind;
 	public static readonly MySqlConnectionStringValueOption<uint> DefaultCommandTimeout;
 	public static readonly MySqlConnectionStringValueOption<bool> ForceSynchronous;
-	public static readonly MySqlConnectionStringValueOption<MySqlGuidFormat> GuidFormat;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreGuidFormat> GuidFormat;
 	public static readonly MySqlConnectionStringValueOption<bool> IgnoreCommandTransaction;
 	public static readonly MySqlConnectionStringValueOption<bool> IgnorePrepare;
 	public static readonly MySqlConnectionStringValueOption<bool> InteractiveSession;
@@ -983,7 +983,7 @@ internal abstract class MySqlConnectionStringOption
 
 		AddOption(LoadBalance = new(
 			keys: new[] { "Load Balance", "LoadBalance" },
-			defaultValue: MySqlLoadBalance.RoundRobin));
+			defaultValue: SingleStoreLoadBalance.RoundRobin));
 
 		AddOption(ConnectionProtocol = new(
 			keys: new[] { "Connection Protocol", "ConnectionProtocol", "Protocol" },
@@ -1020,7 +1020,7 @@ internal abstract class MySqlConnectionStringOption
 
 		AddOption(CertificateStoreLocation = new(
 			keys: new[] { "Certificate Store Location", "CertificateStoreLocation" },
-			defaultValue: MySqlCertificateStoreLocation.None));
+			defaultValue: SingleStoreCertificateStoreLocation.None));
 
 		AddOption(CertificateThumbprint = new(
 			keys: new[] { "Certificate Thumbprint", "CertificateThumbprint", "Certificate Thumb Print" },
@@ -1150,7 +1150,7 @@ internal abstract class MySqlConnectionStringOption
 
 		AddOption(DateTimeKind = new(
 			keys: new[] { "DateTime Kind", "DateTimeKind" },
-			defaultValue: MySqlDateTimeKind.Unspecified));
+			defaultValue: SingleStoreDateTimeKind.Unspecified));
 
 		AddOption(DefaultCommandTimeout = new(
 			keys: new[] { "Default Command Timeout", "DefaultCommandTimeout", "Command Timeout" },
@@ -1162,7 +1162,7 @@ internal abstract class MySqlConnectionStringOption
 
 		AddOption(GuidFormat = new(
 			keys: new[] { "GUID Format", "GuidFormat" },
-			defaultValue: MySqlGuidFormat.Default));
+			defaultValue: SingleStoreGuidFormat.Default));
 
 		AddOption(IgnoreCommandTransaction = new(
 			keys: new[] { "Ignore Command Transaction", "IgnoreCommandTransaction" },
@@ -1261,7 +1261,7 @@ internal sealed class MySqlConnectionStringValueOption<T> : MySqlConnectionStrin
 				return (T) (object) false;
 		}
 
-		if ((typeof(T) == typeof(MySqlLoadBalance) || typeof(T) == typeof(MySqlSslMode) || typeof(T) == typeof(MySqlServerRedirectionMode) || typeof(T) == typeof(MySqlDateTimeKind) || typeof(T) == typeof(MySqlGuidFormat) || typeof(T) == typeof(SingleStoreConnectionProtocol) || typeof(T) == typeof(MySqlCertificateStoreLocation)) && objectValue is string enumString)
+		if ((typeof(T) == typeof(SingleStoreLoadBalance) || typeof(T) == typeof(MySqlSslMode) || typeof(T) == typeof(MySqlServerRedirectionMode) || typeof(T) == typeof(SingleStoreDateTimeKind) || typeof(T) == typeof(SingleStoreGuidFormat) || typeof(T) == typeof(SingleStoreConnectionProtocol) || typeof(T) == typeof(SingleStoreCertificateStoreLocation)) && objectValue is string enumString)
 		{
 			try
 			{

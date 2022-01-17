@@ -11,7 +11,7 @@ public sealed class SingleStoreError
 #pragma warning disable 618
 		Code = code;
 #pragma warning restore
-		ErrorCode = (MySqlErrorCode) code;
+		ErrorCode = (SingleStoreErrorCode) code;
 		Message = message;
 	}
 
@@ -27,9 +27,9 @@ public sealed class SingleStoreError
 	public int Code { get; }
 
 	/// <summary>
-	/// The <see cref="MySqlErrorCode"/> for the error or warning.
+	/// The <see cref="SingleStoreErrorCode"/> for the error or warning.
 	/// </summary>
-	public MySqlErrorCode ErrorCode { get; }
+	public SingleStoreErrorCode ErrorCode { get; }
 
 	/// <summary>
 	/// A human-readable description of the error or warning.

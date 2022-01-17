@@ -416,7 +416,7 @@ internal sealed class ConnectionPool
 		if (ConnectionSettings.ServerRedirectionMode == MySqlServerRedirectionMode.Required)
 		{
 			Log.Error("Pool{0} requires server redirection but server doesn't support it", m_logArguments);
-			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Server does not support redirection", redirectionException);
+			throw new SingleStoreException(SingleStoreErrorCode.UnableToConnectToHost, "Server does not support redirection", redirectionException);
 		}
 		return session;
 	}
@@ -505,7 +505,7 @@ internal sealed class ConnectionPool
 		m_sessionSemaphore = new(cs.MaximumPoolSize);
 		m_sessions = new();
 		m_leasedSessions = new();
-		if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.Sockets && cs.LoadBalance == MySqlLoadBalance.LeastConnections)
+		if (cs.ConnectionProtocol == SingleStoreConnectionProtocol.Sockets && cs.LoadBalance == SingleStoreLoadBalance.LeastConnections)
 		{
 			m_hostSessions = new();
 			foreach (var hostName in cs.HostNames!)
@@ -513,9 +513,9 @@ internal sealed class ConnectionPool
 		}
 
 		m_loadBalancer = cs.ConnectionProtocol != SingleStoreConnectionProtocol.Sockets ? null :
-			cs.HostNames!.Count == 1 || cs.LoadBalance == MySqlLoadBalance.FailOver ? FailOverLoadBalancer.Instance :
-			cs.LoadBalance == MySqlLoadBalance.Random ? RandomLoadBalancer.Instance :
-			cs.LoadBalance == MySqlLoadBalance.LeastConnections ? new LeastConnectionsLoadBalancer(m_hostSessions!) :
+			cs.HostNames!.Count == 1 || cs.LoadBalance == SingleStoreLoadBalance.FailOver ? FailOverLoadBalancer.Instance :
+			cs.LoadBalance == SingleStoreLoadBalance.Random ? RandomLoadBalancer.Instance :
+			cs.LoadBalance == SingleStoreLoadBalance.LeastConnections ? new LeastConnectionsLoadBalancer(m_hostSessions!) :
 			(ILoadBalancer) new RoundRobinLoadBalancer();
 
 		Id = Interlocked.Increment(ref s_poolId);

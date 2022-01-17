@@ -248,13 +248,13 @@ create table query_invalid_sql(id integer not null primary key auto_increment);"
 		{
 			cmd.CommandText = @"select id from query_invalid_sql limit 1 where id is not null";
 			var ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteNonQueryAsync);
-			Assert.Equal((int) MySqlErrorCode.ParseError, ex.Number);
+			Assert.Equal((int) SingleStoreErrorCode.ParseError, ex.Number);
 
 			ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteReaderAsync);
-			Assert.Equal((int) MySqlErrorCode.ParseError, ex.Number);
+			Assert.Equal((int) SingleStoreErrorCode.ParseError, ex.Number);
 
 			ex = await Assert.ThrowsAsync<SingleStoreException>(cmd.ExecuteScalarAsync);
-			Assert.Equal((int) MySqlErrorCode.ParseError, ex.Number);
+			Assert.Equal((int) SingleStoreErrorCode.ParseError, ex.Number);
 		}
 
 		using (var cmd = m_database.Connection.CreateCommand())
@@ -957,11 +957,11 @@ insert into enum_test (id, value) VALUES (1002, 'no'), (1003, 'yes');
 ");
 
 		using var command = new SingleStoreCommand("select * from enum_test where id = @ID;", m_database.Connection);
-		command.Parameters.AddWithValue("@ID", MySqlErrorCode.No);
+		command.Parameters.AddWithValue("@ID", SingleStoreErrorCode.No);
 
 		using var reader = command.ExecuteReader();
 		Assert.True(reader.Read());
-		Assert.Equal((int) MySqlErrorCode.No, reader.GetInt32(0));
+		Assert.Equal((int) SingleStoreErrorCode.No, reader.GetInt32(0));
 		Assert.Equal("no", reader.GetString(1));
 		Assert.False(reader.Read());
 	}
@@ -1317,9 +1317,9 @@ $$";
 		}
 
 #if !BASELINE
-		Assert.Equal(MySqlErrorCode.DelimiterNotSupported, exception.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.DelimiterNotSupported, exception.ErrorCode);
 #else
-		Assert.Equal((int) MySqlErrorCode.ParseError, exception.Number);
+		Assert.Equal((int) SingleStoreErrorCode.ParseError, exception.Number);
 #endif
 	}
 
@@ -1335,8 +1335,8 @@ $$";
 
 		using var reader = command.ExecuteReader();
 		using var schema = reader.GetSchemaTable();
-		var providerType = (MySqlDbType) (int) schema.Rows[0]["ProviderType"];
-		Assert.Equal(MySqlDbType.DateTime, providerType);
+		var providerType = (SingleStoreDbType) (int) schema.Rows[0]["ProviderType"];
+		Assert.Equal(SingleStoreDbType.DateTime, providerType);
 	}
 
 	[SkippableTheory(Baseline = "https://bugs.mysql.com/bug.php?id=105209")]

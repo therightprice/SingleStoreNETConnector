@@ -11,14 +11,14 @@ namespace SingleStoreConnector;
 public sealed class SingleStoreException : DbException
 {
 	/// <summary>
-	/// A <see cref="MySqlErrorCode"/> value identifying the kind of error. Prefer to use the <see cref="ErrorCode"/> property.
+	/// A <see cref="SingleStoreErrorCode"/> value identifying the kind of error. Prefer to use the <see cref="ErrorCode"/> property.
 	/// </summary>
 	public int Number { get; }
 
 	/// <summary>
-	/// A <see cref="MySqlErrorCode"/> value identifying the kind of error.
+	/// A <see cref="SingleStoreErrorCode"/> value identifying the kind of error.
 	/// </summary>
-	public new MySqlErrorCode ErrorCode { get; }
+	public new SingleStoreErrorCode ErrorCode { get; }
 
 	/// <summary>
 	/// A <c>SQLSTATE</c> code identifying the kind of error.
@@ -43,7 +43,7 @@ public sealed class SingleStoreException : DbException
 		: base(info, context)
 	{
 		Number = info.GetInt32("Number");
-		ErrorCode = (MySqlErrorCode) Number;
+		ErrorCode = (SingleStoreErrorCode) Number;
 		SqlState = info.GetString("SqlState");
 	}
 
@@ -86,22 +86,22 @@ public sealed class SingleStoreException : DbException
 	{
 	}
 
-	internal SingleStoreException(MySqlErrorCode errorCode, string message)
+	internal SingleStoreException(SingleStoreErrorCode errorCode, string message)
 		: this(errorCode, null, message, null)
 	{
 	}
 
-	internal SingleStoreException(MySqlErrorCode errorCode, string message, Exception? innerException)
+	internal SingleStoreException(SingleStoreErrorCode errorCode, string message, Exception? innerException)
 		: this(errorCode, null, message, innerException)
 	{
 	}
 
-	internal SingleStoreException(MySqlErrorCode errorCode, string sqlState, string message)
+	internal SingleStoreException(SingleStoreErrorCode errorCode, string sqlState, string message)
 		: this(errorCode, sqlState, message, null)
 	{
 	}
 
-	internal SingleStoreException(MySqlErrorCode errorCode, string? sqlState, string message, Exception? innerException)
+	internal SingleStoreException(SingleStoreErrorCode errorCode, string? sqlState, string message, Exception? innerException)
 		: base(message, innerException)
 	{
 		ErrorCode = errorCode;
@@ -112,14 +112,14 @@ public sealed class SingleStoreException : DbException
 	internal static SingleStoreException CreateForTimeout() => CreateForTimeout(null);
 
 	internal static SingleStoreException CreateForTimeout(Exception? innerException) =>
-		new(MySqlErrorCode.CommandTimeoutExpired, "The Command Timeout expired before the operation completed.", innerException);
+		new(SingleStoreErrorCode.CommandTimeoutExpired, "The Command Timeout expired before the operation completed.", innerException);
 
-	private static bool IsErrorTransient(MySqlErrorCode errorCode) => errorCode
-		is MySqlErrorCode.ConnectionCountError
-		or MySqlErrorCode.LockDeadlock
-		or MySqlErrorCode.LockWaitTimeout
-		or MySqlErrorCode.UnableToConnectToHost
-		or MySqlErrorCode.XARBDeadlock;
+	private static bool IsErrorTransient(SingleStoreErrorCode errorCode) => errorCode
+		is SingleStoreErrorCode.ConnectionCountError
+		or SingleStoreErrorCode.LockDeadlock
+		or SingleStoreErrorCode.LockWaitTimeout
+		or SingleStoreErrorCode.UnableToConnectToHost
+		or SingleStoreErrorCode.XARBDeadlock;
 
 	IDictionary? m_data;
 }

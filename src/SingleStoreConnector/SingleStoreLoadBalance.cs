@@ -1,6 +1,6 @@
 namespace SingleStoreConnector;
 
-public enum MySqlLoadBalance
+public enum SingleStoreLoadBalance
 {
 	/// <summary>
 	/// Each new connection opened for a connection pool uses the next host name (sequentially with wraparound).

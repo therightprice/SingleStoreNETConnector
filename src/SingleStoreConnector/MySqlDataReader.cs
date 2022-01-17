@@ -114,10 +114,10 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 			if (mySqlException?.SqlState is null)
 				Command!.Connection!.SetSessionFailed(m_resultSet.ReadResultSetHeaderException.SourceException);
 
-			if (mySqlException?.ErrorCode == MySqlErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
+			if (mySqlException?.ErrorCode == SingleStoreErrorCode.QueryInterrupted && cancellationToken.IsCancellationRequested)
 				throw new OperationCanceledException(mySqlException.Message, mySqlException, cancellationToken);
 
-			if (mySqlException?.ErrorCode == MySqlErrorCode.QueryInterrupted && Command!.CancellableCommand.IsTimedOut)
+			if (mySqlException?.ErrorCode == SingleStoreErrorCode.QueryInterrupted && Command!.CancellableCommand.IsTimedOut)
 				throw SingleStoreException.CreateForTimeout(mySqlException);
 
 			if (mySqlException is not null)
@@ -160,7 +160,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 				m_hasMoreResults = resultSet.BufferState != ResultSetState.NoMoreData;
 				return 0;
 			}
-			catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted)
+			catch (SingleStoreException ex) when (ex.ErrorCode == SingleStoreErrorCode.QueryInterrupted)
 			{
 				m_hasMoreResults = false;
 				cancellationToken.ThrowIfCancellationRequested();
@@ -260,8 +260,8 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 	public DateTimeOffset GetDateTimeOffset(int ordinal) => GetResultSet().GetCurrentRow().GetDateTimeOffset(ordinal);
 	public DateTimeOffset GetDateTimeOffset(string name) => GetDateTimeOffset(GetOrdinal(name));
 
-	public MySqlDateTime GetMySqlDateTime(int ordinal) => GetResultSet().GetCurrentRow().GetMySqlDateTime(ordinal);
-	public MySqlDateTime GetMySqlDateTime(string name) => GetMySqlDateTime(GetOrdinal(name));
+	public SingleStoreDateTime GetSingleStoreDateTime(int ordinal) => GetResultSet().GetCurrentRow().GetSingleStoreDateTime(ordinal);
+	public SingleStoreDateTime GetSingleStoreDateTime(string name) => GetSingleStoreDateTime(GetOrdinal(name));
 
 	public SingleStoreGeometry GetSingleStoreGeometry(int ordinal) => GetResultSet().GetCurrentRow().GetSingleStoreGeometry(ordinal);
 	public SingleStoreGeometry GetSingleStoreGeometry(string name) => GetSingleStoreGeometry(GetOrdinal(name));
@@ -342,7 +342,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 		var hasNoSchema = columnDefinitions is null || m_resultSet!.ContainsCommandParameters;
 		return hasNoSchema ? new List<DbColumn>().AsReadOnly() :
 			columnDefinitions!
-				.Select((c, n) => (DbColumn) new MySqlDbColumn(n, c, Connection!.AllowZeroDateTime, GetResultSet().ColumnTypes![n]))
+				.Select((c, n) => (DbColumn) new SingleStoreDbColumn(n, c, Connection!.AllowZeroDateTime, GetResultSet().ColumnTypes![n]))
 				.ToList().AsReadOnly();
 	}
 
@@ -534,7 +534,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 		columns.Add(isLong);
 		columns.Add(isReadOnly);
 
-		foreach (MySqlDbColumn column in GetColumnSchema())
+		foreach (SingleStoreDbColumn column in GetColumnSchema())
 		{
 			var schemaRow = schemaTable.NewRow();
 			schemaRow[columnName] = column.ColumnName;
@@ -594,7 +594,7 @@ public sealed class SingleStoreDataReader : DbDataReader, IDbColumnSchemaGenerat
 					{
 					}
 				}
-				catch (SingleStoreException ex) when (ex.ErrorCode == MySqlErrorCode.QueryInterrupted)
+				catch (SingleStoreException ex) when (ex.ErrorCode == SingleStoreErrorCode.QueryInterrupted)
 				{
 					// ignore "Query execution was interrupted" exceptions when closing a data reader
 				}

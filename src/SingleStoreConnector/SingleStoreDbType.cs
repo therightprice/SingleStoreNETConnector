@@ -1,6 +1,6 @@
 namespace SingleStoreConnector;
 
-public enum MySqlDbType
+public enum SingleStoreDbType
 {
 	Bool = -1,
 	Decimal,

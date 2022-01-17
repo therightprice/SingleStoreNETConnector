@@ -30,7 +30,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal("", csb.CertificatePassword);
 		Assert.Equal("", csb.CertificateThumbprint);
 #endif
-		Assert.Equal(MySqlCertificateStoreLocation.None, csb.CertificateStoreLocation);
+		Assert.Equal(SingleStoreCertificateStoreLocation.None, csb.CertificateStoreLocation);
 		Assert.Equal("", csb.CharacterSet);
 		Assert.Equal(0u, csb.ConnectionLifeTime);
 		Assert.Equal(SingleStoreConnectionProtocol.Sockets, csb.ConnectionProtocol);
@@ -46,7 +46,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal(15u, csb.ConnectionTimeout);
 		Assert.False(csb.ConvertZeroDateTime);
 #if !BASELINE
-		Assert.Equal(MySqlDateTimeKind.Unspecified, csb.DateTimeKind);
+		Assert.Equal(SingleStoreDateTimeKind.Unspecified, csb.DateTimeKind);
 #endif
 		Assert.Equal("", csb.Database);
 		Assert.Equal(30u, csb.DefaultCommandTimeout);
@@ -54,9 +54,9 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal("", csb.ApplicationName);
 		Assert.Equal(180u, csb.ConnectionIdleTimeout);
 		Assert.False(csb.ForceSynchronous);
-		Assert.Equal(MySqlGuidFormat.Default, csb.GuidFormat);
+		Assert.Equal(SingleStoreGuidFormat.Default, csb.GuidFormat);
 		Assert.False(csb.IgnoreCommandTransaction);
-		Assert.Equal(MySqlLoadBalance.RoundRobin, csb.LoadBalance);
+		Assert.Equal(SingleStoreLoadBalance.RoundRobin, csb.LoadBalance);
 		Assert.False(csb.IgnorePrepare);
 #endif
 		Assert.False(csb.InteractiveSession);
@@ -176,7 +176,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal("file.pfx", csb.CertificateFile);
 #endif
 		Assert.Equal("Pass1234", csb.CertificatePassword);
-		Assert.Equal(MySqlCertificateStoreLocation.CurrentUser, csb.CertificateStoreLocation);
+		Assert.Equal(SingleStoreCertificateStoreLocation.CurrentUser, csb.CertificateStoreLocation);
 		Assert.Equal("thumbprint123", csb.CertificateThumbprint);
 		Assert.Equal("latin1", csb.CharacterSet);
 		Assert.Equal(15u, csb.ConnectionLifeTime);
@@ -185,7 +185,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal(30u, csb.ConnectionTimeout);
 		Assert.True(csb.ConvertZeroDateTime);
 #if !BASELINE
-		Assert.Equal(MySqlDateTimeKind.Utc, csb.DateTimeKind);
+		Assert.Equal(SingleStoreDateTimeKind.Utc, csb.DateTimeKind);
 #endif
 		Assert.Equal("schema_name", csb.Database);
 		Assert.Equal(123u, csb.DefaultCommandTimeout);
@@ -198,8 +198,8 @@ public class MySqlConnectionStringBuilderTests
 		Assert.True(csb.ForceSynchronous);
 		Assert.True(csb.IgnoreCommandTransaction);
 		Assert.Equal("rsa.pem", csb.ServerRsaPublicKeyFile);
-		Assert.Equal(MySqlLoadBalance.Random, csb.LoadBalance);
-		Assert.Equal(MySqlGuidFormat.TimeSwapBinary16, csb.GuidFormat);
+		Assert.Equal(SingleStoreLoadBalance.Random, csb.LoadBalance);
+		Assert.Equal(SingleStoreGuidFormat.TimeSwapBinary16, csb.GuidFormat);
 		Assert.True(csb.NoBackslashEscapes);
 		Assert.False(csb.Pipelining);
 		Assert.Equal(MySqlServerRedirectionMode.Required, csb.ServerRedirectionMode);
@@ -455,7 +455,7 @@ public class MySqlConnectionStringBuilderTests
 	[InlineData("Auto Enlist", true)]
 	[InlineData("Certificate File", "C:\\cert.pfx")]
 	[InlineData("Certificate Password", "password")]
-	[InlineData("Certificate Store Location", MySqlCertificateStoreLocation.CurrentUser)]
+	[InlineData("Certificate Store Location", SingleStoreCertificateStoreLocation.CurrentUser)]
 	[InlineData("Character Set", "utf8mb4")]
 	[InlineData("Connection Lifetime", 30u)]
 	[InlineData("Connection Protocol", SingleStoreConnectionProtocol.NamedPipe)]
@@ -503,12 +503,12 @@ public class MySqlConnectionStringBuilderTests
 	[InlineData("Application Name", "MyApp")]
 	[InlineData("Cancellation Timeout", 5)]
 	[InlineData("Connection Idle Timeout", 10u)]
-	[InlineData("DateTime Kind", MySqlDateTimeKind.Utc)]
+	[InlineData("DateTime Kind", SingleStoreDateTimeKind.Utc)]
 	[InlineData("Force Synchronous", true)]
-	[InlineData("GUID Format", MySqlGuidFormat.Binary16)]
+	[InlineData("GUID Format", SingleStoreGuidFormat.Binary16)]
 	[InlineData("Ignore Command Transaction", true)]
 	[InlineData("Ignore Prepare", false)]
-	[InlineData("Load Balance", MySqlLoadBalance.Random)]
+	[InlineData("Load Balance", SingleStoreLoadBalance.Random)]
 	[InlineData("No Backslash Escapes", true)]
 	[InlineData("Server Redirection Mode", MySqlServerRedirectionMode.Required)]
 	[InlineData("Server RSA Public Key File", "C:\\server.pem")]

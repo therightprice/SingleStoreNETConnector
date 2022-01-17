@@ -14,11 +14,11 @@ internal sealed class CachedParameter
 		else if (string.Equals(mode, "out", StringComparison.OrdinalIgnoreCase))
 			Direction = ParameterDirection.Output;
 		Name = name;
-		MySqlDbType = TypeMapper.Instance.GetMySqlDbType(dataType, unsigned, length);
+		SingleStoreDbType = TypeMapper.Instance.GetSingleStoreDbType(dataType, unsigned, length);
 	}
 
 	public int Position { get; }
 	public ParameterDirection Direction { get; }
 	public string Name { get; }
-	public MySqlDbType MySqlDbType { get; }
+	public SingleStoreDbType SingleStoreDbType { get; }
 }

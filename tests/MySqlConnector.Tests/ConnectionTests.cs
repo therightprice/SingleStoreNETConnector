@@ -199,7 +199,7 @@ public class ConnectionTests : IDisposable
 			catch (SingleStoreException ex)
 			{
 				Assert.InRange(stopwatch.ElapsedMilliseconds, 3900, 4100);
-				Assert.Equal(MySqlErrorCode.UnableToConnectToHost, (MySqlErrorCode) ex.Number);
+				Assert.Equal(SingleStoreErrorCode.UnableToConnectToHost, (SingleStoreErrorCode) ex.Number);
 			}
 		}
 

@@ -22,8 +22,8 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 		var ex = await Assert.ThrowsAsync<SingleStoreException>(connection.OpenAsync);
-		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Number);
-		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Data["Server Error Code"]);
+		Assert.Equal((int) SingleStoreErrorCode.UnableToConnectToHost, ex.Number);
+		Assert.Equal((int) SingleStoreErrorCode.UnableToConnectToHost, ex.Data["Server Error Code"]);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
 
@@ -131,7 +131,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		var stopwatch = Stopwatch.StartNew();
 		var ex = await Assert.ThrowsAsync<SingleStoreException>(connection.OpenAsync);
 		stopwatch.Stop();
-		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Number);
+		Assert.Equal((int) SingleStoreErrorCode.UnableToConnectToHost, ex.Number);
 		TestUtilities.AssertDuration(stopwatch, 1900, 1500);
 	}
 
@@ -215,7 +215,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		connection.ProvidePasswordCallback = _ => $"wrong_{password}";
 
 		var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
-		Assert.Equal(MySqlErrorCode.AccessDenied, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.AccessDenied, ex.ErrorCode);
 	}
 
 	[Fact]
@@ -232,7 +232,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 		connection.ProvidePasswordCallback = _ => throw innerException;
 
 		var ex = await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
-		Assert.Equal(MySqlErrorCode.ProvidePasswordCallbackFailed, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.ProvidePasswordCallbackFailed, ex.ErrorCode);
 		Assert.Same(innerException, ex.InnerException);
 	}
 

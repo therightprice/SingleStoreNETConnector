@@ -130,7 +130,7 @@ internal sealed class ResultSet
 					Utility.Resize(ref m_columnDefinitionPayloads, columnCount * 96);
 
 					ColumnDefinitions = new ColumnDefinitionPayload[columnCount];
-					ColumnTypes = new MySqlDbType[columnCount];
+					ColumnTypes = new SingleStoreDbType[columnCount];
 
 					for (var column = 0; column < ColumnDefinitions.Length; column++)
 					{
@@ -144,7 +144,7 @@ internal sealed class ResultSet
 
 						var columnDefinition = ColumnDefinitionPayload.Create(new ResizableArraySegment<byte>(m_columnDefinitionPayloads, m_columnDefinitionPayloadUsedBytes, payloadLength));
 						ColumnDefinitions[column] = columnDefinition;
-						ColumnTypes[column] = TypeMapper.ConvertToMySqlDbType(columnDefinition, treatTinyAsBoolean: Connection.TreatTinyAsBoolean, guidFormat: Connection.GuidFormat);
+						ColumnTypes[column] = TypeMapper.ConvertToSingleStoreDbType(columnDefinition, treatTinyAsBoolean: Connection.TreatTinyAsBoolean, guidFormat: Connection.GuidFormat);
 						m_columnDefinitionPayloadUsedBytes += payloadLength;
 					}
 
@@ -246,9 +246,9 @@ internal sealed class ResultSet
 			catch (SingleStoreException ex)
 			{
 				resultSet.BufferState = resultSet.State = ResultSetState.NoMoreData;
-				if (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && token.IsCancellationRequested)
+				if (ex.ErrorCode == SingleStoreErrorCode.QueryInterrupted && token.IsCancellationRequested)
 					throw new OperationCanceledException(ex.Message, ex, token);
-				if (ex.ErrorCode == MySqlErrorCode.QueryInterrupted && resultSet.Command.CancellableCommand.IsTimedOut)
+				if (ex.ErrorCode == SingleStoreErrorCode.QueryInterrupted && resultSet.Command.CancellableCommand.IsTimedOut)
 					throw SingleStoreException.CreateForTimeout(ex);
 				throw;
 			}
@@ -303,7 +303,7 @@ internal sealed class ResultSet
 			throw new IndexOutOfRangeException("value must be between 0 and {0}.".FormatInvariant(ColumnDefinitions.Length));
 
 		var mySqlDbType = ColumnTypes![ordinal];
-		if (mySqlDbType == MySqlDbType.String)
+		if (mySqlDbType == SingleStoreDbType.String)
 			return string.Format(CultureInfo.InvariantCulture, "CHAR({0})", ColumnDefinitions[ordinal].ColumnLength / ProtocolUtility.GetBytesPerCharacter(ColumnDefinitions[ordinal].CharacterSet));
 		return TypeMapper.Instance.GetColumnTypeMetadata(mySqlDbType).SimpleDataTypeName;
 	}
@@ -317,7 +317,7 @@ internal sealed class ResultSet
 
 		var type = TypeMapper.Instance.GetColumnTypeMetadata(ColumnTypes![ordinal]).DbTypeMapping.ClrType;
 		if (Connection.AllowZeroDateTime && type == typeof(DateTime))
-			type = typeof(MySqlDateTime);
+			type = typeof(SingleStoreDateTime);
 		return type;
 	}
 
@@ -364,7 +364,7 @@ internal sealed class ResultSet
 
 	public ResultSetState BufferState { get; private set; }
 	public ColumnDefinitionPayload[]? ColumnDefinitions { get; private set; }
-	public MySqlDbType[]? ColumnTypes { get; private set; }
+	public SingleStoreDbType[]? ColumnTypes { get; private set; }
 	public ulong? RecordsAffected { get; private set; }
 	public int WarningCount { get; private set; }
 	public ResultSetState State { get; private set; }

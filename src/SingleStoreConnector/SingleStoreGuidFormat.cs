@@ -3,7 +3,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// Determines which column type (if any) should be read as a <c>System.Guid</c>.
 /// </summary>
-public enum MySqlGuidFormat
+public enum SingleStoreGuidFormat
 {
 	/// <summary>
 	/// Same as <c>Char36</c> if <c>OldGuids=False</c>; same as <c>LittleEndianBinary16</c> if <c>OldGuids=True</c>.

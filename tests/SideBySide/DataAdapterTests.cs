@@ -180,9 +180,9 @@ insert into data_adapter(int_value, text_value) values
 				{
 					Parameters =
 					{
-						new("@int", MySqlDbType.Int32) { Direction = ParameterDirection.Input, SourceColumn = "int_value" },
-						new("@text", MySqlDbType.String) { Direction = ParameterDirection.Input, SourceColumn = "text_value" },
-						new("@id", MySqlDbType.Int64) { Direction = ParameterDirection.Input, SourceColumn = "id" },
+						new("@int", SingleStoreDbType.Int32) { Direction = ParameterDirection.Input, SourceColumn = "int_value" },
+						new("@text", SingleStoreDbType.String) { Direction = ParameterDirection.Input, SourceColumn = "text_value" },
+						new("@id", SingleStoreDbType.Int64) { Direction = ParameterDirection.Input, SourceColumn = "id" },
 					},
 					UpdatedRowSource = UpdateRowSource.None,
 				};
@@ -216,8 +216,8 @@ insert into data_adapter(int_value, text_value) values
 				{
 					Parameters =
 					{
-						new("@int", MySqlDbType.Int32) { Direction = ParameterDirection.Input, SourceColumn = "int_value" },
-						new("@text", MySqlDbType.String) { Direction = ParameterDirection.Input, SourceColumn = "text_value" },
+						new("@int", SingleStoreDbType.Int32) { Direction = ParameterDirection.Input, SourceColumn = "int_value" },
+						new("@text", SingleStoreDbType.String) { Direction = ParameterDirection.Input, SourceColumn = "text_value" },
 					},
 					UpdatedRowSource = UpdateRowSource.None,
 				};

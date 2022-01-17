@@ -1,6 +1,6 @@
 namespace SingleStoreConnector;
 
-public enum MySqlCertificateStoreLocation
+public enum SingleStoreCertificateStoreLocation
 {
 	/// <summary>
 	/// Do not use certificate store

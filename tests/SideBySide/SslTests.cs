@@ -119,8 +119,8 @@ public class SslTests : IClassFixture<DatabaseFixture>
 	}
 
 	[SkippableTheory(ConfigSettings.RequiresSsl | ConfigSettings.KnownClientCertificate)]
-	[InlineData("ssl-client.pfx", MySqlCertificateStoreLocation.CurrentUser, null)]
-	public async Task ConnectSslClientCertificateFromCertificateStore(string certFile, MySqlCertificateStoreLocation storeLocation, string thumbprint)
+	[InlineData("ssl-client.pfx", SingleStoreCertificateStoreLocation.CurrentUser, null)]
+	public async Task ConnectSslClientCertificateFromCertificateStore(string certFile, SingleStoreCertificateStoreLocation storeLocation, string thumbprint)
 	{
 		// Create a mock of certificate store
 		var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);

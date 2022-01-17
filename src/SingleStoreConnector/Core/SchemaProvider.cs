@@ -246,25 +246,25 @@ internal sealed class SchemaProvider
 		foreach (var columnType in TypeMapper.Instance.GetColumnTypeMetadata())
 		{
 			// hard-code a few types to not appear in the schema table
-			if (columnType.MySqlDbType is MySqlDbType.Decimal or MySqlDbType.Newdate or MySqlDbType.Null or MySqlDbType.VarString)
+			if (columnType.SingleStoreDbType is SingleStoreDbType.Decimal or SingleStoreDbType.Newdate or SingleStoreDbType.Null or SingleStoreDbType.VarString)
 				continue;
-			if (columnType is { MySqlDbType: MySqlDbType.Bool, IsUnsigned: true })
+			if (columnType is { SingleStoreDbType: SingleStoreDbType.Bool, IsUnsigned: true })
 				continue;
 
 			// set miscellaneous properties in code (rather than being data-driven)
 			var clrType = columnType.DbTypeMapping.ClrType;
 			var clrTypeName = clrType.ToString();
-			var mySqlDbType = columnType.MySqlDbType;
-			var dataTypeName = mySqlDbType == MySqlDbType.Guid ? "GUID" :
-				mySqlDbType == MySqlDbType.Bool ? "BOOL" : columnType.DataTypeName;
-			var isAutoIncrementable = mySqlDbType is MySqlDbType.Byte or MySqlDbType.Int16 or MySqlDbType.Int24 or MySqlDbType.Int32 or MySqlDbType.Int64
-				or MySqlDbType.UByte or MySqlDbType.UInt16 or MySqlDbType.UInt24 or MySqlDbType.UInt32 or MySqlDbType.UInt64;
+			var mySqlDbType = columnType.SingleStoreDbType;
+			var dataTypeName = mySqlDbType == SingleStoreDbType.Guid ? "GUID" :
+				mySqlDbType == SingleStoreDbType.Bool ? "BOOL" : columnType.DataTypeName;
+			var isAutoIncrementable = mySqlDbType is SingleStoreDbType.Byte or SingleStoreDbType.Int16 or SingleStoreDbType.Int24 or SingleStoreDbType.Int32 or SingleStoreDbType.Int64
+				or SingleStoreDbType.UByte or SingleStoreDbType.UInt16 or SingleStoreDbType.UInt24 or SingleStoreDbType.UInt32 or SingleStoreDbType.UInt64;
 			var isBestMatch = clrTypes.Add(clrTypeName);
 			var isFixedLength = isAutoIncrementable ||
-				mySqlDbType is MySqlDbType.Date or MySqlDbType.DateTime or MySqlDbType.Time or MySqlDbType.Timestamp
-				or MySqlDbType.Double or MySqlDbType.Float or MySqlDbType.Year or MySqlDbType.Guid or MySqlDbType.Bool;
-			var isFixedPrecisionScale = isFixedLength || mySqlDbType is MySqlDbType.Bit or MySqlDbType.NewDecimal;
-			var isLong = mySqlDbType is MySqlDbType.Blob or MySqlDbType.MediumBlob or MySqlDbType.LongBlob;
+				mySqlDbType is SingleStoreDbType.Date or SingleStoreDbType.DateTime or SingleStoreDbType.Time or SingleStoreDbType.Timestamp
+				or SingleStoreDbType.Double or SingleStoreDbType.Float or SingleStoreDbType.Year or SingleStoreDbType.Guid or SingleStoreDbType.Bool;
+			var isFixedPrecisionScale = isFixedLength || mySqlDbType is SingleStoreDbType.Bit or SingleStoreDbType.NewDecimal;
+			var isLong = mySqlDbType is SingleStoreDbType.Blob or SingleStoreDbType.MediumBlob or SingleStoreDbType.LongBlob;
 
 			// map ColumnTypeMetadata to the row for this data type
 			var createFormatParts = columnType.CreateFormat.Split(';');

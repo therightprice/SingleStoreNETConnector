@@ -422,7 +422,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			catch (SocketException)
 			{
 				SetState(ConnectionState.Closed);
-				throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Unable to connect to any of the specified MySQL hosts.");
+				throw new SingleStoreException(SingleStoreErrorCode.UnableToConnectToHost, "Unable to connect to any of the specified MySQL hosts.");
 			}
 
 			if (m_connectionSettings.AutoEnlist && System.Transactions.Transaction.Current is not null)
@@ -651,7 +651,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// </summary>
 	public override int ConnectionTimeout => GetConnectionSettings().ConnectionTimeout;
 
-	public event MySqlInfoMessageEventHandler? InfoMessage;
+	public event SingleStoreInfoMessageEventHandler? InfoMessage;
 
 	/// <summary>
 	/// Creates a <see cref="SingleStoreBatch"/> object for executing batched commands.
@@ -845,7 +845,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	internal bool ConvertZeroDateTime => GetInitializedConnectionSettings().ConvertZeroDateTime;
 	internal DateTimeKind DateTimeKind => GetInitializedConnectionSettings().DateTimeKind;
 	internal int DefaultCommandTimeout => GetConnectionSettings().DefaultCommandTimeout;
-	internal MySqlGuidFormat GuidFormat => GetInitializedConnectionSettings().GuidFormat;
+	internal SingleStoreGuidFormat GuidFormat => GetInitializedConnectionSettings().GuidFormat;
 	internal bool IgnoreCommandTransaction => GetInitializedConnectionSettings().IgnoreCommandTransaction || m_enlistedTransaction is StandardEnlistedTransaction;
 	internal bool IgnorePrepare => GetInitializedConnectionSettings().IgnorePrepare;
 	internal bool NoBackslashEscapes => GetInitializedConnectionSettings().NoBackslashEscapes;
@@ -886,7 +886,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 					errors.Add(new(reader.GetString(0), reader.GetInt32(1), reader.GetString(2)));
 			}
 
-			InfoMessage(this, new MySqlInfoMessageEventArgs(errors));
+			InfoMessage(this, new SingleStoreInfoMessageEventArgs(errors));
 		}
 	}
 
@@ -916,7 +916,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 			else
 			{
 				// only "fail over" and "random" load balancers supported without connection pooling
-				var loadBalancer = connectionSettings.LoadBalance == MySqlLoadBalance.Random && connectionSettings.HostNames!.Count > 1 ?
+				var loadBalancer = connectionSettings.LoadBalance == SingleStoreLoadBalance.Random && connectionSettings.HostNames!.Count > 1 ?
 					RandomLoadBalancer.Instance : FailOverLoadBalancer.Instance;
 
 				var session = new ServerSession();
@@ -929,11 +929,11 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 		catch (OperationCanceledException) when (timeoutSource?.IsCancellationRequested ?? false)
 		{
 			var messageSuffix = (pool?.IsEmpty ?? false) ? " All pooled connections are in use." : "";
-			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired." + messageSuffix);
+			throw new SingleStoreException(SingleStoreErrorCode.UnableToConnectToHost, "Connect Timeout expired." + messageSuffix);
 		}
-		catch (SingleStoreException ex) when ((timeoutSource?.IsCancellationRequested ?? false) || (ex.ErrorCode == MySqlErrorCode.CommandTimeoutExpired))
+		catch (SingleStoreException ex) when ((timeoutSource?.IsCancellationRequested ?? false) || (ex.ErrorCode == SingleStoreErrorCode.CommandTimeoutExpired))
 		{
-			throw new SingleStoreException(MySqlErrorCode.UnableToConnectToHost, "Connect Timeout expired.", ex);
+			throw new SingleStoreException(SingleStoreErrorCode.UnableToConnectToHost, "Connect Timeout expired.", ex);
 		}
 		finally
 		{

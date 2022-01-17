@@ -34,8 +34,8 @@ public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerabl
 		return parameter;
 	}
 
-	public SingleStoreParameter Add(string parameterName, MySqlDbType mySqlDbType) => Add(new(parameterName, mySqlDbType));
-	public SingleStoreParameter Add(string parameterName, MySqlDbType mySqlDbType, int size) => Add(new(parameterName, mySqlDbType, size));
+	public SingleStoreParameter Add(string parameterName, SingleStoreDbType mySqlDbType) => Add(new(parameterName, mySqlDbType));
+	public SingleStoreParameter Add(string parameterName, SingleStoreDbType mySqlDbType, int size) => Add(new(parameterName, mySqlDbType, size));
 
 	public override void AddRange(Array values)
 	{

@@ -46,7 +46,7 @@ internal sealed class CachedProcedure
 			catch (SingleStoreException ex)
 			{
 				Log.Info("Session{0} failed to retrieve metadata for Schema={1} Component={2}; falling back to INFORMATION_SCHEMA. Error: {3}", connection.Session.Id, schema, component, ex.Message);
-				if (ex.ErrorCode == MySqlErrorCode.TableAccessDenied)
+				if (ex.ErrorCode == SingleStoreErrorCode.TableAccessDenied)
 					connection.Session.ProcAccessDenied = true;
 			}
 		}
@@ -126,7 +126,7 @@ internal sealed class CachedProcedure
 			if (!alignParam.HasSetDirection)
 				alignParam.Direction = cachedParam.Direction;
 			if (!alignParam.HasSetDbType)
-				alignParam.MySqlDbType = cachedParam.MySqlDbType;
+				alignParam.SingleStoreDbType = cachedParam.SingleStoreDbType;
 
 			// cached parameters are oredered by ordinal position
 			alignedParams.Add(alignParam);

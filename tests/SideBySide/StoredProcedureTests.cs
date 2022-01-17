@@ -588,14 +588,14 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		SingleStoreCommandBuilder.DeriveParameters(cmd);
 
 		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
-			AssertParameter("@radius", ParameterDirection.Input, MySqlDbType.Double),
-			AssertParameter("@height", ParameterDirection.Input, MySqlDbType.Double),
-			AssertParameter("@name", ParameterDirection.Input, MySqlDbType.VarChar),
-			AssertParameter("@diameter", ParameterDirection.Output, MySqlDbType.Double),
-			AssertParameter("@circumference", ParameterDirection.Output, MySqlDbType.Double),
-			AssertParameter("@area", ParameterDirection.Output, MySqlDbType.Double),
-			AssertParameter("@volume", ParameterDirection.Output, MySqlDbType.Double),
-			AssertParameter("@shape", ParameterDirection.Output, MySqlDbType.VarChar));
+			AssertParameter("@radius", ParameterDirection.Input, SingleStoreDbType.Double),
+			AssertParameter("@height", ParameterDirection.Input, SingleStoreDbType.Double),
+			AssertParameter("@name", ParameterDirection.Input, SingleStoreDbType.VarChar),
+			AssertParameter("@diameter", ParameterDirection.Output, SingleStoreDbType.Double),
+			AssertParameter("@circumference", ParameterDirection.Output, SingleStoreDbType.Double),
+			AssertParameter("@area", ParameterDirection.Output, SingleStoreDbType.Double),
+			AssertParameter("@volume", ParameterDirection.Output, SingleStoreDbType.Double),
+			AssertParameter("@shape", ParameterDirection.Output, SingleStoreDbType.VarChar));
 	}
 
 	[Fact]
@@ -606,7 +606,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		SingleStoreCommandBuilder.DeriveParameters(cmd);
 
 		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
-			AssertParameter("@high", ParameterDirection.InputOutput, MySqlDbType.Int32));
+			AssertParameter("@high", ParameterDirection.InputOutput, SingleStoreDbType.Int32));
 	}
 
 	[Fact]
@@ -620,7 +620,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 
 		SingleStoreCommandBuilder.DeriveParameters(cmd);
 		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
-			AssertParameter("@high", ParameterDirection.InputOutput, MySqlDbType.Int32));
+			AssertParameter("@high", ParameterDirection.InputOutput, SingleStoreDbType.Int32));
 	}
 
 	[Fact]
@@ -658,8 +658,8 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 			cmd.CommandType = CommandType.StoredProcedure;
 			SingleStoreCommandBuilder.DeriveParameters(cmd);
 			Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
-				AssertParameter("@param1", ParameterDirection.Input, MySqlDbType.Int32),
-				AssertParameter("@param2", ParameterDirection.Output, MySqlDbType.VarChar));
+				AssertParameter("@param1", ParameterDirection.Input, SingleStoreDbType.Int32),
+				AssertParameter("@param2", ParameterDirection.Output, SingleStoreDbType.VarChar));
 		}
 	}
 
@@ -671,7 +671,7 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		SingleStoreCommandBuilder.DeriveParameters(cmd);
 
 		Assert.Collection(cmd.Parameters.Cast<SingleStoreParameter>(),
-			AssertParameter("@vJson", ParameterDirection.Input, MySqlDbType.JSON));
+			AssertParameter("@vJson", ParameterDirection.Input, SingleStoreDbType.JSON));
 	}
 
 	[SkippableFact(ServerFeatures.Json, Baseline = "https://bugs.mysql.com/bug.php?id=101485")]
@@ -680,20 +680,20 @@ public class StoredProcedureTests : IClassFixture<StoredProcedureFixture>
 		using var cmd = new SingleStoreCommand("SetJson", m_database.Connection);
 		cmd.CommandType = CommandType.StoredProcedure;
 		var json = "{\"prop\":[null]}";
-		cmd.Parameters.AddWithValue("@vJson", json).MySqlDbType = MySqlDbType.JSON;
+		cmd.Parameters.AddWithValue("@vJson", json).SingleStoreDbType = SingleStoreDbType.JSON;
 		using var reader = cmd.ExecuteReader();
 		Assert.True(reader.Read());
 		Assert.Equal(json, reader.GetString(0).Replace(" ", ""));
 		Assert.False(reader.Read());
 	}
 
-	private static Action<SingleStoreParameter> AssertParameter(string name, ParameterDirection direction, MySqlDbType mySqlDbType)
+	private static Action<SingleStoreParameter> AssertParameter(string name, ParameterDirection direction, SingleStoreDbType mySqlDbType)
 	{
 		return x =>
 		{
 			Assert.Equal(name, x.ParameterName);
 			Assert.Equal(direction, x.Direction);
-			Assert.Equal(mySqlDbType, x.MySqlDbType);
+			Assert.Equal(mySqlDbType, x.SingleStoreDbType);
 		};
 	}
 

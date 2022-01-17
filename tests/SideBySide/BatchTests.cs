@@ -226,7 +226,7 @@ public class BatchTests : IClassFixture<DatabaseFixture>
 		Assert.False(reader.Read());
 
 		var ex = Assert.Throws<SingleStoreException>(() => reader.NextResult());
-		Assert.Equal(MySqlErrorCode.ParseError, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.ParseError, ex.ErrorCode);
 	}
 
 	[Theory]

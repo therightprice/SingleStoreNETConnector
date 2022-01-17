@@ -5,12 +5,12 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlExceptionTests
+public class SingleStoreExceptionTests
 {
 	[Fact]
 	public void Data()
 	{
-		var exception = new SingleStoreException(MySqlErrorCode.No, "two", "three");
+		var exception = new SingleStoreException(SingleStoreErrorCode.No, "two", "three");
 		Assert.Equal(1002, exception.Data["Server Error Code"]);
 		Assert.Equal("two", exception.Data["SqlState"]);
 	}

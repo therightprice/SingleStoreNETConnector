@@ -3,7 +3,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// Represents the result of a <see cref="SingleStoreBulkCopy"/> operation.
 /// </summary>
-public sealed class MySqlBulkCopyResult
+public sealed class SingleStoreBulkCopyResult
 {
 	/// <summary>
 	/// The warnings, if any. Users of <see cref="SingleStoreBulkCopy"/> should check that this collection is empty to avoid
@@ -16,7 +16,7 @@ public sealed class MySqlBulkCopyResult
 	/// </summary>
 	public int RowsInserted { get; }
 
-	internal MySqlBulkCopyResult(IReadOnlyList<SingleStoreError> warnings, int rowsInserted)
+	internal SingleStoreBulkCopyResult(IReadOnlyList<SingleStoreError> warnings, int rowsInserted)
 	{
 		Warnings = warnings;
 		RowsInserted = rowsInserted;

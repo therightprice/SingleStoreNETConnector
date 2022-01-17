@@ -301,7 +301,7 @@ create table insert_datetimeoffset(rowid integer not null primary key auto_incre
 	}
 
 	[SkippableFact(Baseline = "https://bugs.mysql.com/bug.php?id=91199")]
-	public void InsertMySqlDateTime()
+	public void InsertSingleStoreDateTime()
 	{
 		m_database.Connection.Execute(@"drop table if exists insert_mysqldatetime;
 create table insert_mysqldatetime(rowid integer not null primary key auto_increment, ts timestamp(6) null);");
@@ -312,7 +312,7 @@ create table insert_mysqldatetime(rowid integer not null primary key auto_increm
 		{
 			using var cmd = m_database.Connection.CreateCommand();
 			cmd.CommandText = @"insert into insert_mysqldatetime(ts) values(@ts);";
-			cmd.Parameters.AddWithValue("@ts", new MySqlDateTime(2018, 6, 9, 12, 34, 56, 123456));
+			cmd.Parameters.AddWithValue("@ts", new SingleStoreDateTime(2018, 6, 9, 12, 34, 56, 123456));
 			Assert.Equal(1, cmd.ExecuteNonQuery());
 		}
 		finally
@@ -577,8 +577,8 @@ create table insert_enum_value2(rowid integer not null primary key auto_incremen
 		{
 			await m_database.Connection.OpenAsync();
 			using var command = new SingleStoreCommand("INSERT INTO insert_enum_value2 (`Varchar`, `String`, `Int`) VALUES (@Varchar, @String, @Int);", m_database.Connection);
-			command.Parameters.Add(new("@String", MySqlColor.Orange)).MySqlDbType = MySqlDbType.String;
-			command.Parameters.Add(new("@Varchar", MySqlColor.Green)).MySqlDbType = MySqlDbType.VarChar;
+			command.Parameters.Add(new("@String", MySqlColor.Orange)).SingleStoreDbType = SingleStoreDbType.String;
+			command.Parameters.Add(new("@Varchar", MySqlColor.Green)).SingleStoreDbType = SingleStoreDbType.VarChar;
 			command.Parameters.Add(new("@Int", MySqlColor.None));
 
 			await command.ExecuteNonQueryAsync();

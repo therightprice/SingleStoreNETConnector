@@ -3,7 +3,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// The <see cref="DateTimeKind" /> used when reading <see cref="DateTime" /> from the database.
 /// </summary>
-public enum MySqlDateTimeKind
+public enum SingleStoreDateTimeKind
 {
 	/// <summary>
 	/// Use <see cref="DateTimeKind.Unspecified" /> when reading; allow any <see cref="DateTimeKind" /> in command parameters.

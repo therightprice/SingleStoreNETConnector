@@ -80,18 +80,18 @@ public sealed class SingleStoreBulkCopy
 	public event MySqlRowsCopiedEventHandler? MySqlRowsCopied;
 
 	/// <summary>
-	/// A collection of <see cref="MySqlBulkCopyColumnMapping"/> objects. If the columns being copied from the
+	/// A collection of <see cref="SingleStoreBulkCopyColumnMapping"/> objects. If the columns being copied from the
 	/// data source line up one-to-one with the columns in the destination table then populating this collection is
-	/// unnecessary. Otherwise, this should be filled with a collection of <see cref="MySqlBulkCopyColumnMapping"/> objects
+	/// unnecessary. Otherwise, this should be filled with a collection of <see cref="SingleStoreBulkCopyColumnMapping"/> objects
 	/// specifying how source columns are to be mapped onto destination columns. If one column mapping is specified,
 	/// then all must be specified.
 	/// </summary>
-	public List<MySqlBulkCopyColumnMapping> ColumnMappings { get; }
+	public List<SingleStoreBulkCopyColumnMapping> ColumnMappings { get; }
 
 	/// <summary>
 	/// Returns the number of rows that were copied (after <c>WriteToServer(Async)</c> finishes).
 	/// </summary>
-	[Obsolete("Use the MySqlBulkCopyResult.RowsInserted property returned by WriteToServer.")]
+	[Obsolete("Use the SingleStoreBulkCopyResult.RowsInserted property returned by WriteToServer.")]
 	public int RowsCopied => m_rowsCopied;
 
 	/// <summary>
@@ -99,8 +99,8 @@ public sealed class SingleStoreBulkCopy
 	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataTable">The <see cref="DataTable"/> to copy.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public MySqlBulkCopyResult WriteToServer(DataTable dataTable)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public SingleStoreBulkCopyResult WriteToServer(DataTable dataTable)
 	{
 		m_valuesEnumerator = DataRowsValuesEnumerator.Create(dataTable ?? throw new ArgumentNullException(nameof(dataTable)));
 #pragma warning disable CA2012 // Safe because method completes synchronously
@@ -115,8 +115,8 @@ public sealed class SingleStoreBulkCopy
 	/// </summary>
 	/// <param name="dataTable">The <see cref="DataTable"/> to copy.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public async ValueTask<MySqlBulkCopyResult> WriteToServerAsync(DataTable dataTable, CancellationToken cancellationToken = default)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public async ValueTask<SingleStoreBulkCopyResult> WriteToServerAsync(DataTable dataTable, CancellationToken cancellationToken = default)
 	{
 		m_valuesEnumerator = DataRowsValuesEnumerator.Create(dataTable ?? throw new ArgumentNullException(nameof(dataTable)));
 		return await WriteToServerAsync(IOBehavior.Asynchronous, cancellationToken).ConfigureAwait(false);
@@ -128,8 +128,8 @@ public sealed class SingleStoreBulkCopy
 	/// </summary>
 	/// <param name="dataTable">The <see cref="DataTable"/> to copy.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public async Task<MySqlBulkCopyResult> WriteToServerAsync(DataTable dataTable, CancellationToken cancellationToken = default)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public async Task<SingleStoreBulkCopyResult> WriteToServerAsync(DataTable dataTable, CancellationToken cancellationToken = default)
 	{
 		m_valuesEnumerator = DataRowsValuesEnumerator.Create(dataTable ?? throw new ArgumentNullException(nameof(dataTable)));
 		return await WriteToServerAsync(IOBehavior.Asynchronous, cancellationToken).ConfigureAwait(false);
@@ -143,8 +143,8 @@ public sealed class SingleStoreBulkCopy
 	/// </summary>
 	/// <param name="dataRows">The collection of <see cref="DataRow"/> objects.</param>
 	/// <param name="columnCount">The number of columns to copy (in each row).</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public MySqlBulkCopyResult WriteToServer(IEnumerable<DataRow> dataRows, int columnCount)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public SingleStoreBulkCopyResult WriteToServer(IEnumerable<DataRow> dataRows, int columnCount)
 	{
 		m_valuesEnumerator = new DataRowsValuesEnumerator(dataRows ?? throw new ArgumentNullException(nameof(dataRows)), columnCount);
 #pragma warning disable CA2012 // Safe because method completes synchronously
@@ -161,8 +161,8 @@ public sealed class SingleStoreBulkCopy
 	/// <param name="dataRows">The collection of <see cref="DataRow"/> objects.</param>
 	/// <param name="columnCount">The number of columns to copy (in each row).</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public async ValueTask<MySqlBulkCopyResult> WriteToServerAsync(IEnumerable<DataRow> dataRows, int columnCount, CancellationToken cancellationToken = default)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public async ValueTask<SingleStoreBulkCopyResult> WriteToServerAsync(IEnumerable<DataRow> dataRows, int columnCount, CancellationToken cancellationToken = default)
 	{
 		m_valuesEnumerator = new DataRowsValuesEnumerator(dataRows ?? throw new ArgumentNullException(nameof(dataRows)), columnCount);
 		return await WriteToServerAsync(IOBehavior.Asynchronous, cancellationToken).ConfigureAwait(false);
@@ -176,8 +176,8 @@ public sealed class SingleStoreBulkCopy
 	/// <param name="dataRows">The collection of <see cref="DataRow"/> objects.</param>
 	/// <param name="columnCount">The number of columns to copy (in each row).</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public async Task<MySqlBulkCopyResult> WriteToServerAsync(IEnumerable<DataRow> dataRows, int columnCount, CancellationToken cancellationToken = default)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public async Task<SingleStoreBulkCopyResult> WriteToServerAsync(IEnumerable<DataRow> dataRows, int columnCount, CancellationToken cancellationToken = default)
 	{
 		m_valuesEnumerator = new DataRowsValuesEnumerator(dataRows ?? throw new ArgumentNullException(nameof(dataRows)), columnCount);
 		return await WriteToServerAsync(IOBehavior.Asynchronous, cancellationToken).ConfigureAwait(false);
@@ -189,8 +189,8 @@ public sealed class SingleStoreBulkCopy
 	/// <see cref="DestinationTableName"/> property of the <see cref="SingleStoreBulkCopy"/> object.
 	/// </summary>
 	/// <param name="dataReader">The <see cref="IDataReader"/> to copy from.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public MySqlBulkCopyResult WriteToServer(IDataReader dataReader)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public SingleStoreBulkCopyResult WriteToServer(IDataReader dataReader)
 	{
 		m_valuesEnumerator = DataReaderValuesEnumerator.Create(dataReader ?? throw new ArgumentNullException(nameof(dataReader)));
 #pragma warning disable CA2012 // Safe because method completes synchronously
@@ -205,8 +205,8 @@ public sealed class SingleStoreBulkCopy
 	/// </summary>
 	/// <param name="dataReader">The <see cref="IDataReader"/> to copy from.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public async ValueTask<MySqlBulkCopyResult> WriteToServerAsync(IDataReader dataReader, CancellationToken cancellationToken = default)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public async ValueTask<SingleStoreBulkCopyResult> WriteToServerAsync(IDataReader dataReader, CancellationToken cancellationToken = default)
 	{
 		m_valuesEnumerator = DataReaderValuesEnumerator.Create(dataReader ?? throw new ArgumentNullException(nameof(dataReader)));
 		return await WriteToServerAsync(IOBehavior.Asynchronous, cancellationToken).ConfigureAwait(false);
@@ -218,15 +218,15 @@ public sealed class SingleStoreBulkCopy
 	/// </summary>
 	/// <param name="dataReader">The <see cref="IDataReader"/> to copy from.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
-	/// <returns>A <see cref="MySqlBulkCopyResult"/> with the result of the bulk copy operation.</returns>
-	public async Task<MySqlBulkCopyResult> WriteToServerAsync(IDataReader dataReader, CancellationToken cancellationToken = default)
+	/// <returns>A <see cref="SingleStoreBulkCopyResult"/> with the result of the bulk copy operation.</returns>
+	public async Task<SingleStoreBulkCopyResult> WriteToServerAsync(IDataReader dataReader, CancellationToken cancellationToken = default)
 	{
 		m_valuesEnumerator = DataReaderValuesEnumerator.Create(dataReader ?? throw new ArgumentNullException(nameof(dataReader)));
 		return await WriteToServerAsync(IOBehavior.Asynchronous, cancellationToken).ConfigureAwait(false);
 	}
 #endif
 
-	private async ValueTask<MySqlBulkCopyResult> WriteToServerAsync(IOBehavior ioBehavior, CancellationToken cancellationToken)
+	private async ValueTask<SingleStoreBulkCopyResult> WriteToServerAsync(IOBehavior ioBehavior, CancellationToken cancellationToken)
 	{
 		var tableName = DestinationTableName ?? throw new InvalidOperationException("DestinationTableName must be set before calling WriteToServer");
 		m_wasAborted = false;
@@ -255,7 +255,7 @@ public sealed class SingleStoreBulkCopy
 		}
 
 		// merge column mappings with the destination schema
-		var columnMappings = new List<MySqlBulkCopyColumnMapping>(ColumnMappings);
+		var columnMappings = new List<SingleStoreBulkCopyColumnMapping>(ColumnMappings);
 		var addDefaultMappings = columnMappings.Count == 0;
 		using (var cmd = new SingleStoreCommand("select * from " + tableName + ";", m_connection, m_transaction))
 		using (var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SchemaOnly, ioBehavior, cancellationToken).ConfigureAwait(false))
@@ -276,7 +276,7 @@ public sealed class SingleStoreBulkCopy
 				else
 				{
 					var type = schema[i].DataType;
-					if (type == typeof(byte[]) || (type == typeof(Guid) && (m_connection.GuidFormat is MySqlGuidFormat.Binary16 or MySqlGuidFormat.LittleEndianBinary16 or MySqlGuidFormat.TimeSwapBinary16)))
+					if (type == typeof(byte[]) || (type == typeof(Guid) && (m_connection.GuidFormat is SingleStoreGuidFormat.Binary16 or SingleStoreGuidFormat.LittleEndianBinary16 or SingleStoreGuidFormat.TimeSwapBinary16)))
 					{
 						AddColumnMapping(columnMappings, addDefaultMappings, i, destinationColumn, $"@`\uE002\bcol{i}`", $"%COL% = UNHEX(%VAR%)");
 					}
@@ -301,7 +301,7 @@ public sealed class SingleStoreBulkCopy
 			else
 			{
 				if (columnMapping.DestinationColumn.Length == 0)
-					throw new InvalidOperationException("MySqlBulkCopyColumnMapping.DestinationName is not set for SourceOrdinal {0}".FormatInvariant(columnMapping.SourceOrdinal));
+					throw new InvalidOperationException("SingleStoreBulkCopyColumnMapping.DestinationName is not set for SourceOrdinal {0}".FormatInvariant(columnMapping.SourceOrdinal));
 				if (columnMapping.DestinationColumn[0] == '@')
 					bulkLoader.Columns.Add(columnMapping.DestinationColumn);
 				else
@@ -318,7 +318,7 @@ public sealed class SingleStoreBulkCopy
 		}
 
 		var errors = new List<SingleStoreError>();
-		MySqlInfoMessageEventHandler infoMessageHandler = (s, e) => errors.AddRange(e.Errors);
+		SingleStoreInfoMessageEventHandler infoMessageHandler = (s, e) => errors.AddRange(e.Errors);
 		m_connection.InfoMessage += infoMessageHandler;
 
 		int rowsInserted;
@@ -339,14 +339,14 @@ public sealed class SingleStoreBulkCopy
 		if (!m_wasAborted && rowsInserted != m_rowsCopied)
 		{
 			Log.Error("Bulk copy to DestinationTableName={0} failed; RowsCopied={1}; RowsInserted={2}", tableName, m_rowsCopied, rowsInserted);
-			throw new SingleStoreException(MySqlErrorCode.BulkCopyFailed, "{0} rows were copied to {1} but only {2} were inserted.".FormatInvariant(m_rowsCopied, tableName, rowsInserted));
+			throw new SingleStoreException(SingleStoreErrorCode.BulkCopyFailed, "{0} rows were copied to {1} but only {2} were inserted.".FormatInvariant(m_rowsCopied, tableName, rowsInserted));
 		}
 
 		return new(errors, rowsInserted);
 
 		static string QuoteIdentifier(string identifier) => "`" + identifier.Replace("`", "``") + "`";
 
-		static void AddColumnMapping(List<MySqlBulkCopyColumnMapping> columnMappings, bool addDefaultMappings, int destinationOrdinal, string destinationColumn, string variableName, string expression)
+		static void AddColumnMapping(List<SingleStoreBulkCopyColumnMapping> columnMappings, bool addDefaultMappings, int destinationOrdinal, string destinationColumn, string variableName, string expression)
 		{
 			expression = expression.Replace("%COL%", "`" + destinationColumn + "`").Replace("%VAR%", variableName);
 			var columnMapping = columnMappings.FirstOrDefault(x => destinationColumn.Equals(x.DestinationColumn, StringComparison.OrdinalIgnoreCase));
@@ -529,7 +529,7 @@ public sealed class SingleStoreBulkCopy
 				// NOTE: Utf8Formatter doesn't support "R"
 				return WriteString("{0:R}".FormatInvariant(value), ref utf8Encoder, output, out bytesWritten);
 			}
-			else if (value is MySqlDateTime mySqlDateTimeValue)
+			else if (value is SingleStoreDateTime mySqlDateTimeValue)
 			{
 				if (mySqlDateTimeValue.IsValidDateTime)
 					return WriteString("{0:yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'ffffff}".FormatInvariant(mySqlDateTimeValue.GetDateTime()), ref utf8Encoder, output, out bytesWritten);
@@ -562,17 +562,17 @@ public sealed class SingleStoreBulkCopy
 			}
 			else if (value is Guid guidValue)
 			{
-				if (connection.GuidFormat is MySqlGuidFormat.Binary16 or MySqlGuidFormat.TimeSwapBinary16 or MySqlGuidFormat.LittleEndianBinary16)
+				if (connection.GuidFormat is SingleStoreGuidFormat.Binary16 or SingleStoreGuidFormat.TimeSwapBinary16 or SingleStoreGuidFormat.LittleEndianBinary16)
 				{
 					var bytes = guidValue.ToByteArray();
-					if (connection.GuidFormat != MySqlGuidFormat.LittleEndianBinary16)
+					if (connection.GuidFormat != SingleStoreGuidFormat.LittleEndianBinary16)
 					{
 						Utility.SwapBytes(bytes, 0, 3);
 						Utility.SwapBytes(bytes, 1, 2);
 						Utility.SwapBytes(bytes, 4, 5);
 						Utility.SwapBytes(bytes, 6, 7);
 
-						if (connection.GuidFormat == MySqlGuidFormat.TimeSwapBinary16)
+						if (connection.GuidFormat == SingleStoreGuidFormat.TimeSwapBinary16)
 						{
 							Utility.SwapBytes(bytes, 0, 4);
 							Utility.SwapBytes(bytes, 1, 5);
@@ -586,7 +586,7 @@ public sealed class SingleStoreBulkCopy
 				}
 				else
 				{
-					var is32Characters = connection.GuidFormat == MySqlGuidFormat.Char32;
+					var is32Characters = connection.GuidFormat == SingleStoreGuidFormat.Char32;
 					return Utf8Formatter.TryFormat(guidValue, output, out bytesWritten, is32Characters ? 'N' : 'D');
 				}
 			}

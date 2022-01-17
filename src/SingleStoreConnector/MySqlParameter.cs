@@ -27,27 +27,27 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		SourceVersion = DataRowVersion.Current;
 	}
 
-	public SingleStoreParameter(string name, MySqlDbType mySqlDbType)
+	public SingleStoreParameter(string name, SingleStoreDbType mySqlDbType)
 		: this(name, mySqlDbType, 0)
 	{
 	}
 
-	public SingleStoreParameter(string name, MySqlDbType mySqlDbType, int size)
+	public SingleStoreParameter(string name, SingleStoreDbType mySqlDbType, int size)
 		: this(name, mySqlDbType, size, "")
 	{
 	}
 
-	public SingleStoreParameter(string name, MySqlDbType mySqlDbType, int size, string sourceColumn)
+	public SingleStoreParameter(string name, SingleStoreDbType mySqlDbType, int size, string sourceColumn)
 	{
 		m_name = name ?? "";
 		NormalizedParameterName = NormalizeParameterName(m_name);
-		MySqlDbType = mySqlDbType;
+		SingleStoreDbType = mySqlDbType;
 		Size = size;
 		m_sourceColumn = sourceColumn ?? "";
 		SourceVersion = DataRowVersion.Current;
 	}
 
-	public SingleStoreParameter(string name, MySqlDbType mySqlDbType, int size, ParameterDirection direction, bool isNullable, byte precision, byte scale, string sourceColumn, DataRowVersion sourceVersion, object value)
+	public SingleStoreParameter(string name, SingleStoreDbType mySqlDbType, int size, ParameterDirection direction, bool isNullable, byte precision, byte scale, string sourceColumn, DataRowVersion sourceVersion, object value)
 		: this(name, mySqlDbType, size, sourceColumn)
 	{
 		Direction = direction;
@@ -64,17 +64,17 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		set
 		{
 			m_dbType = value;
-			m_mySqlDbType = TypeMapper.Instance.GetMySqlDbTypeForDbType(value);
+			m_mySqlDbType = TypeMapper.Instance.GetSingleStoreDbTypeForDbType(value);
 			HasSetDbType = true;
 		}
 	}
 
-	public MySqlDbType MySqlDbType
+	public SingleStoreDbType SingleStoreDbType
 	{
 		get => m_mySqlDbType;
 		set
 		{
-			m_dbType = TypeMapper.Instance.GetDbTypeForMySqlDbType(value);
+			m_dbType = TypeMapper.Instance.GetDbTypeForSingleStoreDbType(value);
 			m_mySqlDbType = value;
 			HasSetDbType = true;
 		}
@@ -142,7 +142,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 				if (typeMapping is not null)
 				{
 					m_dbType = typeMapping.DbTypes[0];
-					m_mySqlDbType = TypeMapper.Instance.GetMySqlDbTypeForDbType(m_dbType);
+					m_mySqlDbType = TypeMapper.Instance.GetSingleStoreDbTypeForDbType(m_dbType);
 				}
 			}
 		}
@@ -150,7 +150,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 
 	public override void ResetDbType()
 	{
-		m_mySqlDbType = MySqlDbType.VarChar;
+		m_mySqlDbType = SingleStoreDbType.VarChar;
 		m_dbType = DbType.String;
 		HasSetDbType = false;
 	}
@@ -324,7 +324,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		{
 			writer.Write(mySqlDecimal.ToString());
 		}
-		else if (Value is MySqlDateTime mySqlDateTimeValue)
+		else if (Value is SingleStoreDateTime mySqlDateTimeValue)
 		{
 			if (mySqlDateTimeValue.IsValidDateTime)
 				writer.Write("timestamp('{0:yyyy'-'MM'-'dd' 'HH':'mm':'ss'.'ffffff}')".FormatInvariant(mySqlDateTimeValue.GetDateTime()));
@@ -426,31 +426,31 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 			WriteString(writer, noBackslashEscapes, writeDelimiters: true, stringBuilder.ToString().AsSpan());
 #endif
 		}
-		else if (MySqlDbType == MySqlDbType.Int16)
+		else if (SingleStoreDbType == SingleStoreDbType.Int16)
 		{
 			writer.WriteString((short) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.UInt16)
+		else if (SingleStoreDbType == SingleStoreDbType.UInt16)
 		{
 			writer.WriteString((ushort) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.Int32)
+		else if (SingleStoreDbType == SingleStoreDbType.Int32)
 		{
 			writer.WriteString((int) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.UInt32)
+		else if (SingleStoreDbType == SingleStoreDbType.UInt32)
 		{
 			writer.WriteString((uint) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.Int64)
+		else if (SingleStoreDbType == SingleStoreDbType.Int64)
 		{
 			writer.WriteString((long) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.UInt64)
+		else if (SingleStoreDbType == SingleStoreDbType.UInt64)
 		{
 			writer.WriteString((ulong) Value);
 		}
-		else if ((MySqlDbType is MySqlDbType.String or MySqlDbType.VarChar) && HasSetDbType && Value is Enum)
+		else if ((SingleStoreDbType is SingleStoreDbType.String or SingleStoreDbType.VarChar) && HasSetDbType && Value is Enum)
 		{
 			writer.Write("'{0:G}'".FormatInvariant(Value));
 		}
@@ -608,7 +608,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		{
 			writer.WriteLengthEncodedString(bigInteger.ToString(CultureInfo.InvariantCulture));
 		}
-		else if (Value is MySqlDateTime mySqlDateTimeValue)
+		else if (Value is SingleStoreDateTime mySqlDateTimeValue)
 		{
 			if (mySqlDateTimeValue.IsValidDateTime)
 				WriteDateTime(writer, mySqlDateTimeValue.GetDateTime());
@@ -699,31 +699,31 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 		{
 			writer.WriteLengthEncodedString(stringBuilder);
 		}
-		else if (MySqlDbType == MySqlDbType.Int16)
+		else if (SingleStoreDbType == SingleStoreDbType.Int16)
 		{
 			writer.Write((ushort) (short) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.UInt16)
+		else if (SingleStoreDbType == SingleStoreDbType.UInt16)
 		{
 			writer.Write((ushort) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.Int32)
+		else if (SingleStoreDbType == SingleStoreDbType.Int32)
 		{
 			writer.Write((int) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.UInt32)
+		else if (SingleStoreDbType == SingleStoreDbType.UInt32)
 		{
 			writer.Write((uint) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.Int64)
+		else if (SingleStoreDbType == SingleStoreDbType.Int64)
 		{
 			writer.Write((ulong) (long) Value);
 		}
-		else if (MySqlDbType == MySqlDbType.UInt64)
+		else if (SingleStoreDbType == SingleStoreDbType.UInt64)
 		{
 			writer.Write((ulong) Value);
 		}
-		else if ((MySqlDbType is MySqlDbType.String or MySqlDbType.VarChar) && HasSetDbType && Value is Enum)
+		else if ((SingleStoreDbType is SingleStoreDbType.String or SingleStoreDbType.VarChar) && HasSetDbType && Value is Enum)
 		{
 			writer.WriteLengthEncodedString("{0:G}".FormatInvariant(Value));
 		}
@@ -813,7 +813,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 	static ReadOnlySpan<byte> BinaryBytes => new byte[] { 0x5F, 0x62, 0x69, 0x6E, 0x61, 0x72, 0x79, 0x27 }; // _binary'
 
 	DbType m_dbType;
-	MySqlDbType m_mySqlDbType;
+	SingleStoreDbType m_mySqlDbType;
 	string m_name;
 	ParameterDirection? m_direction;
 	string m_sourceColumn;

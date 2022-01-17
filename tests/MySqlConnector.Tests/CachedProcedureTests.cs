@@ -19,7 +19,7 @@ public class CachedProcedureTests
 			Assert.Equal(expectedParameter.Position, actualParameter.Position);
 			Assert.Equal(expectedParameter.Direction, actualParameter.Direction);
 			Assert.Equal(expectedParameter.Name, actualParameter.Name);
-			Assert.Equal(expectedParameter.MySqlDbType, actualParameter.MySqlDbType);
+			Assert.Equal(expectedParameter.SingleStoreDbType, actualParameter.SingleStoreDbType);
 		}
 	}
 

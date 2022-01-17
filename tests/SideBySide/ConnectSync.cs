@@ -22,8 +22,8 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 #if !BASELINE
 		Assert.True(ex.IsTransient);
 #endif
-		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Number);
-		Assert.Equal((int) MySqlErrorCode.UnableToConnectToHost, ex.Data["Server Error Code"]);
+		Assert.Equal((int) SingleStoreErrorCode.UnableToConnectToHost, ex.Number);
+		Assert.Equal((int) SingleStoreErrorCode.UnableToConnectToHost, ex.Data["Server Error Code"]);
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
 
@@ -62,7 +62,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var ex = Assert.Throws<SingleStoreException>(connection.Open);
 #if !BASELINE // https://bugs.mysql.com/bug.php?id=78426
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.ErrorCodes) || ex.ErrorCode != default)
-			Assert.Equal(MySqlErrorCode.UnknownDatabase, ex.ErrorCode);
+			Assert.Equal(SingleStoreErrorCode.UnknownDatabase, ex.ErrorCode);
 #endif
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
@@ -76,7 +76,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		var ex = Assert.Throws<SingleStoreException>(connection.Open);
 #if !BASELINE // https://bugs.mysql.com/bug.php?id=78426
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.ErrorCodes) || ex.ErrorCode != default)
-			Assert.Equal(MySqlErrorCode.AccessDenied, ex.ErrorCode);
+			Assert.Equal(SingleStoreErrorCode.AccessDenied, ex.ErrorCode);
 #endif
 		Assert.Equal(ConnectionState.Closed, connection.State);
 	}
@@ -286,7 +286,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		connection.ProvidePasswordCallback = _ => $"wrong_{password}";
 
 		var ex = Assert.Throws<SingleStoreException>(() => connection.Open());
-		Assert.Equal(MySqlErrorCode.AccessDenied, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.AccessDenied, ex.ErrorCode);
 	}
 
 	[Fact]
@@ -304,7 +304,7 @@ public class ConnectSync : IClassFixture<DatabaseFixture>
 		connection.ProvidePasswordCallback = _ => throw innerException;
 
 		var ex = Assert.Throws<SingleStoreException>(() => connection.Open());
-		Assert.Equal(MySqlErrorCode.ProvidePasswordCallbackFailed, ex.ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.ProvidePasswordCallbackFailed, ex.ErrorCode);
 		Assert.Same(innerException, ex.InnerException);
 	}
 

@@ -153,14 +153,14 @@ internal sealed class SingleCommandPayloadCreator : ICommandPayloadCreator
 
 		for (var index = 0; index < parameters.Length; index++)
 		{
-			// override explicit MySqlDbType with inferred type from the Value
+			// override explicit SingleStoreDbType with inferred type from the Value
 			var parameter = parameters[index];
-			var mySqlDbType = parameter.MySqlDbType;
+			var mySqlDbType = parameter.SingleStoreDbType;
 			var typeMapping = (parameter.Value is null || parameter.Value == DBNull.Value) ? null : TypeMapper.Instance.GetDbTypeMapping(parameter.Value.GetType());
 			if (typeMapping is not null)
 			{
 				var dbType = typeMapping.DbTypes[0];
-				mySqlDbType = TypeMapper.Instance.GetMySqlDbTypeForDbType(dbType);
+				mySqlDbType = TypeMapper.Instance.GetSingleStoreDbTypeForDbType(dbType);
 			}
 
 			writer.Write(TypeMapper.ConvertToColumnTypeAndFlags(mySqlDbType, command.Connection!.GuidFormat));

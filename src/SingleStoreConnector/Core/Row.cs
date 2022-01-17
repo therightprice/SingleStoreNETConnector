@@ -360,7 +360,7 @@ internal abstract class Row
 				throw new FormatException("Couldn't interpret '{0}' as a valid DateTime".FormatInvariant(value));
 		}
 
-		if (value is MySqlDateTime mySqlDateTime)
+		if (value is SingleStoreDateTime mySqlDateTime)
 			return mySqlDateTime.GetDateTime();
 		return (DateTime) value;
 	}
@@ -423,12 +423,12 @@ internal abstract class Row
 		};
 	}
 
-	public MySqlDateTime GetMySqlDateTime(int ordinal)
+	public SingleStoreDateTime GetSingleStoreDateTime(int ordinal)
 	{
 		var value = GetValue(ordinal);
 		if (value is DateTime dateTime)
-			return new MySqlDateTime(dateTime);
-		return (MySqlDateTime) value;
+			return new SingleStoreDateTime(dateTime);
+		return (SingleStoreDateTime) value;
 	}
 
 	public SingleStoreGeometry GetSingleStoreGeometry(int ordinal)
@@ -499,7 +499,7 @@ internal abstract class Row
 			if (Connection.ConvertZeroDateTime)
 				return DateTime.MinValue;
 			if (Connection.AllowZeroDateTime)
-				return default(MySqlDateTime);
+				return default(SingleStoreDateTime);
 			throw new InvalidCastException("Unable to convert MySQL date/time to System.DateTime, set AllowZeroDateTime=True or ConvertZeroDateTime=True in the connection string. See https://mysqlconnector.net/connection-options/");
 		}
 
@@ -544,7 +544,7 @@ internal abstract class Row
 
 		try
 		{
-			return Connection.AllowZeroDateTime ? (object) new MySqlDateTime(year, month, day, hour, minute, second, microseconds) :
+			return Connection.AllowZeroDateTime ? (object) new SingleStoreDateTime(year, month, day, hour, minute, second, microseconds) :
 				new DateTime(year, month, day, hour, minute, second, microseconds / 1000, Connection.DateTimeKind).AddTicks(microseconds % 1000 * 10);
 		}
 		catch (Exception ex)
@@ -559,16 +559,16 @@ InvalidDateTime:
 #if NET5_0_OR_GREATER
 	[SkipLocalsInit]
 #endif
-	protected static unsafe Guid CreateGuidFromBytes(MySqlGuidFormat guidFormat, ReadOnlySpan<byte> bytes) =>
+	protected static unsafe Guid CreateGuidFromBytes(SingleStoreGuidFormat guidFormat, ReadOnlySpan<byte> bytes) =>
 		guidFormat switch
 		{
 #if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-			MySqlGuidFormat.Binary16 => new Guid(stackalloc byte[16] { bytes[3], bytes[2], bytes[1], bytes[0], bytes[5], bytes[4], bytes[7], bytes[6], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
-			MySqlGuidFormat.TimeSwapBinary16 => new Guid(stackalloc byte[16] { bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
+			SingleStoreGuidFormat.Binary16 => new Guid(stackalloc byte[16] { bytes[3], bytes[2], bytes[1], bytes[0], bytes[5], bytes[4], bytes[7], bytes[6], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
+			SingleStoreGuidFormat.TimeSwapBinary16 => new Guid(stackalloc byte[16] { bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
 			_ => new Guid(bytes),
 #else
-			MySqlGuidFormat.Binary16 => new Guid(new[] { bytes[3], bytes[2], bytes[1], bytes[0], bytes[5], bytes[4], bytes[7], bytes[6], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
-			MySqlGuidFormat.TimeSwapBinary16 => new Guid(new[] { bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
+			SingleStoreGuidFormat.Binary16 => new Guid(new[] { bytes[3], bytes[2], bytes[1], bytes[0], bytes[5], bytes[4], bytes[7], bytes[6], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
+			SingleStoreGuidFormat.TimeSwapBinary16 => new Guid(new[] { bytes[7], bytes[6], bytes[5], bytes[4], bytes[3], bytes[2], bytes[1], bytes[0], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }),
 			_ => new Guid(bytes.ToArray()),
 #endif
 		};

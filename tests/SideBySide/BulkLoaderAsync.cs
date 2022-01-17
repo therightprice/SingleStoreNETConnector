@@ -589,8 +589,8 @@ create table bulk_load_data_table(str varchar(5), number tinyint);", connection)
 		var result = await bulkCopy.WriteToServerAsync(dataTable);
 		Assert.Equal(2, result.RowsInserted);
 		Assert.Equal(2, result.Warnings.Count);
-		Assert.Equal(MySqlErrorCode.WarningDataOutOfRange, result.Warnings[0].ErrorCode);
-		Assert.Equal(MySqlErrorCode.WarningDataTruncated, result.Warnings[1].ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.WarningDataOutOfRange, result.Warnings[0].ErrorCode);
+		Assert.Equal(SingleStoreErrorCode.WarningDataTruncated, result.Warnings[1].ErrorCode);
 	}
 
 	[Fact]

@@ -39,11 +39,11 @@ internal static class IMySqlCommandExtensions
 
 		statementPreparerOptions |= connection.GuidFormat switch
 		{
-			MySqlGuidFormat.Char36 => StatementPreparerOptions.GuidFormatChar36,
-			MySqlGuidFormat.Char32 => StatementPreparerOptions.GuidFormatChar32,
-			MySqlGuidFormat.Binary16 => StatementPreparerOptions.GuidFormatBinary16,
-			MySqlGuidFormat.TimeSwapBinary16 => StatementPreparerOptions.GuidFormatTimeSwapBinary16,
-			MySqlGuidFormat.LittleEndianBinary16 => StatementPreparerOptions.GuidFormatLittleEndianBinary16,
+			SingleStoreGuidFormat.Char36 => StatementPreparerOptions.GuidFormatChar36,
+			SingleStoreGuidFormat.Char32 => StatementPreparerOptions.GuidFormatChar32,
+			SingleStoreGuidFormat.Binary16 => StatementPreparerOptions.GuidFormatBinary16,
+			SingleStoreGuidFormat.TimeSwapBinary16 => StatementPreparerOptions.GuidFormatTimeSwapBinary16,
+			SingleStoreGuidFormat.LittleEndianBinary16 => StatementPreparerOptions.GuidFormatLittleEndianBinary16,
 			_ => StatementPreparerOptions.None,
 		};
 

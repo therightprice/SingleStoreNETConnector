@@ -179,7 +179,7 @@ public class ParameterCollection : IDisposable
 	[Fact]
 	public void AddMySqlParameter()
 	{
-		var parameter = new SingleStoreParameter("test", MySqlDbType.Double, 3);
+		var parameter = new SingleStoreParameter("test", SingleStoreDbType.Double, 3);
 		var parameter2 = m_parameterCollection.Add(parameter);
 		Assert.Same(parameter, parameter2);
 		Assert.Same(parameter, m_parameterCollection[0]);
@@ -188,18 +188,18 @@ public class ParameterCollection : IDisposable
 	[Fact]
 	public void AddNameType()
 	{
-		var parameter = m_parameterCollection.Add("test", MySqlDbType.Double);
+		var parameter = m_parameterCollection.Add("test", SingleStoreDbType.Double);
 		Assert.Equal("test", parameter.ParameterName);
-		Assert.Equal(MySqlDbType.Double, parameter.MySqlDbType);
+		Assert.Equal(SingleStoreDbType.Double, parameter.SingleStoreDbType);
 		Assert.Same(parameter, m_parameterCollection[0]);
 	}
 
 	[Fact]
 	public void AddNameTypeSize()
 	{
-		var parameter = m_parameterCollection.Add("test", MySqlDbType.Double, 10);
+		var parameter = m_parameterCollection.Add("test", SingleStoreDbType.Double, 10);
 		Assert.Equal("test", parameter.ParameterName);
-		Assert.Equal(MySqlDbType.Double, parameter.MySqlDbType);
+		Assert.Equal(SingleStoreDbType.Double, parameter.SingleStoreDbType);
 		Assert.Equal(10, parameter.Size);
 		Assert.Same(parameter, m_parameterCollection[0]);
 	}

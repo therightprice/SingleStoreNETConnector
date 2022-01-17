@@ -272,7 +272,7 @@ internal sealed class FakeMySqlServerConnection
 	private static void WriteError(BinaryWriter writer, string message = "An unknown error occurred")
 	{
 		writer.Write((byte) 0xFF); // signature
-		writer.Write((ushort) MySqlErrorCode.UnknownError); // error code
+		writer.Write((ushort) SingleStoreErrorCode.UnknownError); // error code
 		writer.WriteRaw("#ERROR");
 		writer.WriteRaw(message);
 	}

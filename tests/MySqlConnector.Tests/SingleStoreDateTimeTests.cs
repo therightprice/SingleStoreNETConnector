@@ -7,33 +7,33 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlDateTimeTests
+public class SingleStoreDateTimeTests
 {
 	[Fact]
-	public void NewMySqlDateTimeIsNotValidDateTime()
+	public void NewSingleStoreDateTimeIsNotValidDateTime()
 	{
-		var msdt = new MySqlDateTime();
+		var msdt = new SingleStoreDateTime();
 		Assert.False(msdt.IsValidDateTime);
 	}
 
 	[Fact]
-	public void ZeroMySqlDateTimeIsNotValidDateTime()
+	public void ZeroSingleStoreDateTimeIsNotValidDateTime()
 	{
-		var msdt = new MySqlDateTime(0, 0, 0, 0, 0, 0, 0);
+		var msdt = new SingleStoreDateTime(0, 0, 0, 0, 0, 0, 0);
 		Assert.False(msdt.IsValidDateTime);
 	}
 
 	[Fact]
-	public void NonZeroMySqlDateTimeIsValidDateTime()
+	public void NonZeroSingleStoreDateTimeIsValidDateTime()
 	{
-		var msdt = new MySqlDateTime(2018, 6, 9, 0, 0, 0, 0);
+		var msdt = new SingleStoreDateTime(2018, 6, 9, 0, 0, 0, 0);
 		Assert.True(msdt.IsValidDateTime);
 	}
 
 	[Fact]
 	public void CreateFromDateTime()
 	{
-		var msdt = new MySqlDateTime(s_dateTime);
+		var msdt = new SingleStoreDateTime(s_dateTime);
 		Assert.True(msdt.IsValidDateTime);
 		Assert.Equal(2018, msdt.Year);
 		Assert.Equal(6, msdt.Month);
@@ -57,7 +57,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void GetDateTimeForInvalidDate()
 	{
-		var msdt = new MySqlDateTime();
+		var msdt = new SingleStoreDateTime();
 		Assert.False(msdt.IsValidDateTime);
 		Assert.Throws<SingleStoreConversionException>(() => msdt.GetDateTime());
 	}
@@ -65,7 +65,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void SetMicrosecond()
 	{
-		var msdt = new MySqlDateTime();
+		var msdt = new SingleStoreDateTime();
 		Assert.Equal(0, msdt.Microsecond);
 		msdt.Microsecond = 123456;
 		Assert.Equal(123, msdt.Millisecond);
@@ -98,7 +98,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void NotConvertibleToDateTime()
 	{
-		IConvertible convertible = new MySqlDateTime();
+		IConvertible convertible = new SingleStoreDateTime();
 #if !BASELINE
 		Assert.Throws<InvalidCastException>(() => convertible.ToDateTime(CultureInfo.InvariantCulture));
 #else
@@ -109,7 +109,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void NotConvertToDateTime()
 	{
-		object obj = new MySqlDateTime();
+		object obj = new SingleStoreDateTime();
 #if !BASELINE
 		Assert.Throws<InvalidCastException>(() => Convert.ToDateTime(obj));
 #else
@@ -120,7 +120,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void NotChangeTypeToDateTime()
 	{
-		object obj = new MySqlDateTime();
+		object obj = new SingleStoreDateTime();
 #if !BASELINE
 		Assert.Throws<InvalidCastException>(() => Convert.ChangeType(obj, TypeCode.DateTime));
 #else
@@ -139,7 +139,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void InvalidDateTimeConvertibleToString()
 	{
-		IConvertible convertible = new MySqlDateTime();
+		IConvertible convertible = new SingleStoreDateTime();
 		Assert.Equal("0000-00-00", convertible.ToString(CultureInfo.InvariantCulture));
 	}
 #endif
@@ -147,7 +147,7 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareInvalidObject()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
 #if BASELINE
 		Assert.Throws<InvalidCastException>(() => left.CompareTo(new object()));
 #else
@@ -158,8 +158,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareYear()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2001, 1, 1, 1, 1, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2001, 1, 1, 1, 1, 1, 1);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -167,8 +167,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareMonth()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 2, 1, 1, 1, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 2, 1, 1, 1, 1, 1);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -176,8 +176,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareDay()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 1, 2, 1, 1, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 1, 2, 1, 1, 1, 1);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -185,8 +185,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareHour()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 1, 1, 2, 1, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 1, 1, 2, 1, 1, 1);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -194,8 +194,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareMinute()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 1, 1, 1, 2, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 1, 1, 1, 2, 1, 1);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -203,8 +203,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareSecond()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 1, 1, 1, 1, 2, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 1, 1, 1, 1, 2, 1);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -212,8 +212,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareMicrosecond()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 2);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 2);
 		Assert.True(left.CompareTo(right) < 0);
 		Assert.True(right.CompareTo(left) > 0);
 	}
@@ -221,8 +221,8 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void CompareEqual()
 	{
-		IComparable left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		IComparable right = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		IComparable right = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
 		Assert.Equal(0, left.CompareTo(right));
 	}
 
@@ -230,9 +230,9 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void Operators()
 	{
-		var left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		var same = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		var right = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 2);
+		var left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		var same = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		var right = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 2);
 		Assert.True(left < right);
 		Assert.True(left <= same);
 		Assert.True(left <= right);
@@ -250,9 +250,9 @@ public class MySqlDateTimeTests
 	[Fact]
 	public void Equal()
 	{
-		IEquatable<MySqlDateTime> left = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		var same = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 1);
-		var right = new MySqlDateTime(2000, 1, 1, 1, 1, 1, 2);
+		IEquatable<SingleStoreDateTime> left = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		var same = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 1);
+		var right = new SingleStoreDateTime(2000, 1, 1, 1, 1, 1, 2);
 		Assert.True(left.Equals(same));
 		Assert.True(same.Equals(left));
 		Assert.False(left.Equals(right));
@@ -260,6 +260,6 @@ public class MySqlDateTimeTests
 	}
 #endif
 
-	static readonly MySqlDateTime s_mySqlDateTime = new(2018, 6, 9, 12, 34, 56, 123456);
+	static readonly SingleStoreDateTime s_mySqlDateTime = new(2018, 6, 9, 12, 34, 56, 123456);
 	static readonly DateTime s_dateTime = new DateTime(2018, 6, 9, 12, 34, 56, 123).AddTicks(4560);
 }
