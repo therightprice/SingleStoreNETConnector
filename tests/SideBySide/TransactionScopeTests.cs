@@ -647,7 +647,7 @@ insert into transaction_scope_test(value) values('one'),('two'),('three');");
 	[MemberData(nameof(ConnectionStrings))]
 	public async Task CancelExecuteNonQueryAsync(string connectionString)
 	{
-		using var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString);
+		using var connection = new SingleStoreConnection(AppConfig.ConnectionString + ";" + connectionString + ";AllowUserVariables=True");
 		using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 		await connection.OpenAsync();
 
