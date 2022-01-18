@@ -368,7 +368,7 @@ internal sealed class ConnectionPool
 			// server redirection string has the format "Location: mysql://{host}:{port}/user={userId}[&ttl={ttl}]"
 			Log.Trace("Session{0} has server redirection header {1}", session.Id, statusInfo);
 
-			if (ConnectionSettings.ServerRedirectionMode == MySqlServerRedirectionMode.Disabled)
+			if (ConnectionSettings.ServerRedirectionMode == SingleStoreServerRedirectionMode.Disabled)
 			{
 				Log.Trace("Pool{0} server redirection is disabled; ignoring redirection", m_logArguments);
 			}
@@ -413,7 +413,7 @@ internal sealed class ConnectionPool
 			}
 		}
 
-		if (ConnectionSettings.ServerRedirectionMode == MySqlServerRedirectionMode.Required)
+		if (ConnectionSettings.ServerRedirectionMode == SingleStoreServerRedirectionMode.Required)
 		{
 			Log.Error("Pool{0} requires server redirection but server doesn't support it", m_logArguments);
 			throw new SingleStoreException(SingleStoreErrorCode.UnableToConnectToHost, "Server does not support redirection", redirectionException);

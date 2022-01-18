@@ -67,7 +67,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal("MYSQL", csb.PipeName);
 #if !BASELINE
 		Assert.False(csb.NoBackslashEscapes);
-		Assert.Equal(MySqlServerRedirectionMode.Disabled, csb.ServerRedirectionMode);
+		Assert.Equal(SingleStoreServerRedirectionMode.Disabled, csb.ServerRedirectionMode);
 #endif
 		Assert.False(csb.OldGuids);
 		Assert.False(csb.PersistSecurityInfo);
@@ -91,7 +91,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Null(csb.SslKey);
 		Assert.Null(csb.TlsVersion);
 #endif
-		Assert.Equal(MySqlSslMode.Preferred, csb.SslMode);
+		Assert.Equal(SingleStoreSslMode.Preferred, csb.SslMode);
 		Assert.True(csb.TreatTinyAsBoolean);
 		Assert.False(csb.UseCompression);
 		Assert.Equal("", csb.UserID);
@@ -202,7 +202,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal(SingleStoreGuidFormat.TimeSwapBinary16, csb.GuidFormat);
 		Assert.True(csb.NoBackslashEscapes);
 		Assert.False(csb.Pipelining);
-		Assert.Equal(MySqlServerRedirectionMode.Required, csb.ServerRedirectionMode);
+		Assert.Equal(SingleStoreServerRedirectionMode.Required, csb.ServerRedirectionMode);
 		Assert.Equal("mariadb/host.example.com@EXAMPLE.COM", csb.ServerSPN);
 		Assert.False(csb.UseXaTransactions);
 		Assert.Equal("TLS_AES_128_CCM_8_SHA256,TLS_RSA_WITH_RC4_128_MD5", csb.TlsCipherSuites);
@@ -223,7 +223,7 @@ public class MySqlConnectionStringBuilderTests
 		Assert.Equal("ca.pem", csb.SslCa);
 		Assert.Equal("client-cert.pem", csb.SslCert);
 		Assert.Equal("client-key.pem", csb.SslKey);
-		Assert.Equal(MySqlSslMode.VerifyCA, csb.SslMode);
+		Assert.Equal(SingleStoreSslMode.VerifyCA, csb.SslMode);
 #if BASELINE
 		Assert.Equal("Tls, Tls12", csb.TlsVersion);
 #else
@@ -479,7 +479,7 @@ public class MySqlConnectionStringBuilderTests
 	[InlineData("Pooling", false)]
 	[InlineData("Port", 3307u)]
 	[InlineData("Server", "localhost")]
-	[InlineData("SSL Mode", MySqlSslMode.Required)]
+	[InlineData("SSL Mode", SingleStoreSslMode.Required)]
 #if BASELINE
 	[InlineData("TLS version", "Tls12")]
 #else
@@ -510,7 +510,7 @@ public class MySqlConnectionStringBuilderTests
 	[InlineData("Ignore Prepare", false)]
 	[InlineData("Load Balance", SingleStoreLoadBalance.Random)]
 	[InlineData("No Backslash Escapes", true)]
-	[InlineData("Server Redirection Mode", MySqlServerRedirectionMode.Required)]
+	[InlineData("Server Redirection Mode", SingleStoreServerRedirectionMode.Required)]
 	[InlineData("Server RSA Public Key File", "C:\\server.pem")]
 	[InlineData("Server SPN", "test")]
 	[InlineData("TLS Cipher Suites", "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384")]

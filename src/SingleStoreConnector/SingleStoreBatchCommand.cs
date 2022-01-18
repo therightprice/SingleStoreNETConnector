@@ -37,9 +37,9 @@ public sealed class SingleStoreBatchCommand :
 		0;
 
 #if NET6_0_OR_GREATER
-	public new MySqlParameterCollection Parameters =>
+	public new SingleStoreParameterCollection Parameters =>
 #else
-	public MySqlParameterCollection Parameters =>
+	public SingleStoreParameterCollection Parameters =>
 #endif
 		m_parameterCollection ??= new();
 
@@ -51,7 +51,7 @@ public sealed class SingleStoreBatchCommand :
 
 	CommandBehavior IMySqlCommand.CommandBehavior => Batch!.CurrentCommandBehavior;
 
-	MySqlParameterCollection? IMySqlCommand.RawParameters => m_parameterCollection;
+	SingleStoreParameterCollection? IMySqlCommand.RawParameters => m_parameterCollection;
 
 	SingleStoreAttributeCollection? IMySqlCommand.RawAttributes => null;
 
@@ -63,7 +63,7 @@ public sealed class SingleStoreBatchCommand :
 
 	void IMySqlCommand.SetLastInsertedId(long lastInsertedId) => m_lastInsertedId = lastInsertedId;
 
-	MySqlParameterCollection? IMySqlCommand.OutParameters { get; set; }
+	SingleStoreParameterCollection? IMySqlCommand.OutParameters { get; set; }
 
 	SingleStoreParameter? IMySqlCommand.ReturnParameter { get; set; }
 
@@ -71,6 +71,6 @@ public sealed class SingleStoreBatchCommand :
 
 	internal SingleStoreBatch? Batch { get; set; }
 
-	MySqlParameterCollection? m_parameterCollection;
+	SingleStoreParameterCollection? m_parameterCollection;
 	long m_lastInsertedId;
 }

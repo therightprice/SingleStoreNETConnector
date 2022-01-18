@@ -20,7 +20,7 @@ public class StatementPreparerTests
 	[InlineData("SELECT Id\nFROM mytable\nWHERE column1 = 2 /* mycomment */ AND column2 = @param")]
 	public void Bug429(string sql)
 	{
-		var parameters = new MySqlParameterCollection();
+		var parameters = new SingleStoreParameterCollection();
 		parameters.AddWithValue("@param", 123);
 		var parsedSql = GetParsedSql(sql, parameters);
 		Assert.Equal(sql.Replace("@param", "123") + ";", parsedSql);
@@ -41,7 +41,7 @@ public class StatementPreparerTests
 	[InlineData("UPDATE table SET a = @b - a;")]
 	public void Bug563(string sql)
 	{
-		var parameters = new MySqlParameterCollection();
+		var parameters = new SingleStoreParameterCollection();
 		parameters.AddWithValue("@b", 123);
 		var parsedSql = GetParsedSql(sql, parameters);
 		Assert.Equal(sql.Replace("@b", "123"), parsedSql);
@@ -63,7 +63,7 @@ public class StatementPreparerTests
 	public void EnumParametersAreParsedCorrectly(SingleStoreDbType? type, object value, string replacedValue)
 	{
 		const string sql = "SELECT @param;";
-		var parameters = new MySqlParameterCollection();
+		var parameters = new SingleStoreParameterCollection();
 		var parameter = new SingleStoreParameter("@param", value);
 
 		if (type is not null)
@@ -113,7 +113,7 @@ public class StatementPreparerTests
 	[InlineData("SELECT @\"v\"\"ar\";", "@\"v\"\"ar\"")]
 	public void QuotedParameters(string sql, string parameterName)
 	{
-		var parameters = new MySqlParameterCollection();
+		var parameters = new SingleStoreParameterCollection();
 		parameters.AddWithValue(parameterName, 123);
 		var parsedSql = GetParsedSql(sql, parameters);
 		Assert.Equal("SELECT 123;", parsedSql);
@@ -128,7 +128,7 @@ SELECT @foo+1 as R")]
 SELECT @'var' as R")]
 	public void Bug589(string sql)
 	{
-		var parameters = new MySqlParameterCollection();
+		var parameters = new SingleStoreParameterCollection();
 		parameters.AddWithValue("@foo", 22);
 		var parsedSql = GetParsedSql(sql, parameters, StatementPreparerOptions.AllowUserVariables);
 		Assert.Equal(sql.Replace("@foo", "22") + ";", parsedSql);
@@ -138,7 +138,7 @@ SELECT @'var' as R")]
 	[MemberData(nameof(FormatParameterData))]
 	public void FormatParameter(object parameterValue, string replacedValue, bool noBackslashEscapes = false)
 	{
-		var parameters = new MySqlParameterCollection { new("@param", parameterValue) };
+		var parameters = new SingleStoreParameterCollection { new("@param", parameterValue) };
 		const string sql = "SELECT @param;";
 		var options = noBackslashEscapes ? StatementPreparerOptions.NoBackslashEscapes : StatementPreparerOptions.None;
 		var parsedSql = GetParsedSql(sql, parameters, options);
@@ -193,7 +193,7 @@ SELECT @'var' as R")]
 	[InlineData(StatementPreparerOptions.GuidFormatLittleEndianBinary16, "_binary'dcbafehgijklmnop'")]
 	public void GuidFormat(object options, string replacedValue)
 	{
-		var parameters = new MySqlParameterCollection { new("@param", new Guid("61626364-6566-6768-696a-6b6c6d6e6f70")) };
+		var parameters = new SingleStoreParameterCollection { new("@param", new Guid("61626364-6566-6768-696a-6b6c6d6e6f70")) };
 		const string sql = "SELECT @param;";
 		var parsedSql = GetParsedSql(sql, parameters, (StatementPreparerOptions) options);
 		Assert.Equal(sql.Replace("@param", replacedValue), parsedSql);
@@ -216,7 +216,7 @@ SELECT @'var' as R")]
 	[InlineData("SELECT * FROM test WHERE id = ?", "SELECT * FROM test WHERE id = 0;", true)]
 	public void CompleteStatements(string sql, string expectedSql, bool expectedComplete)
 	{
-		var parameters = new MySqlParameterCollection { new() { Value = 0 } };
+		var parameters = new SingleStoreParameterCollection { new() { Value = 0 } };
 		var preparer = new StatementPreparer(sql, parameters, new StatementPreparerOptions());
 		var writer = new ByteBufferWriter();
 		var isComplete = preparer.ParseAndBindParameters(writer);
@@ -246,7 +246,7 @@ SELECT @'var' as R")]
 		Assert.Equal(expectedStatements.Length, expectedStatementParameters.Length);
 
 		// make some dummy parameters available to the test input
-		var parameters = new MySqlParameterCollection
+		var parameters = new SingleStoreParameterCollection
 		{
 			new("@zero", 0),
 			new("@one", 0),
@@ -284,9 +284,9 @@ SELECT @'var' as R")]
 		}
 	}
 
-	private static string GetParsedSql(string input, MySqlParameterCollection parameters = null, StatementPreparerOptions options = StatementPreparerOptions.None)
+	private static string GetParsedSql(string input, SingleStoreParameterCollection parameters = null, StatementPreparerOptions options = StatementPreparerOptions.None)
 	{
-		var preparer = new StatementPreparer(input, parameters ?? new MySqlParameterCollection(), options);
+		var preparer = new StatementPreparer(input, parameters ?? new SingleStoreParameterCollection(), options);
 		var writer = new ByteBufferWriter();
 		preparer.ParseAndBindParameters(writer);
 		using var payload = writer.ToPayloadData();

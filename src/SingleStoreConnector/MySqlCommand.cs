@@ -80,9 +80,9 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	/// <summary>
 	/// The collection of <see cref="SingleStoreParameter"/> objects for this command.
 	/// </summary>
-	public new MySqlParameterCollection Parameters => m_parameterCollection ??= new();
+	public new SingleStoreParameterCollection Parameters => m_parameterCollection ??= new();
 
-	MySqlParameterCollection? IMySqlCommand.RawParameters => m_parameterCollection;
+	SingleStoreParameterCollection? IMySqlCommand.RawParameters => m_parameterCollection;
 
 	/// <summary>
 	/// The collection of <see cref="SingleStoreAttribute"/> objects for this command.
@@ -125,11 +125,11 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	public Task PrepareAsync(CancellationToken cancellationToken = default) => PrepareAsync(AsyncIOBehavior, cancellationToken);
 #endif
 
-	internal MySqlParameterCollection? CloneRawParameters()
+	internal SingleStoreParameterCollection? CloneRawParameters()
 	{
 		if (m_parameterCollection is null)
 			return null;
-		var parameters = new MySqlParameterCollection();
+		var parameters = new SingleStoreParameterCollection();
 		foreach (var parameter in (IEnumerable<SingleStoreParameter>) m_parameterCollection)
 			parameters.Add(parameter.Clone());
 		return parameters;
@@ -428,7 +428,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 		m_connection.State == ConnectionState.Open ? m_connection.Session.TryGetPreparedStatement(CommandText!) : null;
 
 	CommandBehavior IMySqlCommand.CommandBehavior => m_commandBehavior;
-	MySqlParameterCollection? IMySqlCommand.OutParameters { get; set; }
+	SingleStoreParameterCollection? IMySqlCommand.OutParameters { get; set; }
 	SingleStoreParameter? IMySqlCommand.ReturnParameter { get; set; }
 
 	static readonly ISingleStoreConnectorLogger Log = SingleStoreConnectorLogManager.CreateLogger(nameof(SingleStoreCommand));
@@ -437,7 +437,7 @@ public sealed class SingleStoreCommand : DbCommand, IMySqlCommand, ICancellableC
 	bool m_isDisposed;
 	SingleStoreConnection? m_connection;
 	string m_commandText;
-	MySqlParameterCollection? m_parameterCollection;
+	SingleStoreParameterCollection? m_parameterCollection;
 	SingleStoreAttributeCollection? m_attributeCollection;
 	int? m_commandTimeout;
 	CommandType m_commandType;

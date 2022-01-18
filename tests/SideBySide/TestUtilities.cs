@@ -57,25 +57,25 @@ public static class TestUtilities
 			return null;
 
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		if (configSettings.HasFlag(ConfigSettings.RequiresSsl) && (csb.SslMode == MySqlSslMode.None
+		if (configSettings.HasFlag(ConfigSettings.RequiresSsl) && (csb.SslMode == SingleStoreSslMode.None
 #if !BASELINE
-		 || csb.SslMode == MySqlSslMode.Preferred
+		 || csb.SslMode == SingleStoreSslMode.Preferred
 #endif
 		 ))
 			return "Requires SslMode=Required or higher in connection string";
 
 		if (configSettings.HasFlag(ConfigSettings.TrustedHost) &&
-			(csb.SslMode == MySqlSslMode.None ||
+			(csb.SslMode == SingleStoreSslMode.None ||
 #if !BASELINE
-			csb.SslMode == MySqlSslMode.Preferred ||
+			csb.SslMode == SingleStoreSslMode.Preferred ||
 #endif
-			csb.SslMode == MySqlSslMode.Required))
+			csb.SslMode == SingleStoreSslMode.Required))
 		{
 			return "Requires SslMode=VerifyCA or higher in connection string";
 		}
 
 		if (configSettings.HasFlag(ConfigSettings.UntrustedHost) &&
-			(csb.SslMode == MySqlSslMode.VerifyCA || csb.SslMode == MySqlSslMode.VerifyFull))
+			(csb.SslMode == SingleStoreSslMode.VerifyCA || csb.SslMode == SingleStoreSslMode.VerifyFull))
 		{
 			return "Requires SslMode=Required or lower in connection string";
 		}

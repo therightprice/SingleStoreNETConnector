@@ -3,7 +3,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// SSL connection options.
 /// </summary>
-public enum MySqlSslMode
+public enum SingleStoreSslMode
 {
 	/// <summary>
 	/// Do not use SSL.

@@ -93,7 +93,7 @@ internal sealed class CompressedPayloadHandler : IPayloadHandler
 					if (protocolErrorBehavior == ProtocolErrorBehavior.Ignore)
 						return default;
 
-					var exception = MySqlProtocolException.CreateForPacketOutOfOrder(expectedSequenceNumber, packetSequenceNumber);
+					var exception = SingleStoreProtocolException.CreateForPacketOutOfOrder(expectedSequenceNumber, packetSequenceNumber);
 					return ValueTaskExtensions.FromException<int>(exception);
 				}
 

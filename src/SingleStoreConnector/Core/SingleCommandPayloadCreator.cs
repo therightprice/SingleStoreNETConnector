@@ -187,9 +187,9 @@ internal sealed class SingleCommandPayloadCreator : ICommandPayloadCreator
 			parameterCollection = cachedProcedure.AlignParamsWithDb(parameterCollection);
 
 		SingleStoreParameter? returnParameter = null;
-		var outParameters = new MySqlParameterCollection();
+		var outParameters = new SingleStoreParameterCollection();
 		var outParameterNames = new List<string>();
-		var inParameters = new MySqlParameterCollection();
+		var inParameters = new SingleStoreParameterCollection();
 		var argParameterNames = new List<string>();
 		var inOutSetParameters = "";
 		for (var i = 0; i < (parameterCollection?.Count ?? 0); i++)

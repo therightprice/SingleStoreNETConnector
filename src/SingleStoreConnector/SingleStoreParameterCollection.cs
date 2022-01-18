@@ -3,9 +3,9 @@ using SingleStoreConnector.Utilities;
 
 namespace SingleStoreConnector;
 
-public sealed class MySqlParameterCollection : DbParameterCollection, IEnumerable<SingleStoreParameter>
+public sealed class SingleStoreParameterCollection : DbParameterCollection, IEnumerable<SingleStoreParameter>
 {
-	internal MySqlParameterCollection()
+	internal SingleStoreParameterCollection()
 	{
 		m_parameters = new();
 		m_nameToIndex = new(StringComparer.OrdinalIgnoreCase);

@@ -1,6 +1,6 @@
 namespace SingleStoreConnector;
 
-public sealed class MySqlRowsCopiedEventArgs : EventArgs
+public sealed class SingleStoreRowsCopiedEventArgs : EventArgs
 {
 	/// <summary>
 	/// Gets or sets a value that indicates whether the bulk copy operation should be aborted.
@@ -12,7 +12,7 @@ public sealed class MySqlRowsCopiedEventArgs : EventArgs
 	/// </summary>
 	public long RowsCopied { get; internal set; }
 
-	internal MySqlRowsCopiedEventArgs()
+	internal SingleStoreRowsCopiedEventArgs()
 	{
 	}
 }
@@ -20,4 +20,4 @@ public sealed class MySqlRowsCopiedEventArgs : EventArgs
 /// <summary>
 /// Represents the method that handles the <see cref="SingleStoreBulkCopy.MySqlRowsCopied"/> event of a <see cref="SingleStoreBulkCopy"/>.
 /// </summary>
-public delegate void MySqlRowsCopiedEventHandler(object sender, MySqlRowsCopiedEventArgs e);
+public delegate void SingleStoreRowsCopiedEventHandler(object sender, SingleStoreRowsCopiedEventArgs e);

@@ -23,9 +23,9 @@ public sealed class SingleStoreDataAdapter : DbDataAdapter
 	{
 	}
 
-	public event MySqlRowUpdatingEventHandler? RowUpdating;
+	public event SingleStoreRowUpdatingEventHandler? RowUpdating;
 
-	public event MySqlRowUpdatedEventHandler? RowUpdated;
+	public event SingleStoreRowUpdatedEventHandler? RowUpdated;
 
 	public new SingleStoreCommand? DeleteCommand
 	{
@@ -51,13 +51,13 @@ public sealed class SingleStoreDataAdapter : DbDataAdapter
 		set => base.UpdateCommand = value;
 	}
 
-	protected override void OnRowUpdating(RowUpdatingEventArgs value) => RowUpdating?.Invoke(this, (MySqlRowUpdatingEventArgs) value);
+	protected override void OnRowUpdating(RowUpdatingEventArgs value) => RowUpdating?.Invoke(this, (SingleStoreRowUpdatingEventArgs) value);
 
-	protected override void OnRowUpdated(RowUpdatedEventArgs value) => RowUpdated?.Invoke(this, (MySqlRowUpdatedEventArgs) value);
+	protected override void OnRowUpdated(RowUpdatedEventArgs value) => RowUpdated?.Invoke(this, (SingleStoreRowUpdatedEventArgs) value);
 
-	protected override RowUpdatingEventArgs CreateRowUpdatingEvent(DataRow dataRow, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping) => new MySqlRowUpdatingEventArgs(dataRow, command, statementType, tableMapping);
+	protected override RowUpdatingEventArgs CreateRowUpdatingEvent(DataRow dataRow, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping) => new SingleStoreRowUpdatingEventArgs(dataRow, command, statementType, tableMapping);
 
-	protected override RowUpdatedEventArgs CreateRowUpdatedEvent(DataRow dataRow, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping) => new MySqlRowUpdatedEventArgs(dataRow, command, statementType, tableMapping);
+	protected override RowUpdatedEventArgs CreateRowUpdatedEvent(DataRow dataRow, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping) => new SingleStoreRowUpdatedEventArgs(dataRow, command, statementType, tableMapping);
 
 	public override int UpdateBatchSize { get; set; }
 
@@ -84,7 +84,7 @@ public sealed class SingleStoreDataAdapter : DbDataAdapter
 			CommandText = command.CommandText,
 			CommandType = command.CommandType,
 		};
-		if (mySqlCommand.CloneRawParameters() is MySqlParameterCollection clonedParameters)
+		if (mySqlCommand.CloneRawParameters() is SingleStoreParameterCollection clonedParameters)
 		{
 			foreach (var clonedParameter in clonedParameters)
 				batchCommand.Parameters.Add(clonedParameter!);
@@ -101,13 +101,13 @@ public sealed class SingleStoreDataAdapter : DbDataAdapter
 	SingleStoreBatch? m_batch;
 }
 
-public delegate void MySqlRowUpdatingEventHandler(object sender, MySqlRowUpdatingEventArgs e);
+public delegate void SingleStoreRowUpdatingEventHandler(object sender, SingleStoreRowUpdatingEventArgs e);
 
-public delegate void MySqlRowUpdatedEventHandler(object sender, MySqlRowUpdatedEventArgs e);
+public delegate void SingleStoreRowUpdatedEventHandler(object sender, SingleStoreRowUpdatedEventArgs e);
 
-public sealed class MySqlRowUpdatingEventArgs : RowUpdatingEventArgs
+public sealed class SingleStoreRowUpdatingEventArgs : RowUpdatingEventArgs
 {
-	public MySqlRowUpdatingEventArgs(DataRow row, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping)
+	public SingleStoreRowUpdatingEventArgs(DataRow row, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping)
 		: base(row, command, statementType, tableMapping)
 	{
 	}
@@ -115,9 +115,9 @@ public sealed class MySqlRowUpdatingEventArgs : RowUpdatingEventArgs
 	public new SingleStoreCommand? Command => (SingleStoreCommand?) base.Command!;
 }
 
-public sealed class MySqlRowUpdatedEventArgs : RowUpdatedEventArgs
+public sealed class SingleStoreRowUpdatedEventArgs : RowUpdatedEventArgs
 {
-	public MySqlRowUpdatedEventArgs(DataRow row, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping)
+	public SingleStoreRowUpdatedEventArgs(DataRow row, IDbCommand? command, StatementType statementType, DataTableMapping tableMapping)
 		: base(row, command, statementType, tableMapping)
 	{
 	}

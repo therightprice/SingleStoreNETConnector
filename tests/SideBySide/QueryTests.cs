@@ -995,7 +995,7 @@ insert into long_enum_test (id, value) VALUES (0x7FFFFFFFFFFFFFFF, 1);
 		SingleStoreParameter parameter = command.CreateParameter();
 		parameter.ParameterName = "param";
 		parameter.Value = 1;
-		MySqlParameterCollection parameterCollection = command.Parameters;
+		SingleStoreParameterCollection parameterCollection = command.Parameters;
 		parameterCollection.Add(parameter);
 
 		SingleStoreParameter parameter2 = parameterCollection.AddWithValue("param2", 2);

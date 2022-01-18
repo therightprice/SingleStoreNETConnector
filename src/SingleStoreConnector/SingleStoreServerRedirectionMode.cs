@@ -3,7 +3,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// Server redirection configuration.
 /// </summary>
-public enum MySqlServerRedirectionMode
+public enum SingleStoreServerRedirectionMode
 {
 	/// <summary>
 	/// Server redirection will not be performed.

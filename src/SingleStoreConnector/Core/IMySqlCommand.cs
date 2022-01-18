@@ -9,13 +9,13 @@ internal interface IMySqlCommand
 	CommandType CommandType { get; }
 	bool AllowUserVariables { get; }
 	CommandBehavior CommandBehavior { get; }
-	MySqlParameterCollection? RawParameters { get; }
+	SingleStoreParameterCollection? RawParameters { get; }
 	SingleStoreAttributeCollection? RawAttributes { get; }
 	PreparedStatements? TryGetPreparedStatements();
 	SingleStoreConnection? Connection { get; }
 	long LastInsertedId { get; }
 	void SetLastInsertedId(long lastInsertedId);
-	MySqlParameterCollection? OutParameters { get; set; }
+	SingleStoreParameterCollection? OutParameters { get; set; }
 	SingleStoreParameter? ReturnParameter { get; set; }
 	ICancellableCommand CancellableCommand { get; }
 }

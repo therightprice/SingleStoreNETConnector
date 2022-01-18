@@ -167,7 +167,7 @@ public class ConnectionPool : IClassFixture<DatabaseFixture>
 				Assert.NotEqual(serverThread, connection.ServerThread);
 			}
 #if !BASELINE
-			catch (MySqlProtocolException) when (csb.UseCompression)
+			catch (SingleStoreProtocolException) when (csb.UseCompression)
 			{
 				// workaround for https://bugs.mysql.com/bug.php?id=103412
 			}

@@ -90,5 +90,5 @@ public sealed class SingleStoreCommandBuilder : DbCommandBuilder
 		return quotedIdentifier.Replace("``", "`");
 	}
 
-	private void RowUpdatingHandler(object sender, MySqlRowUpdatingEventArgs e) => RowUpdatingHandler(e);
+	private void RowUpdatingHandler(object sender, SingleStoreRowUpdatingEventArgs e) => RowUpdatingHandler(e);
 }

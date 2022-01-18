@@ -191,7 +191,7 @@ public sealed class SingleStoreParameter : DbParameter, IDbDataParameter, IClone
 
 	internal string NormalizedParameterName { get; private set; }
 
-	internal MySqlParameterCollection? ParameterCollection { get; set; }
+	internal SingleStoreParameterCollection? ParameterCollection { get; set; }
 
 	internal void AppendSqlString(ByteBufferWriter writer, StatementPreparerOptions options)
 	{

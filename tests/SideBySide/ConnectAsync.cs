@@ -399,7 +399,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 	public async Task Sha256WithoutSecureConnection()
 	{
 		var csb = AppConfig.CreateSha256ConnectionStringBuilder();
-		csb.SslMode = MySqlSslMode.None;
+		csb.SslMode = SingleStoreSslMode.None;
 		csb.AllowPublicKeyRetrieval = true;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		if (AppConfig.SupportedFeatures.HasFlag(ServerFeatures.RsaEncryption))
@@ -420,7 +420,7 @@ public class ConnectAsync : IClassFixture<DatabaseFixture>
 	public async Task CachingSha2WithoutSecureConnection()
 	{
 		var csb = AppConfig.CreateCachingSha2ConnectionStringBuilder();
-		csb.SslMode = MySqlSslMode.None;
+		csb.SslMode = SingleStoreSslMode.None;
 		csb.AllowPublicKeyRetrieval = true;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await connection.OpenAsync();

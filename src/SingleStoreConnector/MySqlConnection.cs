@@ -526,13 +526,13 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	/// frequently-changing passwords or authentication tokens. Changing the password in the connection string
 	/// will create unique connection pools; this delegate allows a single connection pool to use multiple passwords.</para>
 	/// </remarks>
-	public Func<MySqlProvidePasswordContext, string>? ProvidePasswordCallback { get; set; }
+	public Func<SingleStoreProvidePasswordContext, string>? ProvidePasswordCallback { get; set; }
 
 	/// <summary>
 	/// Gets or sets the delegate used to verify that the server's certificate is valid.
 	/// </summary>
-	/// <remarks><see cref="SingleStoreConnectionStringBuilder.SslMode"/> must be set to <see cref="MySqlSslMode.Preferred"/>
-	/// or <see cref="MySqlSslMode.Required"/> in order for this delegate to be invoked. See the documentation for
+	/// <remarks><see cref="SingleStoreConnectionStringBuilder.SslMode"/> must be set to <see cref="SingleStoreSslMode.Preferred"/>
+	/// or <see cref="SingleStoreSslMode.Required"/> in order for this delegate to be invoked. See the documentation for
 	/// <see cref="RemoteCertificateValidationCallback"/> for more information on the values passed to this delegate.</remarks>
 	public RemoteCertificateValidationCallback? RemoteCertificateValidationCallback { get; set; }
 
@@ -855,7 +855,7 @@ public sealed class SingleStoreConnection : DbConnection, ICloneable
 	// Defaults to IOBehavior.Synchronous if the connection hasn't been opened yet; only use if it's a no-op for a closed connection.
 	internal IOBehavior SimpleAsyncIOBehavior => (m_connectionSettings?.ForceSynchronous ?? false) ? IOBehavior.Synchronous : IOBehavior.Asynchronous;
 
-	internal MySqlSslMode SslMode => GetInitializedConnectionSettings().SslMode;
+	internal SingleStoreSslMode SslMode => GetInitializedConnectionSettings().SslMode;
 
 	internal int? ActiveCommandId => m_session?.ActiveCommandId;
 

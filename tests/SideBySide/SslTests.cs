@@ -16,7 +16,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 	public async Task ConnectSslPreferred()
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
-		csb.SslMode = MySqlSslMode.Preferred;
+		csb.SslMode = SingleStoreSslMode.Preferred;
 		csb.CertificateFile = null;
 		csb.CertificatePassword = null;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
@@ -46,7 +46,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.CertificatePassword = certFilePassword;
 		if (caCertFile is not null)
 		{
-			csb.SslMode = MySqlSslMode.VerifyCA;
+			csb.SslMode = SingleStoreSslMode.VerifyCA;
 			csb.SslCa = Path.Combine(AppConfig.CertsPath, caCertFile);
 		}
 		await DoTestSsl(csb.ConnectionString);
@@ -96,7 +96,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.SslKey = Path.Combine(AppConfig.CertsPath, keyFile);
 		if (caCertFile is not null)
 		{
-			csb.SslMode = MySqlSslMode.VerifyCA;
+			csb.SslMode = SingleStoreSslMode.VerifyCA;
 			csb.SslCa = Path.Combine(AppConfig.CertsPath, caCertFile);
 		}
 		await DoTestSsl(csb.ConnectionString);
@@ -157,7 +157,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.CertificateFile = Path.Combine(AppConfig.CertsPath, "ssl-client-cert.pem");
-		csb.SslMode = MySqlSslMode.Required;
+		csb.SslMode = SingleStoreSslMode.Required;
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
 	}
@@ -186,7 +186,7 @@ public class SslTests : IClassFixture<DatabaseFixture>
 		csb.SslCert = Path.Combine(AppConfig.CertsPath, "ssl-client-cert.pem");
 		csb.SslKey = Path.Combine(AppConfig.CertsPath, "ssl-client-key.pem");
 #endif
-		csb.SslMode = MySqlSslMode.VerifyCA;
+		csb.SslMode = SingleStoreSslMode.VerifyCA;
 		csb.SslCa = Path.Combine(AppConfig.CertsPath, "non-ca-client-cert.pem");
 		using var connection = new SingleStoreConnection(csb.ConnectionString);
 		await Assert.ThrowsAsync<SingleStoreException>(async () => await connection.OpenAsync());
@@ -194,10 +194,10 @@ public class SslTests : IClassFixture<DatabaseFixture>
 
 #if !BASELINE
 	[SkippableTheory(ServerFeatures.KnownCertificateAuthority, ConfigSettings.RequiresSsl)]
-	[InlineData(MySqlSslMode.VerifyCA, false, false)]
-	[InlineData(MySqlSslMode.VerifyCA, true, false)]
-	[InlineData(MySqlSslMode.Required, true, true)]
-	public async Task ConnectSslRemoteCertificateValidationCallback(MySqlSslMode sslMode, bool clearCA, bool expectedSuccess)
+	[InlineData(SingleStoreSslMode.VerifyCA, false, false)]
+	[InlineData(SingleStoreSslMode.VerifyCA, true, false)]
+	[InlineData(SingleStoreSslMode.Required, true, true)]
+	public async Task ConnectSslRemoteCertificateValidationCallback(SingleStoreSslMode sslMode, bool clearCA, bool expectedSuccess)
 	{
 		var csb = AppConfig.CreateConnectionStringBuilder();
 		csb.CertificateFile = Path.Combine(AppConfig.CertsPath, "ssl-client.pfx");

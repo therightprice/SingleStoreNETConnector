@@ -423,7 +423,7 @@ internal static class ProtocolUtility
 		Exception? packetOutOfOrderException = null;
 		var expectedSequenceNumber = getNextSequenceNumber() % 256;
 		if (expectedSequenceNumber != -1 && packetSequenceNumber != expectedSequenceNumber)
-			packetOutOfOrderException = MySqlProtocolException.CreateForPacketOutOfOrder(expectedSequenceNumber, packetSequenceNumber);
+			packetOutOfOrderException = SingleStoreProtocolException.CreateForPacketOutOfOrder(expectedSequenceNumber, packetSequenceNumber);
 
 		var payloadBytesTask = bufferedByteReader.ReadBytesAsync(byteHandler, payloadLength, ioBehavior);
 		if (payloadBytesTask.IsCompletedSuccessfully)

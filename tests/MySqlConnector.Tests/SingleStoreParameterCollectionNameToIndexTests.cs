@@ -2,11 +2,11 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlParameterCollectionNameToIndexTests
+public class SingleStoreParameterCollectionNameToIndexTests
 {
-	public MySqlParameterCollectionNameToIndexTests()
+	public SingleStoreParameterCollectionNameToIndexTests()
 	{
-		m_collection = new MySqlParameterCollection
+		m_collection = new SingleStoreParameterCollection
 		{
 			new SingleStoreParameter { ParameterName = "A", Value = 1 },
 			new SingleStoreParameter { ParameterName = "B", Value = 2 },
@@ -126,5 +126,5 @@ public class MySqlParameterCollectionNameToIndexTests
 		Assert.Equal(1, m_collection.NormalizedIndexOf("D"));
 	}
 
-	MySqlParameterCollection m_collection;
+	SingleStoreParameterCollection m_collection;
 }

@@ -6,9 +6,9 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlParameterCollectionTests
+public class SingleStoreParameterCollectionTests
 {
-	public MySqlParameterCollectionTests()
+	public SingleStoreParameterCollectionTests()
 	{
 		m_collection = new SingleStoreCommand().Parameters;
 	}
@@ -25,5 +25,5 @@ public class MySqlParameterCollectionTests
 	[Fact]
 	public void RemoveAtEnd() => Assert.Throws<ArgumentOutOfRangeException>(() => m_collection.RemoveAt(0));
 
-	MySqlParameterCollection m_collection;
+	SingleStoreParameterCollection m_collection;
 }

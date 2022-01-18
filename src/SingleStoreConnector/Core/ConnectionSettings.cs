@@ -193,7 +193,7 @@ internal sealed class ConnectionSettings
 	public string Database { get; }
 
 	// SSL/TLS Options
-	public MySqlSslMode SslMode { get; }
+	public SingleStoreSslMode SslMode { get; }
 	public string CertificateFile { get; }
 	public string CertificatePassword { get; }
 	public string CACertificateFile { get; }
@@ -235,7 +235,7 @@ internal sealed class ConnectionSettings
 	public bool NoBackslashEscapes { get; }
 	public bool PersistSecurityInfo { get; }
 	public bool? Pipelining { get; }
-	public MySqlServerRedirectionMode ServerRedirectionMode { get; }
+	public SingleStoreServerRedirectionMode ServerRedirectionMode { get; }
 	public string ServerRsaPublicKeyFile { get; }
 	public string ServerSPN { get; }
 	public bool TreatTinyAsBoolean { get; }

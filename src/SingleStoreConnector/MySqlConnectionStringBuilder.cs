@@ -147,10 +147,10 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	/// Whether to use SSL/TLS when connecting to the MySQL server.
 	/// </summary>
 	[Category("TLS")]
-	[DefaultValue(MySqlSslMode.Preferred)]
+	[DefaultValue(SingleStoreSslMode.Preferred)]
 	[Description("Whether to use SSL/TLS when connecting to the MySQL server.")]
 	[DisplayName("SSL Mode")]
-	public MySqlSslMode SslMode
+	public SingleStoreSslMode SslMode
 	{
 		get => MySqlConnectionStringOption.SslMode.GetValue(this);
 		set => MySqlConnectionStringOption.SslMode.SetValue(this, value);
@@ -227,7 +227,7 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 	}
 
 	/// <summary>
-	/// The path to a CA certificate file in a PEM Encoded (.pem) format. This should be used with a value for the <see cref="SslMode"/> property of <see cref="MySqlSslMode.VerifyCA"/> or <see cref="MySqlSslMode.VerifyFull"/> to enable verification of a CA certificate that is not trusted by the operating system’s certificate store.
+	/// The path to a CA certificate file in a PEM Encoded (.pem) format. This should be used with a value for the <see cref="SslMode"/> property of <see cref="SingleStoreSslMode.VerifyCA"/> or <see cref="SingleStoreSslMode.VerifyFull"/> to enable verification of a CA certificate that is not trusted by the operating system’s certificate store.
 	/// </summary>
 	[AllowNull]
 	[Category("TLS")]
@@ -694,10 +694,10 @@ public sealed class SingleStoreConnectionStringBuilder : DbConnectionStringBuild
 		/// Whether to use server redirection.
 		/// </summary>
 	[Category("Connection")]
-	[DefaultValue(MySqlServerRedirectionMode.Disabled)]
+	[DefaultValue(SingleStoreServerRedirectionMode.Disabled)]
 	[Description("Whether to use server redirection.")]
 	[DisplayName("Server Redirection Mode")]
-	public MySqlServerRedirectionMode ServerRedirectionMode
+	public SingleStoreServerRedirectionMode ServerRedirectionMode
 	{
 		get => MySqlConnectionStringOption.ServerRedirectionMode.GetValue(this);
 		set => MySqlConnectionStringOption.ServerRedirectionMode.SetValue(this, value);
@@ -881,7 +881,7 @@ internal abstract class MySqlConnectionStringOption
 	public static readonly MySqlConnectionStringReferenceOption<string> PipeName;
 
 	// SSL/TLS Options
-	public static readonly MySqlConnectionStringValueOption<MySqlSslMode> SslMode;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreSslMode> SslMode;
 	public static readonly MySqlConnectionStringReferenceOption<string> CertificateFile;
 	public static readonly MySqlConnectionStringReferenceOption<string> CertificatePassword;
 	public static readonly MySqlConnectionStringValueOption<SingleStoreCertificateStoreLocation> CertificateStoreLocation;
@@ -925,7 +925,7 @@ internal abstract class MySqlConnectionStringOption
 	public static readonly MySqlConnectionStringValueOption<bool> OldGuids;
 	public static readonly MySqlConnectionStringValueOption<bool> PersistSecurityInfo;
 	public static readonly MySqlConnectionStringValueOption<bool> Pipelining;
-	public static readonly MySqlConnectionStringValueOption<MySqlServerRedirectionMode> ServerRedirectionMode;
+	public static readonly MySqlConnectionStringValueOption<SingleStoreServerRedirectionMode> ServerRedirectionMode;
 	public static readonly MySqlConnectionStringReferenceOption<string> ServerRsaPublicKeyFile;
 	public static readonly MySqlConnectionStringReferenceOption<string> ServerSPN;
 	public static readonly MySqlConnectionStringValueOption<bool> TreatTinyAsBoolean;
@@ -996,7 +996,7 @@ internal abstract class MySqlConnectionStringOption
 		// SSL/TLS Options
 		AddOption(SslMode = new(
 			keys: new[] { "SSL Mode", "SslMode" },
-			defaultValue: MySqlSslMode.Preferred));
+			defaultValue: SingleStoreSslMode.Preferred));
 
 		AddOption(CertificateFile = new(
 			keys: new[] { "Certificate File", "CertificateFile" },
@@ -1198,7 +1198,7 @@ internal abstract class MySqlConnectionStringOption
 
 		AddOption(ServerRedirectionMode = new(
 			keys: new[] { "Server Redirection Mode", "ServerRedirectionMode" },
-			defaultValue: MySqlServerRedirectionMode.Disabled));
+			defaultValue: SingleStoreServerRedirectionMode.Disabled));
 
 		AddOption(ServerRsaPublicKeyFile = new(
 			keys: new[] { "Server RSA Public Key File", "ServerRsaPublicKeyFile" },
@@ -1261,7 +1261,7 @@ internal sealed class MySqlConnectionStringValueOption<T> : MySqlConnectionStrin
 				return (T) (object) false;
 		}
 
-		if ((typeof(T) == typeof(SingleStoreLoadBalance) || typeof(T) == typeof(MySqlSslMode) || typeof(T) == typeof(MySqlServerRedirectionMode) || typeof(T) == typeof(SingleStoreDateTimeKind) || typeof(T) == typeof(SingleStoreGuidFormat) || typeof(T) == typeof(SingleStoreConnectionProtocol) || typeof(T) == typeof(SingleStoreCertificateStoreLocation)) && objectValue is string enumString)
+		if ((typeof(T) == typeof(SingleStoreLoadBalance) || typeof(T) == typeof(SingleStoreSslMode) || typeof(T) == typeof(SingleStoreServerRedirectionMode) || typeof(T) == typeof(SingleStoreDateTimeKind) || typeof(T) == typeof(SingleStoreGuidFormat) || typeof(T) == typeof(SingleStoreConnectionProtocol) || typeof(T) == typeof(SingleStoreCertificateStoreLocation)) && objectValue is string enumString)
 		{
 			try
 			{

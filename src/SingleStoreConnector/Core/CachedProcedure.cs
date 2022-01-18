@@ -105,9 +105,9 @@ internal sealed class CachedProcedure
 		Parameters = parameters;
 	}
 
-	internal MySqlParameterCollection AlignParamsWithDb(MySqlParameterCollection? parameterCollection)
+	internal SingleStoreParameterCollection AlignParamsWithDb(SingleStoreParameterCollection? parameterCollection)
 	{
-		var alignedParams = new MySqlParameterCollection();
+		var alignedParams = new SingleStoreParameterCollection();
 		var returnParam = parameterCollection?.FirstOrDefault(static x => x.Direction == ParameterDirection.ReturnValue);
 
 		foreach (var cachedParam in Parameters)

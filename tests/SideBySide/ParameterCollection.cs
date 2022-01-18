@@ -300,5 +300,5 @@ public class ParameterCollection : IDisposable
 	}
 
 	SingleStoreCommand m_command;
-	MySqlParameterCollection m_parameterCollection;
+	SingleStoreParameterCollection m_parameterCollection;
 }

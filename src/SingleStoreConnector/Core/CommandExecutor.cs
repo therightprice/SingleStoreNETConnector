@@ -60,7 +60,7 @@ internal static class CommandExecutor
 				Log.Info("Session{0} query was interrupted", connection.Session.Id);
 				throw new OperationCanceledException(ex.Message, ex, cancellationToken);
 			}
-			catch (Exception ex) when (payload.Span.Length > 4_194_304 && (ex is SocketException or IOException or MySqlProtocolException))
+			catch (Exception ex) when (payload.Span.Length > 4_194_304 && (ex is SocketException or IOException or SingleStoreProtocolException))
 			{
 				// the default MySQL Server value for max_allowed_packet (in MySQL 5.7) is 4MiB: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_max_allowed_packet
 				// use "decimal megabytes" (to round up) when creating the exception message

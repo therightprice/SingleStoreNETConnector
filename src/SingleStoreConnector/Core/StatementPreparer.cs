@@ -8,7 +8,7 @@ internal sealed class StatementPreparer
 {
 	public StatementPreparerOptions Options { get; }
 
-	public StatementPreparer(string commandText, MySqlParameterCollection? parameters, StatementPreparerOptions options)
+	public StatementPreparer(string commandText, SingleStoreParameterCollection? parameters, StatementPreparerOptions options)
 	{
 		m_commandText = commandText;
 		m_parameters = parameters;
@@ -161,5 +161,5 @@ internal sealed class StatementPreparer
 	}
 
 	readonly string m_commandText;
-	readonly MySqlParameterCollection? m_parameters;
+	readonly SingleStoreParameterCollection? m_parameters;
 }

@@ -503,7 +503,7 @@ internal sealed class ServerSession
 					m_logArguments[0], ServerVersion.OriginalString, ConnectionId,
 					m_useCompression, m_supportsConnectionAttributes, m_supportsDeprecateEof, serverSupportsSsl, m_supportsSessionTrack, m_supportsPipelining, SupportsQueryAttributes);
 
-				if (cs.SslMode != MySqlSslMode.None && (cs.SslMode != MySqlSslMode.Preferred || serverSupportsSsl))
+				if (cs.SslMode != SingleStoreSslMode.None && (cs.SslMode != SingleStoreSslMode.Preferred || serverSupportsSsl))
 				{
 					if (!serverSupportsSsl)
 					{
@@ -1256,7 +1256,7 @@ internal sealed class ServerSession
 				}
 				else
 				{
-					var requireValid = cs.SslMode is MySqlSslMode.VerifyCA or MySqlSslMode.VerifyFull;
+					var requireValid = cs.SslMode is SingleStoreSslMode.VerifyCA or SingleStoreSslMode.VerifyFull;
 					var foundCertificates = store.Certificates.Find(X509FindType.FindByThumbprint, cs.CertificateThumbprint, requireValid);
 					if (foundCertificates.Count == 0)
 					{
@@ -1395,7 +1395,7 @@ internal sealed class ServerSession
 
 		bool ValidateRemoteCertificate(object rcbSender, X509Certificate? rcbCertificate, X509Chain? rcbChain, SslPolicyErrors rcbPolicyErrors)
 		{
-			if (cs.SslMode is MySqlSslMode.Preferred or MySqlSslMode.Required)
+			if (cs.SslMode is SingleStoreSslMode.Preferred or SingleStoreSslMode.Required)
 				return true;
 
 			if ((rcbPolicyErrors & SslPolicyErrors.RemoteCertificateChainErrors) != 0 &&
@@ -1409,7 +1409,7 @@ internal sealed class ServerSession
 					rcbPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors;
 			}
 
-			if (cs.SslMode == MySqlSslMode.VerifyCA)
+			if (cs.SslMode == SingleStoreSslMode.VerifyCA)
 				rcbPolicyErrors &= ~SslPolicyErrors.RemoteCertificateNameMismatch;
 
 			return rcbPolicyErrors == SslPolicyErrors.None;
@@ -1423,7 +1423,7 @@ internal sealed class ServerSession
 			{
 				Log.Warn("Session{0} not using client-provided RemoteCertificateValidationCallback because SslCA is specified", m_logArguments);
 			}
-			else if (cs.SslMode is not MySqlSslMode.Preferred and not MySqlSslMode.Required)
+			else if (cs.SslMode is not SingleStoreSslMode.Preferred and not SingleStoreSslMode.Required)
 			{
 				m_logArguments[1] = cs.SslMode;
 				Log.Warn("Session{0} not using client-provided RemoteCertificateValidationCallback because SslMode is {1}", m_logArguments);
@@ -1438,7 +1438,7 @@ internal sealed class ServerSession
 		var sslStream = clientCertificates is null ? new SslStream(m_stream!, false, validateRemoteCertificate) :
 			new SslStream(m_stream!, false, validateRemoteCertificate, ValidateLocalCertificate);
 
-		var checkCertificateRevocation = cs.SslMode == MySqlSslMode.VerifyFull;
+		var checkCertificateRevocation = cs.SslMode == SingleStoreSslMode.VerifyFull;
 
 		using (var initSsl = HandshakeResponse41Payload.CreateWithSsl(serverCapabilities, cs, m_useCompression, m_characterSet))
 			await SendReplyAsync(initSsl, ioBehavior, cancellationToken).ConfigureAwait(false);

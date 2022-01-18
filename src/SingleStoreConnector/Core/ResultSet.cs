@@ -176,8 +176,8 @@ internal sealed class ResultSet
 
 	private static bool IsHostVerified(SingleStoreConnection connection)
 	{
-		return connection.SslMode == MySqlSslMode.VerifyCA
-			|| connection.SslMode == MySqlSslMode.VerifyFull;
+		return connection.SslMode == SingleStoreSslMode.VerifyCA
+			|| connection.SslMode == SingleStoreSslMode.VerifyFull;
 	}
 
 	public async Task ReadEntireAsync(IOBehavior ioBehavior, CancellationToken cancellationToken)

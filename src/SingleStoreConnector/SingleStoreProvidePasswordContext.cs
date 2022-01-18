@@ -3,7 +3,7 @@ namespace SingleStoreConnector;
 /// <summary>
 /// Provides context for the <see cref="SingleStoreConnection.ProvidePasswordCallback"/> delegate.
 /// </summary>
-public sealed class MySqlProvidePasswordContext
+public sealed class SingleStoreProvidePasswordContext
 {
 	/// <summary>
 	/// The server to which SingleStoreConnector is connecting. This is a host name from the <see cref="SingleStoreConnectionStringBuilder.Server"/> option.
@@ -25,7 +25,7 @@ public sealed class MySqlProvidePasswordContext
 	/// </summary>
 	public string Database { get; }
 
-	internal MySqlProvidePasswordContext(string server, int port, string userId, string database)
+	internal SingleStoreProvidePasswordContext(string server, int port, string userId, string database)
 	{
 		Server = server;
 		Port = port;
