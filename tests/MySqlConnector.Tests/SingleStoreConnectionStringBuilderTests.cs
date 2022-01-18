@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SingleStoreConnector.Tests;
 
-public class MySqlConnectionStringBuilderTests
+public class SingleStoreConnectionStringBuilderTests
 {
 	[Fact]
 	public void Defaults()

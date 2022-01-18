@@ -10,9 +10,9 @@ using SingleStoreConnector.Protocol;
 
 namespace SingleStoreConnector.Tests;
 
-internal sealed class FakeMySqlServerConnection
+internal sealed class FakeSingleStoreServerConnection
 {
-	public FakeMySqlServerConnection(FakeMySqlServer server, int connectionId)
+	public FakeSingleStoreServerConnection(FakeSingleStoreServer server, int connectionId)
 	{
 		m_server = server ?? throw new ArgumentNullException(nameof(server));
 		m_connectionId = connectionId;
@@ -277,6 +277,6 @@ internal sealed class FakeMySqlServerConnection
 		writer.WriteRaw(message);
 	}
 
-	readonly FakeMySqlServer m_server;
+	readonly FakeSingleStoreServer m_server;
 	readonly int m_connectionId;
 }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SingleStoreConnector.Tests;
 
-public sealed class FakeMySqlServer
+public sealed class FakeSingleStoreServer
 {
-	public FakeMySqlServer()
+	public FakeSingleStoreServer()
 	{
 		m_tcpListener = new(IPAddress.Any, 0);
 		m_lock = new();
@@ -74,7 +74,7 @@ public sealed class FakeMySqlServer
 			Interlocked.Increment(ref m_activeConnections);
 			lock (m_lock)
 			{
-				var connection = new FakeMySqlServerConnection(this, m_tasks.Count);
+				var connection = new FakeSingleStoreServerConnection(this, m_tasks.Count);
 				m_connections.Add(connection);
 				m_tasks.Add(connection.RunAsync(tcpClient, m_cts.Token));
 			}
@@ -83,7 +83,7 @@ public sealed class FakeMySqlServer
 
 	readonly object m_lock;
 	readonly TcpListener m_tcpListener;
-	readonly List<FakeMySqlServerConnection> m_connections;
+	readonly List<FakeSingleStoreServerConnection> m_connections;
 	readonly List<Task> m_tasks;
 	CancellationTokenSource m_cts;
 	int m_activeConnections;

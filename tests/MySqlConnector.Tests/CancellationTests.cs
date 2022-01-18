@@ -457,6 +457,6 @@ public class CancellationTests : IDisposable
 		return value.Value;
 	}
 
-	readonly FakeMySqlServer m_server;
+	readonly FakeSingleStoreServer m_server;
 	readonly SingleStoreConnectionStringBuilder m_csb;
 }
