@@ -157,7 +157,7 @@ internal sealed class FakeSingleStoreServerConnection
 							m_server.CancelQuery(connectionId);
 							await SendAsync(stream, 1, WriteOk);
 						}
-						else if (query == "DO SLEEP(0);")
+						else if (query == "SELECT SLEEP(0) INTO @dummy;")
 						{
 							var wasSet = CancelQueryEvent.Wait(0, token);
 							await SendAsync(stream, 1, WriteOk);
