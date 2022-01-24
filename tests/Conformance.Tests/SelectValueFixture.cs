@@ -34,8 +34,8 @@ Single float,
 String text,
 Guid char(36),
 `Date` date,
-`DateTime` datetime(3),
-`Time` time(3)
+`DateTime` datetime(6),
+`Time` time(6)
 );
 insert into select_value values
 (0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null),

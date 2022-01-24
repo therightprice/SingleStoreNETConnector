@@ -238,7 +238,7 @@ select last_insert_id();";
 	}
 
 	[Theory]
-	[InlineData(3)]
+	[InlineData(0)]
 	[InlineData(6)]
 	public void InsertTime(int precision)
 	{

@@ -395,7 +395,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 			yield return new object[] { isPrepared, "VARCHAR(100)", "test;@'; -- ", SingleStoreDbType.VarChar };
 			yield return new object[] { isPrepared, "TEXT", "testing testing", SingleStoreDbType.Text };
 			yield return new object[] { isPrepared, "DATE", new DateTime(2018, 7, 23), SingleStoreDbType.Date };
-			yield return new object[] { isPrepared, "DATETIME(3)", new DateTime(2018, 7, 23, 20, 46, 52, 123), SingleStoreDbType.DateTime };
+			yield return new object[] { isPrepared, "DATETIME(6)", new DateTime(2018, 7, 23, 20, 46, 52, 123), SingleStoreDbType.DateTime };
 			yield return new object[] { isPrepared, "ENUM('small', 'medium', 'large')", "medium", SingleStoreDbType.Enum };
 			yield return new object[] { isPrepared, "SET('one','two','four','eight')", "two,eight", SingleStoreDbType.Set };
 #if !BASELINE
@@ -403,7 +403,7 @@ SELECT data FROM prepared_command_test ORDER BY rowid;", connection);
 #else
 			yield return new object[] { isPrepared, "BOOL", true, SingleStoreDbType.Int32 };
 #endif
-			yield return new object[] { isPrepared, "TIME(3)", TimeSpan.Zero.Subtract(new TimeSpan(15, 10, 34, 56, 789)), SingleStoreDbType.Time };
+			yield return new object[] { isPrepared, "TIME(6)", TimeSpan.Zero.Subtract(new TimeSpan(15, 10, 34, 56, 789)), SingleStoreDbType.Time };
 
 #if !BASELINE
 			// https://bugs.mysql.com/bug.php?id=91751
